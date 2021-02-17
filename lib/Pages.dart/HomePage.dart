@@ -10,7 +10,7 @@ class HomePage extends StatelessWidget {
       length: 3,
           child: Scaffold(
         appBar: AppBar(
-
+  title: Text('Classroom Scheduler'),
           bottom: TabBar(
             tabs: [
               Text('Notices'),
