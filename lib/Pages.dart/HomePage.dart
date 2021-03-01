@@ -4,6 +4,8 @@ import 'TabBars.dart/LectureTabBar.dart';
 import 'TabBars.dart/NoticesTabBar.dart';
 
 class HomePage extends StatelessWidget {
+
+  static String routeName = 'HomePage';
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(

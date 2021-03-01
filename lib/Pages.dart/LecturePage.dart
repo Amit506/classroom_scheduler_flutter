@@ -3,6 +3,7 @@ import '../components/LectureTile.dart';
 import '../models/Lecture.dart';
 
 class LecturePage extends StatefulWidget {
+   static String routeName = 'LecturePage';
   _LecturePageState createState() => _LecturePageState();
 }
 

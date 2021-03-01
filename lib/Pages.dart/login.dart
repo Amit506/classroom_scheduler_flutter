@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 
 class LogInScreen extends StatelessWidget {
+   static String routeName = 'LogInPage';
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
