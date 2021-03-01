@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
+
 class Lecture {
   String title;
-  String startTime;
-  String endTime;
-
+  TimeOfDay startTime;
+  TimeOfDay endTime;
   Lecture({this.title, this.startTime, this.endTime});
 }
