@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import '../components/LecturesColumn.dart';
 
 class LecturePage extends StatelessWidget {
+  static String routeName = 'LecturePage';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
