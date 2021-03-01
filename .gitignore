@@ -9,6 +9,7 @@
 .history
 .svn/
 
+
 # IntelliJ related
 *.iml
 *.ipr
@@ -21,6 +22,7 @@
 #.vscode/
 
 # Flutter/Dart/Pub related
+*.fvm
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/

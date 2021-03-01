@@ -1,3 +1,5 @@
+import 'package:classroom_scheduler_flutter/Pages.dart/login.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'Pages.dart/HomePage.dart';
 
@@ -9,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePage(),
+      home:LogInScreen(),
     );
   }
 }
