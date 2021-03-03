@@ -18,7 +18,7 @@ class People extends StatelessWidget {
     return Container(
       margin: EdgeInsets.all(4.0),
       child: ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 80.0),
+        contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
         tileColor: Colors.white,
         leading: Icon(
           Icons.account_circle,

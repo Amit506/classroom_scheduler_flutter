@@ -2,7 +2,7 @@ import 'package:classroom_scheduler_flutter/components/PeopleTile.dart';
 import "package:flutter/material.dart";
 
 class PeoplePage extends StatelessWidget {
-    // static String routeName = 'peoplepage';
+    static String routeName = 'peoplepage';
  final int adminNum = 0;
   List<People> classParticipants = [
     People(name: 'Admin 1', type: 'Admin'),

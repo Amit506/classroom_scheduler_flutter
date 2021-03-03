@@ -1,12 +1,10 @@
+import 'package:classroom_scheduler_flutter/Pages.dart/HomePage.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/LandingPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
-
-
-
 class LogInScreen extends StatelessWidget {
-   static String routeName = 'LogInPage';
+  static String routeName = 'LogInPage';
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -27,7 +25,13 @@ class LogInScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.black,
-                    boxShadow: [BoxShadow(blurRadius: 6, color: Colors.black26, spreadRadius: 2, offset: Offset(0,3))],
+                    boxShadow: [
+                      BoxShadow(
+                          blurRadius: 6,
+                          color: Colors.black26,
+                          spreadRadius: 2,
+                          offset: Offset(0, 3))
+                    ],
                   ),
                   child: CircleAvatar(
                     radius: 120,
@@ -35,46 +39,49 @@ class LogInScreen extends StatelessWidget {
                     backgroundColor: Colors.black,
                   ),
                 ),
-
-                Container(
-                  height: 50,
-                  width: 270,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(40),
-                    color: Colors.black,
-                  ),
-
-                  margin: EdgeInsets.symmetric(vertical: 50, horizontal: 0),
-                  child: RaisedButton(
-                    onPressed: null,
-                    color: Colors.black,
-                    shape: RoundedRectangleBorder(
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, LandingPage.routename);
+                  },
+                  child: Container(
+                    height: 50,
+                    width: 270,
+                    decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(40),
+                      color: Colors.black,
                     ),
-                    elevation: 5,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CircleAvatar(
-                          backgroundImage: AssetImage('image/google.png'),
-                          radius: 15,
-                          backgroundColor: Colors.white,
-                        ),
-                        Text(
-                          'Sign In with Google',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
+                    margin: EdgeInsets.symmetric(vertical: 50, horizontal: 0),
+                    child: RaisedButton(
+                      onPressed: null,
+                      color: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                      elevation: 5,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: AssetImage('image/google.png'),
+                            radius: 15,
+                            backgroundColor: Colors.white,
                           ),
-                        ),
-                      ],
+                          Text(
+                            'Sign In with Google',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-        ) ,
+        ),
       ),
     );
   }
