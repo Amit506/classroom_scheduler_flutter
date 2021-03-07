@@ -1,5 +1,6 @@
 import 'package:classroom_scheduler_flutter/Pages.dart/LandingPage.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/login.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/LoginPage.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/loginPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'routes.dart';
@@ -14,8 +15,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
 
-      home:  LogInScreen(),
-      routes: routes,
+      home: Log(),
+    
     );
   }
 }
