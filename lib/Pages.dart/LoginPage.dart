@@ -1,95 +1,125 @@
-
-import 'package:classroom_scheduler_flutter/colors.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/animation.dart';
-import 'package:classroom_scheduler_flutter/Animations.dart/LogInAnimation.dart';
 import 'LandingPage.dart';
-
+import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 
 class LogInPage extends StatefulWidget {
-      static String routeName = 'loginpage';
+  static String routeName = 'loginpage';
   @override
   _LogInPageState createState() => _LogInPageState();
 }
 
-class _LogInPageState extends State<LogInPage> with TickerProviderStateMixin {
-  AnimationController _animationController;
-  LogInScreenAnimation _logInScreenAnimation;
-
+class _LogInPageState extends State<LogInPage> {
   @override
   void initState() {
-    _animationController = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 7),
-    );
-
-    _logInScreenAnimation = LogInScreenAnimation(_animationController);
-    _animationController.forward();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-
-            children: [
-              SizedBox(
-                height: 50,
-              ),
-              AnimatedBuilder(
-                animation: _logInScreenAnimation.controller,
-                builder: (context, child) => Stack(
-                  alignment: Alignment.center,
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        child: Stack(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height * 0.75,
+              width: double.infinity,
+              decoration: BoxDecoration(
+               color:   color4,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(50),
+                    bottomRight: Radius.circular(50),
+                  )),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 90, 10, 0),
+                child: Column(
                   children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height *
-                          0.27 *
-                          _logInScreenAnimation.logobakground.value,
-                      width: MediaQuery.of(context).size.height *
-                          0.43 *
-                          _logInScreenAnimation.logobakground.value,
-                      decoration: BoxDecoration(
-                        color: color1,
-                        shape: BoxShape.circle,
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'Welcome !',
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontFamily: 'AkayaTelivigala',
+                        ),
                       ),
                     ),
-                    Transform.rotate(
-                      angle: _logInScreenAnimation.logo1.value,
-                      child: SvgPicture.asset(
-                        'image/circular-alarm-clock.svg',
-                        height: 80,
-                        width: 80,
-                        color: color10,
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'never miss your class again..',
+                        style: TextStyle(
+                            color: color6,
+                            fontSize: 16,
+                            fontStyle: FontStyle.italic),
                       ),
+                    ),
+                    SizedBox(
+                      height: 80,
+                    ),
+
+//
+
+                    Material(
+                      elevation: 5.0,
+                      borderRadius: BorderRadius.circular(60.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(60.0),
+                        child: SvgPicture.asset(
+                          'image/icons8-clock.svg',
+                          height: 120,
+                          width: 120,
+                        ),
+                      ),
+                    ),
+
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'class',
+                              style: TextStyle(
+                                fontSize: 60,
+                                color: color6,
+                                fontFamily: 'Damion',
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 14.0),
+                              child: Text(
+                                ' schdeuler',
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w100,
+                                  fontFamily: 'Damion',
+                                ),
+                              ),
+                            )
+                          ]),
                     ),
                   ],
                 ),
               ),
-              Container(
-                child: Text(
-                  'Class Schdeuler',
-                  style: TextStyle(fontSize: 35),
-                ),
-              ),
-              SizedBox(
+            ),
+            Positioned(
+              bottom: MediaQuery.of(context).size.height * 0.223,
+              left: MediaQuery.of(context).size.width * 0.1,
+              child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
-                height: 40,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       elevation: 5.0,
-                      primary: color8,
+                      primary: color6,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30))),
                   onPressed: () {
-
-                     Navigator.pushNamed(context, LandingPage.routename);
+                    Navigator.pushNamed(context, LandingPage.routename);
                   },
                   child: Padding(
                     padding: EdgeInsets.all(5.0),
@@ -104,12 +134,10 @@ class _LogInPageState extends State<LogInPage> with TickerProviderStateMixin {
                         ),
                         Text(
                           'Sign In with Google',
-                          
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
-                           letterSpacing: -1,
-
+                            letterSpacing: -1,
                           ),
                         ),
                       ],
@@ -117,11 +145,38 @@ class _LogInPageState extends State<LogInPage> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              SizedBox(
-                height:100,
-              )
-            ],
-          ),
+            ),
+            Positioned(
+              bottom: MediaQuery.of(context).size.height * 0.007,
+              left: MediaQuery.of(context).size.width * 0.38,
+              child: Container(
+                height: 100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Developed by',
+                      style: TextStyle(
+                        letterSpacing: -1,
+                        fontFamily: 'Lato',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      'Technocrats',
+                      style: TextStyle(
+                        color: color6,
+                        fontFamily: 'Redressed',
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
