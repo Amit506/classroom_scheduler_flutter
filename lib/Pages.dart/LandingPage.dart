@@ -41,19 +41,25 @@ class LandingPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        backgroundColor: Colors.blue[900],
         onPressed: () {
           AlertDialog alertDialog_1 = AlertDialog(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(40.0))),
-            backgroundColor: Colors.blue[900],
+            backgroundColor: Theme.of(context).primaryColor,
             titleTextStyle: TextStyle(
                 color: Colors.white,
                 fontSize: 32.0,
                 fontWeight: FontWeight.w300),
             titlePadding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 40.0),
             title: Center(
-              child: Text('Hub Actions'),
+              child: Text(
+                'Hub Actions',
+                style: TextStyle(
+                  fontFamily: 'Lato',
+                  fontSize: 30,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
             ),
             content: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,7 +70,7 @@ class LandingPage extends StatelessWidget {
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
-                        fontWeight: FontWeight.w100),
+                        fontWeight: FontWeight.w300),
                   ),
                   onPressed: () {
                     AlertDialog alertDialog_2 = AlertDialog(
@@ -80,7 +86,7 @@ class LandingPage extends StatelessWidget {
                             EdgeInsets.fromLTRB(10.0, 20.0, 60.0, 15.0),
                         contentPadding:
                             EdgeInsets.fromLTRB(15.0, 20.0, 20.0, 0.0),
-                        title: Text('Please enter a valid hub code:'),
+                        title: Text('enter a valid hub code:'),
                         content: Container(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -113,9 +119,9 @@ class LandingPage extends StatelessWidget {
                                       child: Text(
                                         'Join',
                                         style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.w300,
-                                            color: Colors.green[800]),
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w300),
                                       ),
                                       onPressed: () {
                                         Navigator.push(

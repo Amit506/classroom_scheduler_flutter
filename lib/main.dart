@@ -22,7 +22,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
  theme: theme ,
     
-   home: LogInPage() ,
+  initialRoute: LogInPage.routeName ,
+  routes: routes,
     
     );
   }

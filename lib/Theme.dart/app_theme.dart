@@ -13,6 +13,16 @@ primaryColorLight: color3,
 accentColor: color11 ,
 dividerColor: color5,
 splashColor: color6,
+floatingActionButtonTheme: FloatingActionButtonThemeData(
+  
+  backgroundColor: color6,
+  splashColor: color8,
+
+
+
+
+
+),
 
 
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter/animation.dart';
+
 import 'LandingPage.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 
@@ -28,7 +28,7 @@ class _LogInPageState extends State<LogInPage> {
               height: MediaQuery.of(context).size.height * 0.75,
               width: double.infinity,
               decoration: BoxDecoration(
-               color:   color4,
+                  color: color4,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                     bottomRight: Radius.circular(50),
