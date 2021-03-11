@@ -5,20 +5,6 @@ import 'data.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 
 
-// class NoticesPage extends StatelessWidget {
-//   final String title = "NOTICES";
-
-//   @override
-//   Widget build(BuildContext context) => MaterialApp(
-//         debugShowCheckedModeBanner: false,
-//         title: title,
-//         theme: ThemeData(
-//           primaryColor: Colors.grey,
-//         ),
-//         home: NoticesPage(title: title),
-//       );
-// }
-
 class NoticesPage extends StatefulWidget {
   final String title = "NOTICES";
 
