@@ -1,3 +1,5 @@
+//replaced by Pages/LoginPage.dart 
+
 import 'package:classroom_scheduler_flutter/Pages.dart/HomePage.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/LandingPage.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/tempLogin.dart';

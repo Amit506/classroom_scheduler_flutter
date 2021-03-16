@@ -25,8 +25,8 @@ class HomePage extends StatelessWidget {
         body: TabBarView(
          children: [
             NoticesTabBar(),
-          PeopleTabBar(),
-          LectureTabBar(),
+            PeopleTabBar(),
+            LectureTabBar(),
          ],
         ),
         

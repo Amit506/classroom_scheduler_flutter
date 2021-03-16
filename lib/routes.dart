@@ -3,11 +3,11 @@ import 'package:classroom_scheduler_flutter/Pages.dart/tempLogin.dart';
 import 'package:flutter/material.dart';
 import 'Pages.dart/HomePage.dart';
 import 'Pages.dart/LecturePage.dart';
-import 'Pages.dart/login.dart';
+import 'Pages.dart/LoginPage.dart';
 
 final Map<String, WidgetBuilder> routes = {
   HomePage.routeName: (context) => HomePage(),
-  LogInScreen.routeName: (context) => LogInScreen(),
+  LogInPage.routeName: (context) => LogInPage(),
   LandingPage.routename: (context) => LandingPage(),
   TempLogin.routename: (_) => TempLogin(),
 };
