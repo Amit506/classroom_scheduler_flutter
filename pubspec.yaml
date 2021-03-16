@@ -12,6 +12,9 @@ environment:
 
 dependencies:
   integration_test: ^1.0.2+2
+  cloud_firestore: ^1.0.0
+  firebase_core: ^1.0.0
+  firebase_auth: ^1.0.0
   flutter:
     sdk: flutter
 
@@ -29,10 +32,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-
   assets:
     - image/
-
 
   # fonts:
   #   - family: Schyler
@@ -48,4 +49,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-

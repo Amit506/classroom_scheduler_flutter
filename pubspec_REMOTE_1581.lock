@@ -50,8 +50,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-<<<<<<< HEAD
-=======
   cloud_firestore:
     dependency: "direct main"
     description:
@@ -73,7 +71,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
->>>>>>> newNotices
   collection:
     dependency: transitive
     description:
@@ -116,8 +113,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.0.0"
-<<<<<<< HEAD
-=======
   firebase_auth:
     dependency: "direct main"
     description:
@@ -160,7 +155,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
->>>>>>> newNotices
   flutter:
     dependency: "direct main"
     description: flutter
@@ -200,8 +194,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2+2"
-<<<<<<< HEAD
-=======
   intl:
     dependency: transitive
     description:
@@ -216,7 +208,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.3"
->>>>>>> newNotices
   matcher:
     dependency: transitive
     description:
@@ -245,18 +236,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
-<<<<<<< HEAD
-  process:
-=======
   plugin_platform_interface:
->>>>>>> newNotices
     dependency: transitive
     description:
       name: plugin_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
-=======
     version: "2.0.0"
   process:
     dependency: transitive
@@ -264,7 +249,6 @@ packages:
       name: process
       url: "https://pub.dartlang.org"
     source: hosted
->>>>>>> newNotices
     version: "4.0.0"
   sky_engine:
     dependency: transitive

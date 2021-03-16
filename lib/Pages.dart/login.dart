@@ -1,5 +1,6 @@
 import 'package:classroom_scheduler_flutter/Pages.dart/HomePage.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/LandingPage.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/tempLogin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -41,7 +42,7 @@ class LogInScreen extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, LandingPage.routename);
+                    Navigator.pushNamed(context, TempLogin.routename);
                   },
                   child: Container(
                     height: 50,

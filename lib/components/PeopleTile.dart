@@ -5,6 +5,7 @@ class People extends StatelessWidget {
   final String type;
   People({this.name, this.type});
 
+  // ignore: missing_return
   TextStyle userStyle({String userType}) {
     if (userType == 'Admin') {
       return TextStyle(fontWeight: FontWeight.bold);

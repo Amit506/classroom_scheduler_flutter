@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "117101380290",
+    "project_id": "classroomschedulerflutter",
+    "storage_bucket": "classroomschedulerflutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:117101380290:android:7f4253d22912ae29a1f15b",
+        "android_client_info": {
+          "package_name": "com.example.classroom_scheduler_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "117101380290-a6ov3ijhp7bt07es65qfb13getndlmpf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8gUbKZA4HTpp7wHx2Egj0_QhpG_AOlpo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "117101380290-a6ov3ijhp7bt07es65qfb13getndlmpf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
