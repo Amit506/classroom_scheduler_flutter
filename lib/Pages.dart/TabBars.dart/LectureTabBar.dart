@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../LecturePage.dart';
+import '../Lecture_pagedart/LecturePage.dart';
 
 class LectureTabBar extends StatelessWidget {
   @override

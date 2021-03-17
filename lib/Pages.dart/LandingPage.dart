@@ -1,8 +1,10 @@
+import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'HomePage.dart';
 
 class LandingPage extends StatelessWidget {
+  final AuthService authService = AuthService();
   static String routename = 'landing page';
   @override
   Widget build(BuildContext context) {
@@ -13,7 +15,15 @@ class LandingPage extends StatelessWidget {
           'Classroom Scheduler',
         ),
         centerTitle: true,
+        actions: [
+  IconButton(icon: 
+  Icon(Icons.login_rounded)
+  , onPressed: () async{
+    await authService.logout();
+  })
+],
       ),
+
       body: Column(
         children: [
           SizedBox(height: 20),

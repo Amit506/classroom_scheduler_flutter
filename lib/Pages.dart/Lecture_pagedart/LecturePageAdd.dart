@@ -1,6 +1,6 @@
 import 'package:classroom_scheduler_flutter/components/ErrorDialog.dart';
 import 'package:flutter/material.dart';
-import '../components/LecturesColumn.dart';
+import '../../components/LecturesColumn.dart';
 
 class LecturePageAdd extends StatefulWidget {
   static String routeName = 'LecturePageAdd';

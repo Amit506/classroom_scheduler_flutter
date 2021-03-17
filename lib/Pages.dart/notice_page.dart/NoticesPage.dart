@@ -1,7 +1,7 @@
 import 'package:classroom_scheduler_flutter/widget/notices_item_widget.dart';
 import 'package:flutter/material.dart';
 
-import 'data.dart';
+import '../data.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 
 
@@ -17,11 +17,7 @@ class _NoticesPageState extends State<NoticesPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Colors.grey,
-        appBar: AppBar(
-          title: Text(widget.title),
-          centerTitle: true,
-        ),
+   
         body: Column(
           children: [
             Expanded(
@@ -32,18 +28,14 @@ class _NoticesPageState extends State<NoticesPage> {
                     buildItem(items[index], index, animation),
               ),
             ),
-            // Container(
-            //   padding: EdgeInsets.all(16),
-            //   child: buildInsertButton(),
-            // ),
+          
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          hoverColor: Colors.white,
-        //title: Text(item.title, style: TextStyle(fontSize: 20)),
-            child: Icon(Icons.add_circle, color: Colors.green, size: 32),
+          
+        child: Icon(Icons.add),
               onPressed: () { insertItem(3, Data.noticesList.first);}
-              // alignment: Alignment.bottomRight,
+             
             
        
       ),

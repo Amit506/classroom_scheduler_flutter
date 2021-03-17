@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../NoticesPage.dart';
+import '../notice_page.dart/NoticesPage.dart';
 
 class NoticesTabBar extends StatelessWidget {
   @override

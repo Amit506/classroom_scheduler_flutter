@@ -1,6 +1,6 @@
 import 'package:classroom_scheduler_flutter/components/LecturesColumn.dart';
 import "package:flutter/material.dart";
-import '../components/LecturesColumn.dart';
+import '../../components/LecturesColumn.dart';
 
 class LecturePage extends StatelessWidget {
   static String routeName = 'LecturePage';
