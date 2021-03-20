@@ -11,9 +11,10 @@ class AuthService  with ChangeNotifier{
 final googleSignIn = GoogleSignIn();
 static FirebaseAuth instance = FirebaseAuth.instance;
 
-Stream<User> get  currentUser => instance.authStateChanges();
+Stream<User> get  authState => instance.authStateChanges();
 
-
+// GoogleSignInAccount get  currentUser => googleSignIn.currentUser;
+User get currentUser => instance.currentUser;
 Future<UserCredential> login() async{
     final GoogleSignInAccount user = await googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth = await user.authentication;
@@ -29,6 +30,8 @@ Future<UserCredential> login() async{
 
 logout() async{
   await instance.signOut();
+  await googleSignIn.signOut();
+  
 }
 
 

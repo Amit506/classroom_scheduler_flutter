@@ -1,6 +1,6 @@
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:flutter/material.dart';
-import 'LandingPage.dart';
+import 'Landing_page.dart/LandingPage.dart';
 import 'TabBars.dart/PeopleTabBar.dart';
 import 'TabBars.dart/LectureTabBar.dart';
 import 'TabBars.dart/NoticesTabBar.dart';

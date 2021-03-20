@@ -1,4 +1,4 @@
-import 'package:classroom_scheduler_flutter/Pages.dart/LandingPage.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/LandingPage.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/AuthenticationScreen.dart/AuthCheckerScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';

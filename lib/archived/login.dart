@@ -1,7 +1,7 @@
 //replaced by Pages/LoginPage.dart 
 
 import 'package:classroom_scheduler_flutter/Pages.dart/HomePage.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/LandingPage.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/LandingPage.dart';
 import 'package:classroom_scheduler_flutter/archived/tempLogin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,5 @@
 import 'package:classroom_scheduler_flutter/Pages.dart/HomePage.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/LandingPage.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/LandingPage.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/AuthenticationScreen.dart/LoginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,6 +27,7 @@ AuthService authService = AuthService();
       builder: (context, snapshot) {
      
  if(snapshot.hasData){
+   print(snapshot.data.displayName);
    return LandingPage();
  }
  else{
