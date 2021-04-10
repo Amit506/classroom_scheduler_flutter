@@ -10,22 +10,22 @@ class LecturesColumn extends StatefulWidget {
 class _LecturesColumnState extends State<LecturesColumn> {
   var lectures = [
     Lecture(
-      title: 'Subject-1',
+      subjectName: 'Subject-1',
       startTime: TimeOfDay(hour: 12, minute: 30),
       endTime: TimeOfDay(hour: 1, minute: 30),
     ),
     Lecture(
-      title: 'Subject-2',
+      subjectName: 'Subject-2',
       startTime: TimeOfDay(hour: 1, minute: 30),
       endTime: TimeOfDay(hour: 2, minute: 30),
     ),
     Lecture(
-      title: 'Subject-3',
+      subjectName: 'Subject-3',
       startTime: TimeOfDay(hour: 2, minute: 30),
       endTime: TimeOfDay(hour: 3, minute: 30),
     ),
     Lecture(
-      title: 'Subject-4',
+      subjectName: 'Subject-4',
       startTime: TimeOfDay(hour: 3, minute: 30),
       endTime: TimeOfDay(hour: 4, minute: 30),
     ),
@@ -36,7 +36,7 @@ class _LecturesColumnState extends State<LecturesColumn> {
     return ListView(
       children: lectures
           .map((e) => LectureTile(
-              title: e.title,
+              title: e.subjectName,
               startTime: e.startTime.hour.toString() +
                   ":" +
                   e.startTime.minute.toString()))

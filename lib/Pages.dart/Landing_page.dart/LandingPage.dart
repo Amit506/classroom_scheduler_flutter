@@ -1,10 +1,22 @@
+import 'dart:ui';
+
+import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/drawer.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/basichub_info.dart';
+import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
+import 'package:classroom_scheduler_flutter/models/member.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
+import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
+import 'package:classroom_scheduler_flutter/services/stateProvider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../HomePage.dart';
+import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
+
+FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 // ignore: must_be_immutable
 class LandingPage extends StatefulWidget {
@@ -17,16 +29,76 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
   final AuthService authService = AuthService();
 
-  final HubRootData hubIdData = HubRootData();
+  final HubRootData hubRootData = HubRootData();
 
   String hubname = '';
   String hubcode = '';
-  bool loading = false;
+
+  bool _loading = false;
   TextEditingController textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  floatingActionButtonLoading() {
+    setState(() {
+      _loading = !_loading;
+    });
+  }
+
+  Future joinHub(UserCollection userCollection) async {
+    final newHub = hubRootData.rootCollectionReference(userCollection.hubname,
+        userCollection.hubCode, authService.currentUser.uid);
+    final members = Members.memberObject(
+        authService.currentUser.email, authService.currentUser.displayName);
+
+    await hubRootData.joinHub(
+        newHub, members, userCollection, authService.currentUser.uid);
+  }
+
+  Future addHub() async {
+    floatingActionButtonLoading();
+    hubcode = await hubRootData.uniqueHubCode(hubRootData.rootCollection());
+    print(hubcode);
+    final newHub = hubRootData.rootCollectionReference(
+        hubname, hubcode, authService.currentUser.uid);
+    var roothub = RootHub(
+        admin: authService.currentUser.email,
+        hubname: hubname,
+        timeStamp: Timestamp.now(),
+        createdBy: authService.currentUser.displayName,
+        hubCode: hubcode);
+    final userColl = UserCollection(
+        admin: authService.currentUser.email,
+        hubname: hubname,
+        timeStamp: Timestamp.now(),
+        createdBy: authService.currentUser.displayName,
+        hubCode: hubcode);
+    final members = Members(
+        memberInfo: MemberInfo(
+            email: authService.currentUser.email,
+            name: authService.currentUser.displayName));
+    await hubRootData.createRootHub(
+        newHub, roothub, userColl, members, authService.currentUser.uid);
+    floatingActionButtonLoading();
+    // await newHub.notice.add({
+    //   'createdAt': FieldValue.serverTimestamp(),
+    // });
+    // await newHub.people.add({
+    //   'createdAt': FieldValue.serverTimestamp(),
+    // });
+    // await newHub.lectures.add({
+    //   'createdAt': FieldValue.serverTimestamp(),
+    // });
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(authService.currentUser.uid);
     return Scaffold(
-      drawer: LandingScreenDrawer() ,
+      drawer: LandingScreenDrawer(),
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
@@ -45,42 +117,85 @@ class _LandingPageState extends State<LandingPage> {
         child: Container(
           height: MediaQuery.of(context).size.height,
           child: StreamBuilder<QuerySnapshot>(
-            stream: hubIdData.rootCollection().orderBy('timeStamp',descending: true).snapshots(),
+            stream: hubRootData
+                .userCollection(authService.currentUser.uid)
+                .orderBy('timeStamp', descending: true)
+                .snapshots(),
+            // .rootCollection()
+
+            // .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                List list = snapshot.data.docs;
-                print(list);
+                List lists = snapshot.data.docs;
+                List<UserCollection> rootData = [];
+                for (var list in lists) {
+                  final admin = list["admin"];
+                  final hubCode = list["hubCode"];
+                  final hubName = list["hubname"];
+                  final createdBy = list["createdBy"];
+                  rootData.add(UserCollection(
+                      admin: admin,
+                      hubCode: hubCode,
+                      hubname: hubName,
+                      createdBy: createdBy));
+                }
+
+                print(lists);
                 return ListView.builder(
                     itemCount: snapshot.data.size,
                     itemBuilder: (context, index) {
-                      return TextButton(
-                          onPressed: () {
-                            Navigator.push(
+                      return GestureDetector(
+                        onTap: () async {
+                          final rootCollection =
+                              hubRootData.rootCollectionReference(
+                                  rootData[index].hubname,
+                                  rootData[index].hubCode,
+                                  authService.currentUser.uid);
+                          final collection = Provider.of<HubDataProvider>(
+                                  context,
+                                  listen: false)
+                              .rootReference = rootCollection;
+                          final roothub = await Provider.of<HubDataProvider>(
+                                  context,
+                                  listen: false)
+                              .getRootHub(rootData[index].hubCode);
+                          Provider.of<HubDataProvider>(context, listen: false)
+                              .rootData = roothub;
+                          print("+++++++++++++++++++++++++");
+                          print(roothub.admin);
+                          // Provider.of<HubDataProvider>(context, listen: false)
+                          //     .rootData = rootData[index];
+                          // Provider.of<HubDataProvider>(context, listen: false)
+                          //     .getJoinedDocs(rootCollection);
+                          Navigator.push(
                               context,
-                              new MaterialPageRoute(
-                                  builder: (context) => HomePage()),
-                            );
-                          },
-                          child: Card(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, HomePage.routeName);
-                              },
-                              child: SizedBox(
-                                height: 50,
-                                width: double.infinity,
-                                child: Center(
-                                  child: Text(
-                                    list[index]['hubname'],
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w300),
-                                  ),
-                                ),
-                              ),
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      HomePage(rootData: roothub)));
+                          // : showDialog(
+                          //     context: context,
+                          //     builder: (context) {
+                          //       return HubExtraInfoDialogue(
+                          //         hubrootHub: hubRootData,
+                          //         hubCode: lists[index]["hubCode"],
+                          //         hubName: lists[index]["hubname"],
+                          //       );
+                          //     });
+                        },
+                        child: Card(
+                          child: ListTile(
+                            title: Text(
+                              rootData[index].hubname,
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w300),
                             ),
-                          ));
+                            trailing: rootData[index].admin ==
+                                    authService.currentUser.email
+                                ? Icon(Icons.add_moderator)
+                                : SizedBox(),
+                          ),
+                        ),
+                      );
                     });
               } else {
                 return Text('no data available');
@@ -90,7 +205,7 @@ class _LandingPageState extends State<LandingPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: loading ? CircularProgressIndicator() : Icon(Icons.add),
+        child: _loading ? CircularProgressIndicator() : Icon(Icons.add),
         onPressed: () {
           AlertDialog alertDialog_1 = AlertDialog(
             shape: RoundedRectangleBorder(
@@ -179,25 +294,21 @@ class _LandingPageState extends State<LandingPage> {
                                             fontWeight: FontWeight.w300),
                                       ),
                                       onPressed: () async {
-                                        setState(() {
-                                          loading = true;
-                                        });
-
+                                        floatingActionButtonLoading();
                                         Navigator.pop(context);
-                                        bool check = await hubIdData.isexist(
-                                            hubIdData.rootCollection(),
+                                        final check = await hubRootData.isexist(
+                                            hubRootData.rootCollection(),
                                             hubcode);
-                                   
-                                        setState(() {
-                                          loading = false;
-                                        });
-                                        if (check) {
-                                          Navigator.push(
-                                            context,
-                                            new MaterialPageRoute(
-                                                builder: (context) =>
-                                                    HomePage()),
-                                          );
+                                        floatingActionButtonLoading();
+                                        if (check.isExist) {
+                                          joinHub(check.userCollection);
+
+                                          // Navigator.push(
+                                          //   context,
+                                          //   new MaterialPageRoute(
+                                          //       builder: (context) =>
+                                          //           HomePage()),
+                                          // );
                                         } else {
                                           showDialog(
                                               context: context,
@@ -247,88 +358,56 @@ class _LandingPageState extends State<LandingPage> {
                             EdgeInsets.fromLTRB(15.0, 20.0, 20.0, 0.0),
                         title: Text('Please enter a hub name:'),
                         content: Container(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    TextField(
-                                      onChanged: (String value) async {
-                                        setState(() {
-                                          hubname = value;
-                                        });
-                                      },
-                                      decoration: InputDecoration(
-                                          border: UnderlineInputBorder(),
-                                          hintText: 'Input name here',
-                                          hintStyle: TextStyle(
-                                            color: Colors.white,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(
+                                onChanged: (String value) async {
+                                  setState(() {
+                                    hubname = value;
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                    border: UnderlineInputBorder(),
+                                    hintText: 'Input name here',
+                                    hintStyle: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.w100,
+                                    )),
+                              ),
+                              SizedBox(height: 30.0),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextButton(
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(
                                             fontSize: 18.0,
-                                            fontWeight: FontWeight.w100,
-                                          )),
-                                    ),
-                                    SizedBox(height: 30.0),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        TextButton(
-                                            child: Text(
-                                              'Cancel',
-                                              style: TextStyle(
-                                                  fontSize: 18.0,
-                                                  fontWeight: FontWeight.w300,
-                                                  color: Colors.red[700]),
-                                            ),
-                                            onPressed: () =>
-                                                Navigator.pop(context)),
-                                        TextButton(
-                                            child: Text(
-                                              'Create',
-                                              style: TextStyle(
-                                                  fontSize: 18.0,
-                                                  fontWeight: FontWeight.w300,
-                                                  color: Colors.green[800]),
-                                            ),
-                                            onPressed: () async {
-                                              setState(() {
-                                                loading = true;
-                                              });
-
-                                              Navigator.pop(context);
-                                              Navigator.pop(context);
-                                              hubcode = await hubIdData
-                                                  .uniqueHubCode(hubIdData
-                                                      .rootCollection());
-                                              print(hubcode);
-                                              final newHub = await hubIdData
-                                                  .rootCollectionReference(
-                                                      hubname, hubcode);
-                                              print('---------------------');
-                                              await hubIdData.createRootHub(
-                                                  hubname,
-                                                  FieldValue.serverTimestamp(),
-                                                  authService
-                                                      .currentUser.displayName,
-                                                  newHub,
-                                                  hubcode);
-                                              setState(() {
-                                                loading = false;
-                                              });
-                                                await newHub.notice.add({
-                                                  'testing ': 'testing',
-                                                });
-                                                await newHub.people.add({
-                                                  'testing ': 'testing',
-                                                });
-                                                await newHub.lectures.add({
-                                              'testing ': 'testing',
-                                                });
-                                            })
-                                            
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ));
+                                            fontWeight: FontWeight.w300,
+                                            color: Colors.red[700]),
+                                      ),
+                                      onPressed: () => Navigator.pop(context)),
+                                  TextButton(
+                                      child: Text(
+                                        'Create',
+                                        style: TextStyle(
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.w300,
+                                            color: Colors.green[800]),
+                                      ),
+                                      onPressed: () async {
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                        addHub();
+                                      })
+                                ],
+                              )
+                            ],
+                          ),
+                        ));
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {

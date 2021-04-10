@@ -1,46 +1,85 @@
+import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
+import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
+import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:flutter/material.dart';
 import 'Landing_page.dart/LandingPage.dart';
 import 'TabBars.dart/PeopleTabBar.dart';
 import 'TabBars.dart/LectureTabBar.dart';
 import 'TabBars.dart/NoticesTabBar.dart';
+import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
-final AuthService authService = AuthService();
+class HomePage extends StatefulWidget {
+  final RootHub rootData;
   static String routeName = 'HomePage';
+
+  HomePage({
+    Key key,
+    this.rootData,
+  }) : super(key: key);
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final AuthService authService = AuthService();
+  bool isAdmin = false;
+  RootCollection rootCollection;
+  HubRootData hubRootData = HubRootData();
+  @override
+  void initState() {
+    super.initState();
+    print(authService.currentUser.email);
+    print('***************************************************');
+    print(widget.rootData.admin);
+    if (authService.currentUser.email == widget.rootData.admin) {
+      setState(() {
+        isAdmin = true;
+        print(isAdmin);
+      });
+    }
+    // rootCollection = hubRootData.rootCollectionReference(
+    //     widget.rootData.hubname,
+    //     widget.rootData.hubCode,
+    //     authService.currentUser.uid);
+    // Provider.of<HubDataProvider>(context, listen: false).rootReference =
+    //     rootCollection;
+    // Provider.of<HubDataProvider>(context, listen: false).rootData =
+    //     widget.rootData;
+    // Provider.of<HubDataProvider>(context, listen: false)
+    //     .getJoinedList(rootCollection);
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
-          child: Scaffold(
+      child: Scaffold(
         appBar: AppBar(
-  title: Text('Classroom Scheduler'),
-  centerTitle: true,
+          title: Text("classroom "),
+          centerTitle: true,
           bottom: TabBar(
             tabs: [
               Text('Notices'),
-              Text('People'),
               Text('Lecture'),
+              Text('People'),
             ],
-          
           ),
           leading: IconButton(
-            onPressed: (){
+            onPressed: () {
               Navigator.pushNamed(context, LandingPage.routename);
             },
-   icon: Icon(Icons.home),
+            icon: Icon(Icons.home),
           ),
-
         ),
         body: TabBarView(
-         children: [
-            NoticesTabBar(),
-            
-            LectureTabBar(),
+          children: [
+            NoticesTabBar(isAdmin: isAdmin),
+            LectureTabBar(isAdmin: isAdmin),
             PeopleTabBar(),
-         ],
+          ],
         ),
-        
       ),
     );
   }

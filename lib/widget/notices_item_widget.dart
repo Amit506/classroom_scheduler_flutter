@@ -1,5 +1,6 @@
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:flutter/material.dart';
+
 //import 'package:classroom_scheduler_flutter/widget/Notices_item_widget.dart';
 class NoticesItemWidget extends StatelessWidget {
   final NoticesItem item;
@@ -28,7 +29,7 @@ class NoticesItemWidget extends StatelessWidget {
               radius: 32,
               backgroundImage: NetworkImage(item.urlImage),
             ),
-            title: Text(item.title, style: TextStyle(fontSize: 20)),
+            title: Text(item.noticeTitle, style: TextStyle(fontSize: 20)),
             trailing: IconButton(
               icon: Icon(Icons.remove_circle, color: Colors.green, size: 32),
               onPressed: onClicked,
