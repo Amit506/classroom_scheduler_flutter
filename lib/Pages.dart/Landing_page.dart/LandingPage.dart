@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/drawer.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/basichub_info.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/exta_hub_info.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/models/member.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
@@ -42,15 +42,12 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    dynamicLink.handleDynamicLinks();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _timerLink = new Timer(const Duration(milliseconds: 100), () {
-        dynamicLink.handleDynamicLinks();
-      });
+      _timerLink = new Timer(const Duration(milliseconds: 100), () {});
     }
     super.didChangeAppLifecycleState(state);
   }
