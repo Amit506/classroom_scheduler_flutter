@@ -10,6 +10,7 @@ class Common {
   }
 }
 
+// class used in joining hub
 class Exist {
   final bool isExist;
   final UserCollection userCollection;

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-//basic collection neede for each hub
+// this class used to get forebase path to various collection of hubs
 class RootCollection {
   final CollectionReference notice;
   final CollectionReference lectures;
@@ -20,9 +20,7 @@ class RootCollection {
       this.rootData});
 }
 
-// RootHub welcomeFromJson(String str) => RootHub.fromJson(json.decode(str));
-
-// String welcomeToJson(RootHub data) => json.encode(data.toJson());
+// used to contain the basic info about each hub
 class RootHub {
   final String hubname;
   final String hubCode;
@@ -60,7 +58,7 @@ class RootHub {
         "subCode": subCode,
       };
 
-  static RootHub rootHubObject(
+  static RootHub mapRootHub(
       hubname, hubCode, timeStamp, admin, createdBy, teacherName, subCode) {
     return RootHub(
       hubname: hubname,
@@ -74,6 +72,7 @@ class RootHub {
   }
 }
 
+// collects the userInfo  like how many hub a user has joined
 class UserCollection {
   final String hubname;
   final String hubCode;
