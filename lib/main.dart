@@ -11,6 +11,7 @@ import 'routes.dart';
 import 'Pages.dart/AuthenticationScreen.dart/LoginPage.dart';
 import 'Theme.dart/app_theme.dart';
 import 'package:flutter/services.dart';
+import 'package:share/share.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

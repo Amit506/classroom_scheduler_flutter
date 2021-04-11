@@ -104,4 +104,13 @@ class UserCollection {
         "admin": admin,
         "createdBy": createdBy,
       };
+
+  static UserCollection mapUserCollection(Map<String, dynamic> map) =>
+      UserCollection(
+        hubname: map["hubname"],
+        hubCode: map["hubcode"],
+        timeStamp: map["timeStamp"],
+        admin: map["admin"],
+        createdBy: map["createdBy"],
+      );
 }

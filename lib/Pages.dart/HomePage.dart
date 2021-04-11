@@ -39,16 +39,6 @@ class _HomePageState extends State<HomePage> {
         print(isAdmin);
       });
     }
-    // rootCollection = hubRootData.rootCollectionReference(
-    //     widget.rootData.hubname,
-    //     widget.rootData.hubCode,
-    //     authService.currentUser.uid);
-    // Provider.of<HubDataProvider>(context, listen: false).rootReference =
-    //     rootCollection;
-    // Provider.of<HubDataProvider>(context, listen: false).rootData =
-    //     widget.rootData;
-    // Provider.of<HubDataProvider>(context, listen: false)
-    //     .getJoinedList(rootCollection);
   }
 
   @override

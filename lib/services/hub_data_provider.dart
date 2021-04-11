@@ -3,6 +3,7 @@ import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
+// this class is used to  get data once inside in particular hub
 class HubDataProvider extends ChangeNotifier {
   HubRootData hubRootData = HubRootData();
   RootCollection _rootCollection;
@@ -20,6 +21,10 @@ class HubDataProvider extends ChangeNotifier {
   set rootData(RootHub rootHub) {
     _rootHub = rootHub;
     notifyListeners();
+  }
+
+  Stream<QuerySnapshot> getMembers(RootCollection collection) {
+    return collection.members.snapshots();
   }
 
   Future<RootHub> getRootHub(String hubcode) async {

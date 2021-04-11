@@ -3,15 +3,18 @@ import 'dart:convert';
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/models/member.dart';
+import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
 class HubRootData extends ChangeNotifier {
+  final AuthService authService = AuthService();
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;
   RootCollection _collection;
 
+// collection of hubs user has joined
   CollectionReference userCollection(String userid) {
     return _firestore
         .collection('UserData')
@@ -24,7 +27,7 @@ class HubRootData extends ChangeNotifier {
     return rootdata;
   }
 
-// taking reference of various root collections
+// taking reference of all collections using hubname , hubode , userid
   RootCollection rootCollectionReference(
       String hubname, String id, String userid) {
     CollectionReference rootdata = _firestore.collection('Data')..doc(id);
@@ -33,7 +36,7 @@ class HubRootData extends ChangeNotifier {
     CollectionReference notices = hub.doc(id).collection('notices');
     CollectionReference lectures = hub.doc(id).collection('lectures');
     CollectionReference userData = _firestore.collection('UserData')
-      ..doc(userid);
+      ..doc(userid).set({"timeStamp": Timestamp.now()});
     this._collection = RootCollection(
         members: members,
         notice: notices,
@@ -44,34 +47,7 @@ class HubRootData extends ChangeNotifier {
     return _collection;
   }
 
-// creating root data of hubs
-  Future createRootHub(RootCollection collection, RootHub roothub,
-      UserCollection userCollection, Members members, String userId) async {
-    await collection.rootData.doc(roothub.hubCode).set(roothub.toJson());
-    await collection.hub.doc(roothub.hubCode).set({
-      "timeStamp": FieldValue.serverTimestamp(),
-    });
-    await collection.members.add(members.toJson());
-    await collection.userData
-        .doc(userId)
-        .collection('joinedHubs')
-        .add(userCollection.toJson());
-  }
-
-  Future joinHub(
-    RootCollection collection,
-    Members members,
-    UserCollection userCollection,
-    String userId,
-  ) async {
-    await collection.members.add(members.toJson());
-    await collection.userData
-        .doc(userId)
-        .collection('joinedHubs')
-        .add(userCollection.toJson());
-  }
-
-// extra is teacher name  and subject code which is necessary  yo open hub after creating
+// extra  data needed in hub  like teacher name  and subject code
   Future extraRootHubDetail(HubRootData hubRootData, String hubCode,
       String hubname, String teacherName, String subCode) async {
     final rootData = hubRootData.rootCollection()..doc(hubCode);
@@ -90,27 +66,24 @@ class HubRootData extends ChangeNotifier {
   Future<Exist> isexist(
       CollectionReference collectionReferencenc, String code) async {
     bool isExist = false;
-    String hubname;
 
     UserCollection userCollection;
-    await collectionReferencenc.get().then((value) {
-      print(value.docs);
-      Iterator<QueryDocumentSnapshot> iterator = value.docs.iterator;
-      while (iterator.moveNext()) {
-        if (iterator.current.id == code) {
-          print('**************************************');
-          print(iterator.current.data()["hubname"]);
-          userCollection = UserCollection.fromJson(iterator.current.data());
-          hubname = userCollection.hubname;
-
-          print(hubname);
-          isExist = true;
-          break;
-        } else {
-          isExist = false;
-        }
-      }
-    });
+    final snap = await collectionReferencenc.doc(code).get();
+    if (snap.exists) {
+      userCollection = UserCollection(
+        hubCode: snap.data()["hubCode"],
+        hubname: snap.data()["hubname"],
+        timeStamp: snap.data()["timeStamp"],
+        admin: snap.data()["admin"],
+        createdBy: snap.data()["createdBy"],
+      );
+      print(userCollection.admin);
+      print(userCollection.hubCode);
+      isExist = true;
+    } else {
+      print('no');
+      isExist = false;
+    }
 
     return Exist(isExist, userCollection);
   }
@@ -120,19 +93,15 @@ class HubRootData extends ChangeNotifier {
       CollectionReference collectionReferencenc) async {
     String hubcode = generateHubCode();
 
-    await collectionReferencenc.get().then((value) {
-      print(value.docs);
-      Iterator<QueryDocumentSnapshot> iterator = value.docs.iterator;
-      while (iterator.moveNext()) {
-        if (iterator.current.id == hubcode) {
-          uniqueHubCode(collectionReferencenc);
-        }
-      }
-    });
+    final snap = await collectionReferencenc.doc(hubcode).get();
 
+    if (snap.exists) {
+      uniqueHubCode(collectionReferencenc);
+    }
     return hubcode;
   }
 
+  /// method to get basic data of hubs which will be used everywhere in app
   Future<RootHub> getRootHub(String hubcode) async {
     RootHub rootHub;
     await _firestore.collection('Data').get().then((value) {
@@ -144,6 +113,72 @@ class HubRootData extends ChangeNotifier {
       }
     });
     return rootHub;
+  }
+
+  /// join Hub .. firstc checking already joined if not then join it
+  Future<bool> joinHub(
+    UserCollection userCollection,
+  ) async {
+    bool isJoined = false;
+    print(userCollection.hubname);
+    print('-----------------join started');
+    final collection = rootCollectionReference(userCollection.hubname,
+        userCollection.hubCode, authService.currentUser.uid);
+    final members = Members.memberObject(
+        authService.currentUser.email, authService.currentUser.displayName);
+    print(userCollection.hubCode);
+    final snap = await collection.userData
+        .doc(authService.currentUser.uid)
+        .collection('joinedHubs')
+        .doc(userCollection.hubCode)
+        .get();
+    if (!snap.exists) {
+      await collection.members.add(members.toJson());
+      await collection.userData
+          .doc(authService.currentUser.uid)
+          .collection('joinedHubs')
+          .doc(userCollection.hubCode)
+          .set(userCollection.toJson());
+      isJoined = true;
+    } else {
+      isJoined = false;
+    }
+    return isJoined;
+  }
+
+// creating root data for hub
+  Future createRootHub(String hubname, String userId) async {
+    final hubcode = await uniqueHubCode(rootCollection());
+    print(hubcode);
+    final collection =
+        rootCollectionReference(hubname, hubcode, authService.currentUser.uid);
+    final roothub = RootHub(
+        admin: authService.currentUser.email,
+        hubname: hubname,
+        timeStamp: Timestamp.now(),
+        createdBy: authService.currentUser.displayName,
+        hubCode: hubcode);
+    final userCollection = UserCollection(
+        admin: authService.currentUser.email,
+        hubname: hubname,
+        timeStamp: Timestamp.now(),
+        createdBy: authService.currentUser.displayName,
+        hubCode: hubcode);
+    final members = Members(
+        memberInfo: MemberInfo(
+            email: authService.currentUser.email,
+            name: authService.currentUser.displayName));
+
+    await collection.rootData.doc(roothub.hubCode).set(roothub.toJson());
+    await collection.hub.doc(roothub.hubCode).set({
+      "timeStamp": FieldValue.serverTimestamp(),
+    });
+    await collection.members.add(members.toJson());
+    await collection.userData
+        .doc(userId)
+        .collection('joinedHubs')
+        .doc(hubcode)
+        .set(userCollection.toJson());
   }
 }
 

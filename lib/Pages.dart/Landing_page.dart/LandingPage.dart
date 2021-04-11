@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
@@ -6,6 +7,7 @@ import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/basichub
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/models/member.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
+import 'package:classroom_scheduler_flutter/services/dynamic_link.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:classroom_scheduler_flutter/services/stateProvider.dart';
@@ -18,7 +20,6 @@ import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-// ignore: must_be_immutable
 class LandingPage extends StatefulWidget {
   static String routename = 'landing page';
 
@@ -26,20 +27,41 @@ class LandingPage extends StatefulWidget {
   _LandingPageState createState() => _LandingPageState();
 }
 
-class _LandingPageState extends State<LandingPage> {
+class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   final AuthService authService = AuthService();
 
   final HubRootData hubRootData = HubRootData();
-
-  String hubname = '';
-  String hubcode = '';
-
+  final DynamicLink dynamicLink = DynamicLink();
+  String hubname;
+  String hubcode;
+  Timer _timerLink;
   bool _loading = false;
   TextEditingController textEditingController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    dynamicLink.handleDynamicLinks();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _timerLink = new Timer(const Duration(milliseconds: 100), () {
+        dynamicLink.handleDynamicLinks();
+      });
+    }
+    super.didChangeAppLifecycleState(state);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    if (_timerLink != null) {
+      _timerLink.cancel();
+    }
+    super.dispose();
   }
 
   floatingActionButtonLoading() {
@@ -48,50 +70,31 @@ class _LandingPageState extends State<LandingPage> {
     });
   }
 
-  Future joinHub(UserCollection userCollection) async {
-    final newHub = hubRootData.rootCollectionReference(userCollection.hubname,
-        userCollection.hubCode, authService.currentUser.uid);
-    final members = Members.memberObject(
-        authService.currentUser.email, authService.currentUser.displayName);
-
-    await hubRootData.joinHub(
-        newHub, members, userCollection, authService.currentUser.uid);
-  }
-
   Future addHub() async {
     floatingActionButtonLoading();
-    hubcode = await hubRootData.uniqueHubCode(hubRootData.rootCollection());
-    print(hubcode);
-    final newHub = hubRootData.rootCollectionReference(
-        hubname, hubcode, authService.currentUser.uid);
-    var roothub = RootHub(
-        admin: authService.currentUser.email,
-        hubname: hubname,
-        timeStamp: Timestamp.now(),
-        createdBy: authService.currentUser.displayName,
-        hubCode: hubcode);
-    final userColl = UserCollection(
-        admin: authService.currentUser.email,
-        hubname: hubname,
-        timeStamp: Timestamp.now(),
-        createdBy: authService.currentUser.displayName,
-        hubCode: hubcode);
-    final members = Members(
-        memberInfo: MemberInfo(
-            email: authService.currentUser.email,
-            name: authService.currentUser.displayName));
-    await hubRootData.createRootHub(
-        newHub, roothub, userColl, members, authService.currentUser.uid);
+    if (hubcode != null && hubname != null) {
+      await hubRootData.createRootHub(hubname, authService.currentUser.uid);
+    } else {
+      print('hubcode and hubname are null');
+    }
+
     floatingActionButtonLoading();
-    // await newHub.notice.add({
-    //   'createdAt': FieldValue.serverTimestamp(),
-    // });
-    // await newHub.people.add({
-    //   'createdAt': FieldValue.serverTimestamp(),
-    // });
-    // await newHub.lectures.add({
-    //   'createdAt': FieldValue.serverTimestamp(),
-    // });
+  }
+
+  Future<RootHub> setHubData(String hubname, String hubCode) async {
+    final rootCollection = hubRootData.rootCollectionReference(
+        hubname, hubCode, authService.currentUser.uid);
+    Provider.of<HubDataProvider>(context, listen: false).rootReference =
+        rootCollection;
+    final roothub = await Provider.of<HubDataProvider>(context, listen: false)
+        .getRootHub(hubCode);
+    print(Provider.of<HubDataProvider>(context, listen: false)
+        .rootReference
+        .members
+        .id);
+
+    Provider.of<HubDataProvider>(context, listen: false).rootData = roothub;
+    return roothub;
   }
 
   @override
@@ -121,9 +124,6 @@ class _LandingPageState extends State<LandingPage> {
                 .userCollection(authService.currentUser.uid)
                 .orderBy('timeStamp', descending: true)
                 .snapshots(),
-            // .rootCollection()
-
-            // .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 List lists = snapshot.data.docs;
@@ -146,25 +146,10 @@ class _LandingPageState extends State<LandingPage> {
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () async {
-                          final rootCollection =
-                              hubRootData.rootCollectionReference(
-                                  rootData[index].hubname,
-                                  rootData[index].hubCode,
-                                  authService.currentUser.uid);
-                          final collection = Provider.of<HubDataProvider>(
-                                  context,
-                                  listen: false)
-                              .rootReference = rootCollection;
-                          final roothub = await Provider.of<HubDataProvider>(
-                                  context,
-                                  listen: false)
-                              .getRootHub(rootData[index].hubCode);
+                          final roothub = await setHubData(
+                              rootData[index].hubname, rootData[index].hubCode);
                           Provider.of<HubDataProvider>(context, listen: false)
                               .rootData = roothub;
-                          print("+++++++++++++++++++++++++");
-                          print(roothub.admin);
-                          // Provider.of<HubDataProvider>(context, listen: false)
-                          //     .rootData = rootData[index];
                           // Provider.of<HubDataProvider>(context, listen: false)
                           //     .getJoinedDocs(rootCollection);
                           Navigator.push(
@@ -172,15 +157,6 @@ class _LandingPageState extends State<LandingPage> {
                               MaterialPageRoute(
                                   builder: (context) =>
                                       HomePage(rootData: roothub)));
-                          // : showDialog(
-                          //     context: context,
-                          //     builder: (context) {
-                          //       return HubExtraInfoDialogue(
-                          //         hubrootHub: hubRootData,
-                          //         hubCode: lists[index]["hubCode"],
-                          //         hubName: lists[index]["hubname"],
-                          //       );
-                          //     });
                         },
                         child: Card(
                           child: ListTile(
@@ -294,32 +270,8 @@ class _LandingPageState extends State<LandingPage> {
                                             fontWeight: FontWeight.w300),
                                       ),
                                       onPressed: () async {
-                                        floatingActionButtonLoading();
-                                        Navigator.pop(context);
-                                        final check = await hubRootData.isexist(
-                                            hubRootData.rootCollection(),
-                                            hubcode);
-                                        floatingActionButtonLoading();
-                                        if (check.isExist) {
-                                          joinHub(check.userCollection);
-
-                                          // Navigator.push(
-                                          //   context,
-                                          //   new MaterialPageRoute(
-                                          //       builder: (context) =>
-                                          //           HomePage()),
-                                          // );
-                                        } else {
-                                          showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  content: Text(
-                                                      'enter valide hubcode'),
-                                                );
-                                              });
-                                        }
-                                      })
+                                        await joinHub();
+                                      }),
                                 ],
                               )
                             ],
@@ -431,5 +383,32 @@ class _LandingPageState extends State<LandingPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
+  }
+
+  Future joinHub() async {
+    if (hubcode != null) {
+      floatingActionButtonLoading();
+      Navigator.pop(context);
+      final check =
+          await hubRootData.isexist(hubRootData.rootCollection(), hubcode);
+      if (check.isExist) {
+        final b = await hubRootData.joinHub(check.userCollection);
+        floatingActionButtonLoading();
+        print(b);
+        Navigator.pop(context);
+      } else {
+        floatingActionButtonLoading();
+        Navigator.pop(context);
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                content: Text('enter valide hubcode'),
+              );
+            });
+      }
+    } else {
+      print('hubcode is null');
+    }
   }
 }
