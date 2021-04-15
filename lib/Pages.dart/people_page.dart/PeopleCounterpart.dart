@@ -2,7 +2,7 @@ import 'package:classroom_scheduler_flutter/services/dynamic_link.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
-import 'package:classroom_scheduler_flutter/components/PeopleCounterpartTile.dart';
+
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 

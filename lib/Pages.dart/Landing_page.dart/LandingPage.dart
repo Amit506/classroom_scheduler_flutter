@@ -1,39 +1,39 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/drawer.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/exta_hub_info.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
-import 'package:classroom_scheduler_flutter/models/member.dart';
+
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/dynamic_link.dart';
+import 'package:classroom_scheduler_flutter/services/firebase_notification.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
-import 'package:classroom_scheduler_flutter/services/stateProvider.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import '../HomePage.dart';
-import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 
-FirebaseFirestore _firestore = FirebaseFirestore.instance;
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class LandingPage extends StatefulWidget {
   static String routename = 'landing page';
-
   @override
   _LandingPageState createState() => _LandingPageState();
 }
 
 class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   final AuthService authService = AuthService();
-
+  FireBaseNotificationService _fcm = FireBaseNotificationService();
   final HubRootData hubRootData = HubRootData();
   final DynamicLink dynamicLink = DynamicLink();
   String hubname;
   String hubcode;
+  String token;
   Timer _timerLink;
   bool _loading = false;
   TextEditingController textEditingController = TextEditingController();
@@ -42,12 +42,36 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    print('-------------------------------------------');
+
+    // FieldValue.arrayUnion(elements)
+    loadToken();
+    _fcm.onMessage();
+  }
+
+  loadToken() async {
+    token = await _fcm.token();
+    print(token);
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
       _timerLink = new Timer(const Duration(milliseconds: 100), () {});
+    }
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print("app in resumed");
+        break;
+      case AppLifecycleState.inactive:
+        print("app in inactive");
+        break;
+      case AppLifecycleState.paused:
+        print("app in paused");
+        break;
+      case AppLifecycleState.detached:
+        print("app in detached");
+        break;
     }
     super.didChangeAppLifecycleState(state);
   }
@@ -69,10 +93,12 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
 
   Future addHub() async {
     floatingActionButtonLoading();
-    if (hubcode != null && hubname != null) {
-      await hubRootData.createRootHub(hubname, authService.currentUser.uid);
+
+    if (hubname != null && token != null) {
+      await hubRootData.createRootHub(
+          hubname, authService.currentUser.uid, token);
     } else {
-      print('hubcode and hubname are null');
+      print('token & hubname are null');
     }
 
     floatingActionButtonLoading();
@@ -383,13 +409,13 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   }
 
   Future joinHub() async {
-    if (hubcode != null) {
+    if (hubcode != null && token != null) {
       floatingActionButtonLoading();
       Navigator.pop(context);
-      final check =
-          await hubRootData.isexist(hubRootData.rootCollection(), hubcode);
+      final check = await hubRootData.isexist(
+          hubRootData.rootCollection(), hubcode, token);
       if (check.isExist) {
-        final b = await hubRootData.joinHub(check.userCollection);
+        final b = await hubRootData.joinHub(check.userCollection, token);
         floatingActionButtonLoading();
         print(b);
         Navigator.pop(context);

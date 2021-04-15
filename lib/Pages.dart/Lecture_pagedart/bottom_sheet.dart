@@ -1,10 +1,12 @@
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/main.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
-import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/lecture_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:weekday_selector/weekday_selector.dart';
 
@@ -19,9 +21,13 @@ class CustomBottomSheet extends StatefulWidget {
 class _CustomBottomSheet extends State<CustomBottomSheet> {
   // PersistentBottomSheetController _controller;
   // final _scaffoldKey = GlobalKey<ScaffoldState>();
-  LectureData _lectureData;
+  String messageTitle = 'Empty';
+  String notificarionAlert = 'Alert';
+  String _token;
 
-  final values = <bool>[null, false, true, false, true, false, null];
+  LectureData _lectureData;
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final values = <bool>[true, false, true, false, true, false, false];
   printIntAsDay(int day) {
     print(
         'Received integer: $day. Corresponds to day: ${intDayToEnglish(day)}');
@@ -64,137 +70,169 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
     _lectureData = LectureData(
         rootCollection:
             Provider.of<HubDataProvider>(context, listen: false).rootReference);
+
+    _firebaseMessaging.getInitialMessage().then((RemoteMessage message) {
+      if (message != null) {
+        print(message);
+      }
+    });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification notification = message.notification;
+      AndroidNotification android = message.notification?.android;
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+                android: AndroidNotificationDetails(
+                    channel.id, channel.name, channel.description,
+                    icon: 'launch_background')));
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('A new onMessageOpenedApp event was published!');
+      // Navigator.pushNamed(context, '/message',
+      //     arguments: MessageArguments(message, true));
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => Navigator.of(context).pop(),
-        child: Container(
-            color: Color.fromRGBO(0, 0, 0, 0.001),
-            child: GestureDetector(
-              onTap: () {},
-              child: DraggableScrollableSheet(
-                initialChildSize: 0.4,
-                minChildSize: 0.2,
-                maxChildSize: 0.8,
-                builder: (_, controller) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(25.0),
-                        topRight: const Radius.circular(25.0),
+      onTap: () => Navigator.of(context).pop(),
+      child: Container(
+        color: Color.fromRGBO(0, 0, 0, 0.001),
+        child: GestureDetector(
+          onTap: () {},
+          child: DraggableScrollableSheet(
+            initialChildSize: 0.4,
+            minChildSize: 0.2,
+            maxChildSize: 0.8,
+            builder: (_, controller) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: const Radius.circular(25.0),
+                    topRight: const Radius.circular(25.0),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.remove,
+                      color: Colors.grey[600],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 23.0),
+                            child: Text(
+                              'from',
+                              style: TextStyle(fontSize: 26),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              _selectTime(1);
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(top: 30),
+                              width: 100,
+                              height: 40,
+                              alignment: Alignment.center,
+                              decoration:
+                                  BoxDecoration(color: Colors.grey[200]),
+                              child: TextFormField(
+                                style: TextStyle(fontSize: 25),
+                                textAlign: TextAlign.center,
+                                onSaved: (String val) {},
+                                enabled: false,
+                                keyboardType: TextInputType.text,
+                                controller: _timeController1,
+                                decoration: InputDecoration(
+                                    disabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide.none),
+                                    // labelText: 'Time',
+                                    contentPadding: EdgeInsets.all(1)),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 23.0),
+                            child: Text(
+                              'To',
+                              style: TextStyle(fontSize: 26),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              _selectTime(2);
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(top: 30),
+                              width: 100,
+                              height: 40,
+                              alignment: Alignment.center,
+                              decoration:
+                                  BoxDecoration(color: Colors.grey[200]),
+                              child: TextFormField(
+                                style: TextStyle(fontSize: 25),
+                                textAlign: TextAlign.center,
+                                onSaved: (String val) {
+                                  final _setTime = val;
+                                },
+                                enabled: false,
+                                keyboardType: TextInputType.text,
+                                controller: _timeController2,
+                                decoration: InputDecoration(
+                                    disabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide.none),
+                                    // labelText: 'Time',
+                                    contentPadding: EdgeInsets.all(1)),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.remove,
-                          color: Colors.grey[600],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 23.0),
-                                child: Text(
-                                  'from',
-                                  style: TextStyle(fontSize: 26),
-                                ),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  _selectTime(1);
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(top: 30),
-                                  width: 100,
-                                  height: 40,
-                                  alignment: Alignment.center,
-                                  decoration:
-                                      BoxDecoration(color: Colors.grey[200]),
-                                  child: TextFormField(
-                                    style: TextStyle(fontSize: 25),
-                                    textAlign: TextAlign.center,
-                                    onSaved: (String val) {},
-                                    enabled: false,
-                                    keyboardType: TextInputType.text,
-                                    controller: _timeController1,
-                                    decoration: InputDecoration(
-                                        disabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide.none),
-                                        // labelText: 'Time',
-                                        contentPadding: EdgeInsets.all(1)),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 23.0),
-                                child: Text(
-                                  'To',
-                                  style: TextStyle(fontSize: 26),
-                                ),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  _selectTime(2);
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(top: 30),
-                                  width: 100,
-                                  height: 40,
-                                  alignment: Alignment.center,
-                                  decoration:
-                                      BoxDecoration(color: Colors.grey[200]),
-                                  child: TextFormField(
-                                    style: TextStyle(fontSize: 25),
-                                    textAlign: TextAlign.center,
-                                    onSaved: (String val) {
-                                      final _setTime = val;
-                                    },
-                                    enabled: false,
-                                    keyboardType: TextInputType.text,
-                                    controller: _timeController2,
-                                    decoration: InputDecoration(
-                                        disabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide.none),
-                                        // labelText: 'Time',
-                                        contentPadding: EdgeInsets.all(1)),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        WeekdaySelector(
-                          selectedFillColor: Colors.indigo,
-                          onChanged: (v) {
-                            printIntAsDay(v);
-                            setState(() {
-                              values[v % 7] = !values[v % 7];
-                            });
-                          },
-                          values: values,
-                        ),
-                        ElevatedButton(
-                            onPressed: () async {
-                              Lecture lecture = Lecture(
-                                // startTime: selectedTime,
-                                // endTime: selectedTime,
-                                lectureDays: values,
-                                timeStamp: FieldValue.serverTimestamp(),
-                              );
-                              await _lectureData.addLectureData(lecture);
-                            },
-                            child: Text('save'))
-                      ],
+                    WeekdaySelector(
+                      selectedFillColor: Colors.indigo,
+                      onChanged: (v) {
+                        printIntAsDay(v);
+                        setState(() {
+                          values[v % 7] = !values[v % 7];
+                        });
+                      },
+                      values: values,
                     ),
-                  );
-                },
-              ),
-            )));
+                    ElevatedButton(
+                      onPressed: () async {
+                        Lecture lecture = Lecture(
+                          // startTime: selectedTime,
+                          // endTime: selectedTime,
+                          lectureDays: values,
+                          timeStamp: FieldValue.serverTimestamp(),
+                        );
+                        await _lectureData.addLectureData(lecture);
+                      },
+                      child: Text('save'),
+                    ),
+                    Text(messageTitle),
+                    Text(notificarionAlert),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
   }
 }

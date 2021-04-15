@@ -1,13 +1,12 @@
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
-import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
+
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:flutter/material.dart';
 import 'Landing_page.dart/LandingPage.dart';
 import 'TabBars.dart/PeopleTabBar.dart';
 import 'TabBars.dart/LectureTabBar.dart';
 import 'TabBars.dart/NoticesTabBar.dart';
-import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   final RootHub rootData;

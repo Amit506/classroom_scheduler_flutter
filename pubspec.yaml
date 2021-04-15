@@ -22,6 +22,10 @@ dependencies:
   firebase_messaging: ^9.1.1
   firebase_dynamic_links: ^0.8.0
   share: ^2.0.1
+  flutter_local_notifications: ^5.0.0+1
+  http: ^0.13.1
+  dio: ^4.0.0
+
   flutter:
     sdk: flutter
 

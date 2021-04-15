@@ -1,10 +1,8 @@
-import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/bottom_sheet.dart';
 import 'package:classroom_scheduler_flutter/components/LecturesColumn.dart';
-import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
+
 import "package:flutter/material.dart";
 import '../../components/LecturesColumn.dart';
-import 'package:weekday_selector/weekday_selector.dart';
 
 DateTime date = DateTime.now();
 

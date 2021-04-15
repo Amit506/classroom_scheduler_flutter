@@ -1,7 +1,5 @@
-import 'dart:async';
-
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
-import 'package:classroom_scheduler_flutter/models/member.dart';
+
 import 'package:flutter/material.dart';
 
 class Common {

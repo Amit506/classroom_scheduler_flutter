@@ -1,4 +1,3 @@
-import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:flutter/material.dart';
 import '../Lecture_pagedart/LecturePage.dart';
 

@@ -2,8 +2,6 @@ import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/Landing
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 
-import 'package:share/share.dart';
-
 class DynamicLink {
   Future<Uri> createDynamicLink(String hubCode, String hubName) async {
     final DynamicLinkParameters parameters = DynamicLinkParameters(
