@@ -6,7 +6,7 @@ class FcmServiceApi {
   static final header = {
     'content-type': 'application/json',
     'Authorization':
-        'AAAAG0PJQsI:APA91bHRAevpUEERz7BQysMMmNxMnFa5KG1ai6I67dpFoTUpCPBMg6QD7oD7mMR-9qoR3eGQCZyy9N-7bAIHF42ULV4hCDkGQRszxtiEb8Mrc7rNqSr7M2ieH_4lVT3J_sr5YeFpm5qZ'
+        'add serverkey here'
   };
 
   Future sendMessage(Map data) async {
