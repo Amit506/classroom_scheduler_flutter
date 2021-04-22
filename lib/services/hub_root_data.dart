@@ -4,7 +4,7 @@ import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/models/member.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
-import 'package:classroom_scheduler_flutter/services/firebase_notification.dart';
+import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

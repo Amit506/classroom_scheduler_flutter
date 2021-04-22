@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Lecture {
-  String subjectName;
-  String subCode;
-  TimeOfDay startTime;
-  TimeOfDay endTime;
-  List<bool> lectureDays;
-  String teacherName;
+  final String subjectName;
+  final String subCode;
+  final String startTime;
+  final String endTime;
+  final List<bool> lectureDays;
+  final String teacherName;
   final FieldValue timeStamp;
 //  List<dynamic>.from(coordinates.map((x) => x)),
   Lecture(

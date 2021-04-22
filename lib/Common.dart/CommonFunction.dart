@@ -4,7 +4,23 @@ import 'package:flutter/material.dart';
 
 class Common {
   static String getTimeString(TimeOfDay time) {
-    return time.hour.toString() + ' : ' + time.minute.toString();
+    print(time);
+    return time.hour.toString().padLeft(2, '0') +
+        ':' +
+        time.minute.toString().padLeft(2, '0') +
+        ':' +
+        '00';
+  }
+
+  static String getNotificationTimeString(String time) {
+    DateTime today = DateTime.now();
+    return today.year.toString() +
+        '-' +
+        today.month.toString().padLeft(2, '0') +
+        '-' +
+        today.day.toString().padLeft(2, '0') +
+        ' ' +
+        time;
   }
 }
 

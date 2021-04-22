@@ -6,7 +6,7 @@ import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/dynamic_link.dart';
-import 'package:classroom_scheduler_flutter/services/firebase_notification.dart';
+import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 

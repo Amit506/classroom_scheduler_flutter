@@ -1,6 +1,7 @@
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/main.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
+import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/lecture_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,7 +25,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
   String messageTitle = 'Empty';
   String notificarionAlert = 'Alert';
   String _token;
-
+  FireBaseNotificationService fcm = FireBaseNotificationService();
   LectureData _lectureData;
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final values = <bool>[true, false, true, false, true, false, false];
@@ -70,33 +71,6 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
     _lectureData = LectureData(
         rootCollection:
             Provider.of<HubDataProvider>(context, listen: false).rootReference);
-
-    _firebaseMessaging.getInitialMessage().then((RemoteMessage message) {
-      if (message != null) {
-        print(message);
-      }
-    });
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification notification = message.notification;
-      AndroidNotification android = message.notification?.android;
-      if (notification != null && android != null) {
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-                android: AndroidNotificationDetails(
-                    channel.id, channel.name, channel.description,
-                    icon: 'launch_background')));
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
-      // Navigator.pushNamed(context, '/message',
-      //     arguments: MessageArguments(message, true));
-    });
   }
 
   @override
@@ -215,12 +189,29 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
                     ElevatedButton(
                       onPressed: () async {
                         Lecture lecture = Lecture(
-                          // startTime: selectedTime,
-                          // endTime: selectedTime,
+                          startTime: Common.getNotificationTimeString(
+                              _timeController1.text),
+                          endTime: Common.getNotificationTimeString(
+                              _timeController2.text),
                           lectureDays: values,
                           timeStamp: FieldValue.serverTimestamp(),
                         );
                         await _lectureData.addLectureData(lecture);
+
+                        NotificationMessage m = NotificationMessage(
+                            to: "/topics/Electronics",
+                            notification: NotificationA(
+                              title: "hii amit",
+                              body: "yes i love u",
+                            ),
+                            data: NotificationData(
+                              startTime: Common.getNotificationTimeString(
+                                  _timeController1.text),
+                              endTime: Common.getNotificationTimeString(
+                                  _timeController2.text),
+                              lectureDays: values,
+                            ));
+                        await fcm.sendCustomMessage(m.toJson());
                       },
                       child: Text('save'),
                     ),
