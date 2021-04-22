@@ -1,3 +1,4 @@
+import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/LandingPage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LocalNotificationManagerFlutter {
@@ -27,5 +28,13 @@ class LocalNotificationManagerFlutter {
 
   Future selectNotification(String payload) async {
     print('---------------on-----select-----notification----------$payload');
+  }
+
+  Future<List<PendingNotificationRequest>> pendingNotifications() async {
+    List<PendingNotificationRequest> to =
+        await flnp.pendingNotificationRequests();
+    print(['----------------------------------------']);
+
+    print(to);
   }
 }

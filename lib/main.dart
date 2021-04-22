@@ -25,7 +25,8 @@ void main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage((_firebaseMessagingBackgroundHandler));
-  LocalNotificationManagerFlutter.init();
+  LocalNotificationManagerFlutter f = LocalNotificationManagerFlutter.init();
+  f.pendingNotifications();
   runApp(MyApp());
 }
 

@@ -28,7 +28,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
   FireBaseNotificationService fcm = FireBaseNotificationService();
   LectureData _lectureData;
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  final values = <bool>[true, false, true, false, true, false, false];
+  final values = <bool>[false, false, false, false, false, false, false];
   printIntAsDay(int day) {
     print(
         'Received integer: $day. Corresponds to day: ${intDayToEnglish(day)}');
@@ -180,9 +180,12 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
                       selectedFillColor: Colors.indigo,
                       onChanged: (v) {
                         printIntAsDay(v);
+                        print(v % 7);
+
                         setState(() {
                           values[v % 7] = !values[v % 7];
                         });
+                        print(values);
                       },
                       values: values,
                     ),
@@ -197,7 +200,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
                           timeStamp: FieldValue.serverTimestamp(),
                         );
                         await _lectureData.addLectureData(lecture);
-
+                        print(values);
                         NotificationMessage m = NotificationMessage(
                             to: "/topics/Electronics",
                             notification: NotificationA(
@@ -210,6 +213,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
                               endTime: Common.getNotificationTimeString(
                                   _timeController2.text),
                               lectureDays: values,
+                              hubName: "Electronics",
                             ));
                         await fcm.sendCustomMessage(m.toJson());
                       },

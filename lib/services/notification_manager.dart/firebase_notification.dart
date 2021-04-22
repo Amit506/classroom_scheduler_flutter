@@ -1,3 +1,4 @@
+import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/fcm_service_api.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/notification_provider.dart';
@@ -25,7 +26,8 @@ class FireBaseNotificationService {
       AndroidNotification android = message.notification?.android;
       print("==========================----------------------------------");
       final NotificationData data = NotificationData.fromMap(message.data);
-
+      print(data.lectureDays);
+      print('------------------jjjjj');
       if (notification != null && android != null) {
         np.createHubNotification(data, notification, android);
       }
@@ -135,31 +137,4 @@ class NotificationA {
         "title": title,
         "body": body,
       };
-}
-
-class NotificationData {
-  final String startTime;
-  final String endTime;
-  final List<bool> lectureDays;
-
-  NotificationData({this.startTime, this.endTime, this.lectureDays});
-  factory NotificationData.fromMap(Map<String, dynamic> map) =>
-      NotificationData(
-        startTime: map['startTime'],
-        endTime: map['endTime'],
-        lectureDays: _toList(map['lecturedays']),
-      );
-  Map<String, dynamic> toJson() => {
-        "startTime": startTime,
-        "endTime": endTime,
-        "lectureDays": List<bool>.from(lectureDays.map((x) => x)),
-      };
-}
-
-List<bool> _toList(dynamic value) {
-  if (value == null) {
-    return <bool>[];
-  }
-
-  return List<bool>.from(value);
 }
