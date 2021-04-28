@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:ui';
-
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/drawer.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
-
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
+import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/dynamic_link.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
@@ -30,6 +29,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   final AuthService authService = AuthService();
   FireBaseNotificationService _fcm = FireBaseNotificationService();
   final HubRootData hubRootData = HubRootData();
+  List<UserCollection> drawerData = [];
   final DynamicLink dynamicLink = DynamicLink();
   String hubname;
   String hubcode;
@@ -42,16 +42,17 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    print('-------------------------------------------');
 
     // FieldValue.arrayUnion(elements)
+    loadDrawer();
     loadToken();
+
     _fcm.onMessage();
   }
 
   loadToken() async {
     token = await _fcm.token();
-    print(token);
+    AppLogger.print(" fcm token $token");
   }
 
   @override
@@ -61,16 +62,16 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
     }
     switch (state) {
       case AppLifecycleState.resumed:
-        print("app in resumed");
+        AppLogger.print("app in resumed");
         break;
       case AppLifecycleState.inactive:
-        print("app in inactive");
+        AppLogger.print("app in inactive");
         break;
       case AppLifecycleState.paused:
-        print("app in paused");
+        AppLogger.print("app in paused");
         break;
       case AppLifecycleState.detached:
-        print("app in detached");
+        AppLogger.print("app in detached");
         break;
     }
     super.didChangeAppLifecycleState(state);
@@ -92,13 +93,14 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   }
 
   Future addHub() async {
+    AppLogger.print('creating new hub');
     floatingActionButtonLoading();
 
     if (hubname != null && token != null) {
       await hubRootData.createRootHub(
           hubname, authService.currentUser.uid, token);
     } else {
-      print('token & hubname are null');
+      AppLogger.print('token & hubname are null');
     }
 
     floatingActionButtonLoading();
@@ -123,8 +125,11 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     print(authService.currentUser.uid);
+    print(drawerData);
     return Scaffold(
-      drawer: LandingScreenDrawer(),
+      drawer: LandingScreenDrawer(
+        drawerData: drawerData,
+      ),
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
@@ -162,7 +167,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                       hubname: hubName,
                       createdBy: createdBy));
                 }
-
+                drawerData = rootData;
                 print(lists);
                 return ListView.builder(
                     itemCount: snapshot.data.size,
@@ -173,8 +178,6 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                               rootData[index].hubname, rootData[index].hubCode);
                           Provider.of<HubDataProvider>(context, listen: false)
                               .rootData = roothub;
-                          // Provider.of<HubDataProvider>(context, listen: false)
-                          //     .getJoinedDocs(rootCollection);
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -408,7 +411,28 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
     );
   }
 
+  loadDrawer() async {
+    AppLogger.print("loading drawer");
+    final temp = await hubRootData.getDrawerData();
+    List lists = temp.docs;
+    List<UserCollection> drawerData = [];
+    for (var list in lists) {
+      final admin = list["admin"];
+      final hubCode = list["hubCode"];
+      final hubName = list["hubname"];
+      final createdBy = list["createdBy"];
+      setState(() {
+        drawerData.add(UserCollection(
+            admin: admin,
+            hubCode: hubCode,
+            hubname: hubName,
+            createdBy: createdBy));
+      });
+    }
+  }
+
   Future joinHub() async {
+    AppLogger.print('joining hub');
     if (hubcode != null && token != null) {
       floatingActionButtonLoading();
       Navigator.pop(context);

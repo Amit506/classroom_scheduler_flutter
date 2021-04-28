@@ -16,25 +16,11 @@ class PeoplePage extends StatefulWidget {
 
 class _PeoplePageState extends State<PeoplePage> {
   final DynamicLink dynamicLink = DynamicLink();
-  // List<UserTile> adminList = [
-  //   UserTile(userName: 'Admin 1', type: UserType.admin),
-  //   UserTile(userName: 'Admin 2', type: UserType.admin),
-  // ];
 
-  // List<UserTile> userList = [
-  //   UserTile(userName: 'User 1', type: UserType.user),
-  //   UserTile(userName: 'User 2', type: UserType.user),
-  //   UserTile(userName: 'User 3', type: UserType.user),
-  //   UserTile(userName: 'User 4', type: UserType.user),
-  //   UserTile(userName: 'User 5', type: UserType.user),
-  //   UserTile(userName: 'User 6', type: UserType.user),
-  //   UserTile(userName: 'User 7', type: UserType.user),
-  //   UserTile(userName: 'User 8', type: UserType.user),
-  //   UserTile(userName: 'User 9', type: UserType.user),
-  //   UserTile(userName: 'User 10', type: UserType.user),
-  //   UserTile(userName: 'User 11', type: UserType.user),
-  //   UserTile(userName: 'User 12', type: UserType.user),
-  // ];
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,16 +32,16 @@ class _PeoplePageState extends State<PeoplePage> {
             height: MediaQuery.of(context).size.height,
             child: StreamBuilder(
               stream: Provider.of<HubDataProvider>(context, listen: false)
-                  .getMembers(
-                      Provider.of<HubDataProvider>(context, listen: false)
-                          .rootReference),
+                  .getMembers(),
+              // Provider.of<HubDataProvider>(context, listen: false)
+              //     .rootReference),
               builder: (context, snapshot) {
-                List list = snapshot.data.docs;
-                print('---------------------------------------');
-                print(list.length);
-                print(list[0]['memberInfo']);
-
                 if (snapshot.hasData) {
+                  List list = snapshot.data.docs;
+                  print('---------------------------------------');
+                  print(list.length);
+                  print(list[0]['memberInfo']);
+
                   return ListView.builder(
                       itemCount: list.length + 1,
                       itemBuilder: (context, index) {

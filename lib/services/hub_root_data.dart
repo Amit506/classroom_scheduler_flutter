@@ -4,13 +4,17 @@ import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/models/member.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
+import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
+import 'package:classroom_scheduler_flutter/services/notification_manager.dart/notification_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
 class HubRootData extends ChangeNotifier {
+  final NotificationProvider notificationProvider = NotificationProvider();
   final AuthService authService = AuthService();
   final FireBaseNotificationService fcm = FireBaseNotificationService();
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -124,9 +128,30 @@ class HubRootData extends ChangeNotifier {
   Future<bool> joinHub(UserCollection userCollection, String token) async {
     bool isJoined = false;
     print(userCollection.hubname);
-    print('-----------------join started');
     final collection = rootCollectionReference(userCollection.hubname,
         userCollection.hubCode, authService.currentUser.uid);
+
+//  set notification to device joining after creating the hub
+    List<NotificationData> notificationData = [];
+    final lectures = await collection.lectures.get();
+    if (lectures.docs.isNotEmpty) {
+      final lists = lectures.docs;
+      for (var value in lists) {
+        notificationData.add(NotificationData(
+          startTime: value['startTime'],
+          endTime: value['endTime'],
+          notificationId: value['notificationId'],
+          lectureDays: List<bool>.from(value['lectureDays']),
+          hubName: value['hubName'],
+          title: value['title'],
+          body: value['body'],
+        ));
+      }
+    } else {
+      AppLogger.print('lecture docs is empty');
+    }
+    AppLogger.print(notificationData[0].startTime);
+
     final members = Members.memberObject(
         authService.currentUser.email,
         authService.currentUser.displayName,
@@ -148,7 +173,12 @@ class HubRootData extends ChangeNotifier {
           .doc(authService.currentUser.uid)
           .collection('joinedHubs')
           .doc(userCollection.hubCode)
-          .set(userCollection.toJson());
+          .set(userCollection.toMap());
+      if (notificationData != null) {
+        for (var data in notificationData) {
+          await notificationProvider.createHubNotification(data);
+        }
+      }
       isJoined = true;
     } else {
       isJoined = false;
@@ -197,15 +227,27 @@ class HubRootData extends ChangeNotifier {
           .doc(userId)
           .collection('joinedHubs')
           .doc(hubcode)
-          .set(userCollection.toJson());
+          .set(userCollection.toMap());
     } else
-      print('hubcode is null or topic(hubname) is inavlid');
+      AppLogger.print('hubcode is null or topic(hubname) is inavlid');
+  }
+
+  Future<QuerySnapshot> getDrawerData() async {
+    return await userCollection(authService.currentUser.uid)
+        .orderBy('timeStamp', descending: true)
+        .get();
   }
 }
 
 // generating hubcode
 String generateHubCode() {
   Random random = Random.secure();
+  // DateTime date = DateTime.now();
+  // String time = date.day.toString().padLeft(2, '0') +
+  //     date.month.toString().padLeft(2, '0') +
+  //     date.year.toString().substring(3);
+  // int intDate = int.parse(time);
   var value = List<int>.generate(7, (index) => random.nextInt(256));
+
   return base64Url.encode(value);
 }

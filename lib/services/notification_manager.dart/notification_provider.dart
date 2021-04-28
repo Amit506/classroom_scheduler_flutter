@@ -1,5 +1,6 @@
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/main.dart';
+import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,35 +15,35 @@ class NotificationProvider extends ChangeNotifier {
   LocalNotificationManagerFlutter _localNotificationManagerFlutter =
       LocalNotificationManagerFlutter.getInstance();
 
-  Future createHubNotification(
-      NotificationData data,
-      RemoteNotification notification,
-      AndroidNotification androidNotification) async {
-    //decode the notification here and set various notifications
-
-    print('------------------------------starting----------------');
-    print(data.startTime);
+  Future createHubNotification(NotificationData data
+      // AndroidNotification androidNotification
+      ) async {
     tz.initializeTimeZones();
-    print(data.lectureDays);
-    for (int i = 0; i < data.lectureDays.length; i++) {
-      if (data.lectureDays[i]) {
-        print(i);
-        if (i == 0) {
-          tz.TZDateTime time = _nextInstanceOfDay(data.startTime, 0);
-          await createHubNotificationUtil(notification, time, data.hubName);
+    if (data.specificDateTime != null) {
+      final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+      tz.TZDateTime scheduledDate =
+          tz.TZDateTime.parse(tz.local, data.specificDateTime);
+      AppLogger.print('$now    :  $scheduledDate');
+
+      await createSpecificNotificationUtil(scheduledDate, data);
+    } else {
+      for (int i = 0; i < data.lectureDays.length; i++) {
+        if (data.lectureDays[i]) {
+          if (i == 0) {
+            tz.TZDateTime time = _nextInstanceOfDay(data.startTime, 0);
+            await createHubNotificationUtil(
+                time, data, int.parse(data.notificationId));
+          }
+          tz.TZDateTime time = _nextInstanceOfDay(data.startTime, i);
+          await createHubNotificationUtil(
+              time, data, int.parse(data.notificationId));
         }
-        tz.TZDateTime time = _nextInstanceOfDay(data.startTime, i);
-        await createHubNotificationUtil(notification, time, data.hubName);
       }
     }
-
-    print(androidNotification);
   }
 
-  Future createHubNotificationUtil(RemoteNotification notification,
-      tz.TZDateTime time, String hubName) async {
-    print('==========================started===========');
-
+  Future createSpecificNotificationUtil(
+      tz.TZDateTime time, NotificationData data) async {
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel', // id
       'High Importance Notifications', // title
@@ -51,11 +52,10 @@ class NotificationProvider extends ChangeNotifier {
       // description
       importance: Importance.high,
     );
-
     await _localNotificationManagerFlutter.flnp.zonedSchedule(
-      notification.hashCode,
-      notification.title,
-      notification.body,
+      int.parse(data.notificationId),
+      data.title,
+      data.body,
       time,
       NotificationDetails(
         android: AndroidNotificationDetails(
@@ -69,6 +69,38 @@ class NotificationProvider extends ChangeNotifier {
           UILocalNotificationDateInterpretation.absoluteTime,
       androidAllowWhileIdle: false,
     );
+    AppLogger.print(" specificdateTime notification message set");
+  }
+
+  Future createHubNotificationUtil(
+      tz.TZDateTime time, NotificationData data, int notificationId) async {
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'high_importance', // id
+      'High Importance ', // title
+      'This channel is used for ',
+      ledColor: Colors.red,
+      // description
+      importance: Importance.high,
+    );
+
+    await _localNotificationManagerFlutter.flnp.zonedSchedule(
+        notificationId,
+        data.title,
+        data.body,
+        time,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            channel.id,
+            channel.name,
+            channel.description,
+            icon: 'launch_background',
+          ),
+        ),
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        androidAllowWhileIdle: false,
+        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime);
+    AppLogger.print("weekly scheduled notification message set");
   }
 
   cancelNotification(int id) async {
@@ -76,7 +108,7 @@ class NotificationProvider extends ChangeNotifier {
   }
 
 // to implememnt
-  updateHubNotification() async {}
+  // updateHubNotification() async {}
 
   tz.TZDateTime _nextInstanceOfWeekDay(String time) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);

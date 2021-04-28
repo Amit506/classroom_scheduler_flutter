@@ -1,4 +1,5 @@
 import 'package:classroom_scheduler_flutter/Pages.dart/AuthenticationScreen.dart/AuthCheckerScreen.dart';
+import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
@@ -17,7 +18,7 @@ import 'package:flutter/services.dart';
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('---------------------b--a---c--k------------------------------');
   await Firebase.initializeApp();
-  print('Handling a background message ${message.messageId}');
+  AppLogger.print('Handling a background message ${message.messageId}');
 }
 
 void main() async {
@@ -27,6 +28,7 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage((_firebaseMessagingBackgroundHandler));
   LocalNotificationManagerFlutter f = LocalNotificationManagerFlutter.init();
   f.pendingNotifications();
+  f.getActiveNotifications();
   runApp(MyApp());
 }
 

@@ -11,7 +11,7 @@ class NoticesItem {
   const NoticesItem({
     this.noticeTime,
     @required this.noticeTitle,
-    @required this.urlImage,
+    this.urlImage,
   });
 }
 

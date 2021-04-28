@@ -92,18 +92,18 @@ class UserCollection {
     this.status,
   });
 
-  factory UserCollection.fromJson(Map<String, dynamic> json) => UserCollection(
-        token: json["token"],
-        uid: json["uid"],
-        hubname: json["hubname"],
-        hubCode: json["hubcode"],
-        timeStamp: json["timeStamp"],
-        admin: json["admin"],
-        createdBy: json["createdBy"],
-        status: json["status"],
+  factory UserCollection.fromJson(Map<String, dynamic> map) => UserCollection(
+        token: map["token"],
+        uid: map["uid"],
+        hubname: map["hubname"],
+        hubCode: map["hubcode"],
+        timeStamp: map["timeStamp"],
+        admin: map["admin"],
+        createdBy: map["createdBy"],
+        status: map["status"],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
         "token": token,
         "uid": uid,
         "hubname": hubname,

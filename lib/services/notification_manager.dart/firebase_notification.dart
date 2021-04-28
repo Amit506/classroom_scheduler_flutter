@@ -1,17 +1,10 @@
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/fcm_service_api.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/notification_provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:classroom_scheduler_flutter/main.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-// final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-//     FlutterLocalNotificationsPlugin();
 
 class FireBaseNotificationService {
   LocalNotificationManagerFlutter _localNotificationManagerFlutter =
@@ -24,28 +17,25 @@ class FireBaseNotificationService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification notification = message.notification;
       AndroidNotification android = message.notification?.android;
-      print("==========================----------------------------------");
+      AppLogger.print("fcm message");
       final NotificationData data = NotificationData.fromMap(message.data);
-      print(data.lectureDays);
-      print('------------------jjjjj');
+      AppLogger.print('firebase mesggaing recived');
       if (notification != null && android != null) {
-        np.createHubNotification(data, notification, android);
+        np.createHubNotification(data);
       }
     });
   }
 
   onMessageOpenedApp() async {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
-      print(
-          '8888888888888888888888888888888888888888888888888888888888888888888');
+      AppLogger.print('A new onMessageOpenedApp event was published!');
     });
   }
 
   onIntialMessafe() async {
     fcm.getInitialMessage().then((RemoteMessage message) {
       if (message != null) {
-        print('---------------------b--a---c--k------------------------------');
+        AppLogger.print('from intial message');
       }
     });
   }
@@ -61,7 +51,7 @@ class FireBaseNotificationService {
   Future<bool> subscribeTopic(String topic) async {
     try {
       await fcm.subscribeToTopic(topic);
-      print('sucessfully subscribed $topic');
+      AppLogger.print('sucessfully subscribed $topic');
       return true;
     } catch (e) {
       print(e);
@@ -72,6 +62,7 @@ class FireBaseNotificationService {
   Future<String> unSubscribeTopic(String topic) async {
     try {
       await fcm.unsubscribeFromTopic(topic);
+      AppLogger.print('sucessfully Unsubscribed $topic');
       return 'sucessfully Unsubscribed $topic';
     } catch (e) {
       print(e);
@@ -99,42 +90,3 @@ class FireBaseNotificationService {
 //     "key_2": "Value for key_2"
 //   }
 // };
-
-class NotificationMessage {
-  final String to;
-  final NotificationA notification;
-  final NotificationData data;
-
-  NotificationMessage({
-    this.to,
-    this.notification,
-    this.data,
-  });
-  factory NotificationMessage.fromMap(Map<String, dynamic> map) =>
-      NotificationMessage(
-        to: map['to'],
-        notification: NotificationA.fromMap(map['notification']),
-        data: NotificationData.fromMap(map['data']),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "to": to,
-        "notification": notification.toJson(),
-        "data": data.toJson(),
-      };
-}
-
-class NotificationA {
-  final String title;
-  final String body;
-
-  NotificationA({this.title, this.body});
-  factory NotificationA.fromMap(Map<String, dynamic> map) => NotificationA(
-        body: map['body'],
-        title: map['title'],
-      );
-  Map<String, dynamic> toJson() => {
-        "title": title,
-        "body": body,
-      };
-}

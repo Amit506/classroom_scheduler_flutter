@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 class HubDataProvider extends ChangeNotifier {
   HubRootData hubRootData = HubRootData();
   RootCollection _rootCollection;
+
   RootHub _rootHub;
 
   RootCollection get rootReference => _rootCollection;
@@ -20,11 +21,16 @@ class HubDataProvider extends ChangeNotifier {
 
   set rootData(RootHub rootHub) {
     _rootHub = rootHub;
+
     notifyListeners();
   }
 
-  Stream<QuerySnapshot> getMembers(RootCollection collection) {
-    return collection.members.snapshots();
+  Stream<QuerySnapshot> getMembers() {
+    return _rootCollection.members.snapshots();
+  }
+
+  Stream<QuerySnapshot> getNotices() {
+    return _rootCollection.notice.snapshots();
   }
 
   Future<RootHub> getRootHub(String hubcode) async {
@@ -35,6 +41,10 @@ class HubDataProvider extends ChangeNotifier {
     final quer = await collection.members.get();
     print('-------------------------------------------------');
     print(quer.docs.length);
+  }
+
+  Stream<QuerySnapshot> getLectureSream() {
+    return _rootCollection.lectures.snapshots();
   }
 
   Future getNoticedocs(RootCollection collection) async {

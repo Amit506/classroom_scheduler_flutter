@@ -36,7 +36,7 @@ class _LecturesColumnState extends State<LecturesColumn> {
     return ListView(
       children: lectures
           .map((e) => LectureTile(
-              title: e.subjectName,
+              title: e.hubName,
               startTime: e.startTime.hour.toString() +
                   ":" +
                   e.startTime.minute.toString()))

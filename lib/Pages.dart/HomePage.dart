@@ -1,8 +1,10 @@
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
+import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'Landing_page.dart/LandingPage.dart';
 import 'TabBars.dart/PeopleTabBar.dart';
 import 'TabBars.dart/LectureTabBar.dart';
@@ -46,7 +48,9 @@ class _HomePageState extends State<HomePage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("classroom "),
+          title: Text(Provider.of<HubDataProvider>(context, listen: true)
+              .rootData
+              .hubname),
           centerTitle: true,
           bottom: TabBar(
             tabs: [
