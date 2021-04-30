@@ -1,30 +1,50 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+
+Members welcomeFromJson(String str) => Members.fromJson(json.decode(str));
+
+String welcomeToJson(Members data) => json.encode(data.toJson());
 
 class Members {
-  final MemberInfo memberInfo;
+  Members({
+    this.memberInfo,
+  });
 
-  Members({this.memberInfo});
+  MemberInfo memberInfo;
+
+  factory Members.fromJson(Map<String, dynamic> json) => Members(
+        memberInfo: MemberInfo.fromJson(json["memberInfo"]),
+      );
+
   Map<String, dynamic> toJson() => {
-        'memberInfo': memberInfo.toJson(),
+        "memberInfo": memberInfo.toJson(),
       };
-  static Members memberObject(email, name, token, uid) {
-    return Members(
-        memberInfo:
-            MemberInfo(email: email, name: name, token: token, uid: uid));
-  }
 }
 
 class MemberInfo {
-  final String email;
-  final String name;
-  final String token;
-  final String uid;
+  MemberInfo({
+    this.uid,
+    this.token,
+    this.email,
+    this.name,
+  });
 
-  MemberInfo({this.token, this.uid, this.email, this.name});
+  String uid;
+  String token;
+  String email;
+  String name;
+
+  factory MemberInfo.fromJson(Map<String, dynamic> json) => MemberInfo(
+        uid: json["uid"],
+        token: json["token"],
+        email: json["email"],
+        name: json["name"],
+      );
+
   Map<String, dynamic> toJson() => {
-        'uid': uid,
-        'token': token,
-        'email': name,
-        'name': name,
+        "uid": uid,
+        "token": token,
+        "email": email,
+        "name": name,
       };
 }

@@ -1,5 +1,6 @@
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
+import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
@@ -31,13 +32,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    print(authService.currentUser.email);
-    print('***************************************************');
-    print(widget.rootData.admin);
     if (authService.currentUser.email == widget.rootData.admin) {
       setState(() {
         isAdmin = true;
-        print(isAdmin);
+        AppLogger.print('isAdmin $isAdmin');
       });
     }
   }

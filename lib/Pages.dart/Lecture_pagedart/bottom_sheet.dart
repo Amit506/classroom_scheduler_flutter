@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:weekday_selector/weekday_selector.dart';
+import 'package:classroom_scheduler_flutter/models/notification.dart';
 
 // to implement import date dependent notification for one time only
 typedef StringValue = String Function(String);
@@ -83,10 +84,10 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
     super.initState();
 
     AppLogger.print(isTimetableSet.toString());
-    AppLogger.print(widget.sheetLectureData.hubName);
+
     pickedDate = DateTime.now();
-    _timeController1.text = selectedTime.toString();
-    _timeController2.text = selectedTime.toString();
+    _timeController1.text = Common.getTimeString(selectedTime);
+    _timeController2.text = Common.getTimeString(selectedTime);
     _lectureData = LectureData(
         rootCollection:
             Provider.of<HubDataProvider>(context, listen: false).rootReference);
@@ -98,7 +99,9 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
           .rootData
           .hubname);
       if (Provider.of<HubDataProvider>(context, listen: false).rootData !=
-          null) {
+              null &&
+          startTime != null &&
+          endTime != null) {
         int nth = await _lectureData.nthLectureTime();
         String hubName = Provider.of<HubDataProvider>(context, listen: false)
             .rootData
@@ -108,20 +111,34 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
             .hubCode;
         body = '$hubName will start in 5 minutes';
         title = '$hubName';
+        AppLogger.print(body);
         int notificationId = Common.generateNotificationId();
+        AppLogger.print(startTime.toString());
         String starttime = Common.getNotificationTimeString(startTime);
         String endtime = Common.getNotificationTimeString(endTime);
+        AppLogger.print(starttime);
         Lecture lecture = Lecture(
           startTime: starttime,
           endTime: endtime,
+          isSpecificDateTime: false,
           hubName: hubName,
           hubCode: hubCode,
+          notificationData: NotificationData(
+            startTime: starttime,
+            endTime: endtime,
+            notificationId: notificationId.toString(),
+            lectureDays: values,
+            isSpecificDateTime: false,
+            hubName: hubName,
+            body: body,
+            title: title,
+          ),
           lectureDays: values,
           body: body,
           nth: nth,
           title: title,
           notificationId: notificationId,
-          timeStamp: FieldValue.serverTimestamp(),
+          timeStamp: FieldValue.serverTimestamp().toString(),
         );
         await _lectureData.addLectureData(lecture, nth.toString());
         NotificationMessage m = NotificationMessage(
@@ -135,14 +152,17 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
               endTime: endtime,
               notificationId: notificationId.toString(),
               lectureDays: values,
+              isSpecificDateTime: false,
               hubName: hubName,
               body: body,
               title: title,
             ));
         await fcm.sendCustomMessage(m.toJson());
         return true;
-      } else
+      } else {
+        AppLogger.print('something went wrong in creating timetable');
         return true;
+      }
     } catch (e) {
       AppLogger.print('$e');
       return false;
@@ -326,56 +346,74 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
   Future<bool> setSpecificCLassTime() async {
     int nth = await _lectureData.nthLectureTime();
 
-    String hubName =
-        Provider.of<HubDataProvider>(context, listen: false).rootData.hubname;
+    if (nth != null && selectedTime != null) {
+      String hubName =
+          Provider.of<HubDataProvider>(context, listen: false).rootData.hubname;
+      AppLogger.print(hubName);
+      String hubCode =
+          Provider.of<HubDataProvider>(context, listen: false).rootData.hubCode;
+      body = '$hubName extra class will start in 5 minutes';
+      title = '$hubName';
 
-    String hubCode =
-        Provider.of<HubDataProvider>(context, listen: false).rootData.hubCode;
-    body = '$hubName extra class will start in 5 minutes';
-    title = '$hubName';
+      int notificationId = Common.generateNotificationId();
 
-    int notificationId = Common.generateNotificationId();
-
-    String specifcDateTime = Common.getNotificationTimeString(selectedTime,
-        date: pickedDate, isSpecificDate: true);
-    AppLogger.print(specifcDateTime);
-    Lecture lecture = Lecture(
-      specificDateTime: specifcDateTime,
-      hubName: hubName,
-      hubCode: hubCode,
-      lectureDays: values,
-      body: body,
-      nth: nth,
-      title: title,
-      notificationId: notificationId,
-      timeStamp: FieldValue.serverTimestamp(),
-    );
-    await _lectureData.addLectureData(lecture, nth.toString());
-    NotificationMessage m = NotificationMessage(
-        to: "/topics/$hubName",
-        notification: NotificationA(
-          title: title,
-          body: body,
-        ),
-        data: NotificationData(
+      String specifcDateTime = Common.getNotificationTimeString(selectedTime,
+          date: pickedDate, isSpecificDate: true);
+      AppLogger.print(specifcDateTime);
+      Lecture lecture = Lecture(
+        specificDateTime: specifcDateTime,
+        hubName: hubName,
+        hubCode: hubCode,
+        isSpecificDateTime: true,
+        lectureDays: values,
+        body: body,
+        notificationData: NotificationData(
           specificDateTime: specifcDateTime,
           notificationId: notificationId.toString(),
           lectureDays: values,
           hubName: hubName,
           body: body,
           title: title,
-        ));
-    await fcm.sendCustomMessage(m.toJson());
+        ),
+        nth: nth,
+        title: title,
+        notificationId: notificationId,
+        timeStamp: FieldValue.serverTimestamp().toString(),
+      );
+      await _lectureData.addLectureData(lecture, nth.toString());
+      NotificationMessage m = NotificationMessage(
+          to: "/topics/$hubName",
+          notification: NotificationA(
+            title: title,
+            body: body,
+          ),
+          data: NotificationData(
+            specificDateTime: specifcDateTime,
+            notificationId: notificationId.toString(),
+            isSpecificDateTime: true,
+            lectureDays: values,
+            hubName: hubName,
+            body: body,
+            title: title,
+          ));
+      await fcm.sendCustomMessage(m.toJson());
+      return true;
+    } else {
+      AppLogger.print('something went wrong in setting specific time');
+      return false;
+    }
   }
 
   Future<bool> updateLectureTime() async {
     try {
       AppLogger.print(widget.sheetLectureData.toString());
-      if (widget.sheetLectureData.nth != null) {
+      if (widget.sheetLectureData.nth != null &&
+          startTime != null &&
+          endTime != null) {
         String starttime = Common.getNotificationTimeString(startTime);
         String endtime = Common.getNotificationTimeString(endTime);
         AppLogger.print(starttime);
-        AppLogger.print(endtime);
+
         int notificationId = Common.generateNotificationId();
         Lecture lecture = Lecture(
           startTime: starttime,
@@ -383,11 +421,12 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
           hubName: widget.sheetLectureData.hubName,
           hubCode: widget.sheetLectureData.hubCode,
           lectureDays: values,
+          isSpecificDateTime: false,
           body: widget.sheetLectureData.body,
           nth: widget.sheetLectureData.nth,
           title: widget.sheetLectureData.title,
           notificationId: notificationId,
-          timeStamp: FieldValue.serverTimestamp(),
+          timeStamp: FieldValue.serverTimestamp().toString(),
         );
         await _lectureData.addLectureData(
             lecture, widget.sheetLectureData.nth.toString());
@@ -403,14 +442,19 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
               endTime: endtime,
               notificationId: notificationId.toString(),
               lectureDays: values,
+              isSpecificDateTime: false,
               hubName: widget.sheetLectureData.hubName,
               body: widget.sheetLectureData.body,
               title: widget.sheetLectureData.title,
             ));
+        AppLogger.print('sending');
         await fcm.sendCustomMessage(m.toJson());
+        AppLogger.print('sending');
         return true;
-      } else
+      } else {
+        AppLogger.print('something went wrong in updating time table');
         return true;
+      }
     } catch (e) {
       return false;
     }

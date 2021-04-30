@@ -3,6 +3,7 @@ import 'package:classroom_scheduler_flutter/components/LecturesColumn.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import "package:flutter/material.dart";
 import 'package:provider/provider.dart';
@@ -39,29 +40,16 @@ class _LecturePageState extends State<LecturePage> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: StreamBuilder(
+        child: StreamBuilder<QuerySnapshot>(
             stream: Provider.of<HubDataProvider>(context, listen: false)
                 .getLectureSream(),
-            builder: (context, snapshot) {
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasData) {
-                List lists = snapshot.data.docs;
-                List<Lecture> lecture = [];
-                for (var list in lists) {
-                  lecture.add(Lecture(
-                    hubName: list["hubName"],
-                    startTime: list['startTime'],
-                    body: list['body'],
-                    title: list['title'],
-                    endTime: list['endTime'],
-                    nth: list['nth'],
-                    hubCode: list['hubCode'],
+                List<QueryDocumentSnapshot> lists = snapshot.data.docs;
 
-                    teacherName: list['teacherName'],
-                    // timeStamp: list['timeStamp'],
-                    lectureDays: List<bool>.from(list['lectureDays']),
-                    notificationId: list['notificationId'],
-                    subCode: list['subCode'],
-                  ));
+                List<Lecture> lecture = [];
+                for (QueryDocumentSnapshot list in lists) {
+                  lecture.add(Lecture.fromJson(list.data()));
                 }
 
                 return ListView.builder(
@@ -85,7 +73,7 @@ class _LecturePageState extends State<LecturePage> {
                               : AppLogger.print("admin: ${widget.isAdmin}");
                         },
                         child: ListTile(
-                          title: Text(lecture[index].lectureDays.toString()),
+                          title: Text('${lecture[index].hubName} time table'),
                         ),
                       );
                     });

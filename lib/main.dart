@@ -28,7 +28,11 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage((_firebaseMessagingBackgroundHandler));
   LocalNotificationManagerFlutter f = LocalNotificationManagerFlutter.init();
   f.pendingNotifications();
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    AppLogger.print('${message.data.toString()}');
+  });
   f.getActiveNotifications();
+
   runApp(MyApp());
 }
 

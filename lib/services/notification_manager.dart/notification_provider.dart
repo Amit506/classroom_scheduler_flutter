@@ -1,14 +1,10 @@
-import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
-import 'package:classroom_scheduler_flutter/main.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
-import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
-
+import 'package:classroom_scheduler_flutter/models/notification.dart';
 import 'localnotification_manager.dart';
 
 class NotificationProvider extends ChangeNotifier {
@@ -20,6 +16,7 @@ class NotificationProvider extends ChangeNotifier {
       ) async {
     tz.initializeTimeZones();
     if (data.specificDateTime != null) {
+      AppLogger.print('nooooooooo');
       final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
       tz.TZDateTime scheduledDate =
           tz.TZDateTime.parse(tz.local, data.specificDateTime);
@@ -27,6 +24,7 @@ class NotificationProvider extends ChangeNotifier {
 
       await createSpecificNotificationUtil(scheduledDate, data);
     } else {
+      AppLogger.print('yess');
       for (int i = 0; i < data.lectureDays.length; i++) {
         if (data.lectureDays[i]) {
           if (i == 0) {
@@ -107,6 +105,10 @@ class NotificationProvider extends ChangeNotifier {
     await _localNotificationManagerFlutter.flnp.cancel(id);
   }
 
+  cancelAllNotification() async {
+    await _localNotificationManagerFlutter.flnp.cancelAll();
+  }
+
 // to implememnt
   // updateHubNotification() async {}
 
@@ -129,5 +131,29 @@ class NotificationProvider extends ChangeNotifier {
     }
 
     return scheduledDate;
+  }
+
+  showNotification() async {
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'high_importance', // id
+      'High Importance ', // title
+      'This channel is used for ',
+      ledColor: Colors.red,
+      // description
+      importance: Importance.high,
+    );
+    await _localNotificationManagerFlutter.flnp.show(
+      1,
+      'sunile',
+      'go to chattisgarh',
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channel.id,
+          channel.name,
+          channel.description,
+          icon: 'launch_background',
+        ),
+      ),
+    );
   }
 }

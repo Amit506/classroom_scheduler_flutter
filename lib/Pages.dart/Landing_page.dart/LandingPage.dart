@@ -46,13 +46,13 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
     // FieldValue.arrayUnion(elements)
     loadDrawer();
     loadToken();
-
+    _fcm.subscribeTopic('Electronics');
     _fcm.onMessage();
   }
 
   loadToken() async {
     token = await _fcm.token();
-    AppLogger.print(" fcm token $token");
+    AppLogger.print(" fcm token : $token");
   }
 
   @override
@@ -113,7 +113,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
         rootCollection;
     final roothub = await Provider.of<HubDataProvider>(context, listen: false)
         .getRootHub(hubCode);
-    print(Provider.of<HubDataProvider>(context, listen: false)
+    AppLogger.print(Provider.of<HubDataProvider>(context, listen: false)
         .rootReference
         .members
         .id);
@@ -154,18 +154,11 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                List lists = snapshot.data.docs;
+                List<QueryDocumentSnapshot> lists = snapshot.data.docs;
+
                 List<UserCollection> rootData = [];
                 for (var list in lists) {
-                  final admin = list["admin"];
-                  final hubCode = list["hubCode"];
-                  final hubName = list["hubname"];
-                  final createdBy = list["createdBy"];
-                  rootData.add(UserCollection(
-                      admin: admin,
-                      hubCode: hubCode,
-                      hubname: hubName,
-                      createdBy: createdBy));
+                  rootData.add(UserCollection.fromJson(list.data()));
                 }
                 drawerData = rootData;
                 print(lists);

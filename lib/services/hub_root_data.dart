@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:classroom_scheduler_flutter/models/notification.dart';
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/models/member.dart';
@@ -76,16 +76,7 @@ class HubRootData extends ChangeNotifier {
     UserCollection userCollection;
     final snap = await collectionReferencenc.doc(hubcode).get();
     if (snap.exists) {
-      userCollection = UserCollection(
-        hubCode: snap.data()["hubCode"],
-        hubname: snap.data()["hubname"],
-        timeStamp: snap.data()["timeStamp"],
-        admin: snap.data()["admin"],
-        createdBy: snap.data()["createdBy"],
-        uid: authService.currentUser.uid,
-        status: 'subscribed',
-        token: token,
-      );
+      userCollection = UserCollection.fromJson(snap.data());
       print(userCollection.admin);
       print(userCollection.hubCode);
       isExist = true;
@@ -137,26 +128,20 @@ class HubRootData extends ChangeNotifier {
     if (lectures.docs.isNotEmpty) {
       final lists = lectures.docs;
       for (var value in lists) {
-        notificationData.add(NotificationData(
-          startTime: value['startTime'],
-          endTime: value['endTime'],
-          notificationId: value['notificationId'],
-          lectureDays: List<bool>.from(value['lectureDays']),
-          hubName: value['hubName'],
-          title: value['title'],
-          body: value['body'],
-        ));
+        notificationData.add(NotificationData.fromJson(value.data()));
       }
     } else {
       AppLogger.print('lecture docs is empty');
     }
     AppLogger.print(notificationData[0].startTime);
 
-    final members = Members.memberObject(
-        authService.currentUser.email,
-        authService.currentUser.displayName,
-        token,
-        authService.currentUser.uid);
+    final members = Members(
+      memberInfo: MemberInfo(
+          email: authService.currentUser.email,
+          name: authService.currentUser.displayName,
+          token: token,
+          uid: authService.currentUser.uid),
+    );
     print(userCollection.hubCode);
 
     final snap = await collection.userData
@@ -173,7 +158,7 @@ class HubRootData extends ChangeNotifier {
           .doc(authService.currentUser.uid)
           .collection('joinedHubs')
           .doc(userCollection.hubCode)
-          .set(userCollection.toMap());
+          .set(userCollection.toJson());
       if (notificationData != null) {
         for (var data in notificationData) {
           await notificationProvider.createHubNotification(data);
@@ -204,7 +189,7 @@ class HubRootData extends ChangeNotifier {
       final userCollection = UserCollection(
           admin: authService.currentUser.email,
           hubname: hubname,
-          timeStamp: Timestamp.now(),
+          timeStamp: Timestamp.now().toString(),
           createdBy: authService.currentUser.displayName,
           hubCode: hubcode,
           uid: authService.currentUser.uid,
@@ -227,7 +212,7 @@ class HubRootData extends ChangeNotifier {
           .doc(userId)
           .collection('joinedHubs')
           .doc(hubcode)
-          .set(userCollection.toMap());
+          .set(userCollection.toJson());
     } else
       AppLogger.print('hubcode is null or topic(hubname) is inavlid');
   }

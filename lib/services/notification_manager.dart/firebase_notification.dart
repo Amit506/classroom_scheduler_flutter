@@ -1,9 +1,8 @@
-import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/fcm_service_api.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/notification_provider.dart';
-
+import 'package:classroom_scheduler_flutter/models/notification.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class FireBaseNotificationService {
@@ -12,13 +11,15 @@ class FireBaseNotificationService {
   static FirebaseMessaging fcm = FirebaseMessaging.instance;
   static FcmServiceApi fcmApi = FcmServiceApi();
   NotificationProvider np = NotificationProvider();
-// 2012-02-27 13:27:00
+  // 2012-02-27 13:27:00
   onMessage() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification notification = message.notification;
       AndroidNotification android = message.notification?.android;
       AppLogger.print("fcm message");
-      final NotificationData data = NotificationData.fromMap(message.data);
+      np.showNotification();
+      final NotificationData data = NotificationData.fromJson(message.data);
+
       AppLogger.print('firebase mesggaing recived');
       if (notification != null && android != null) {
         np.createHubNotification(data);

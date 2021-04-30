@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 
 // this class used to get forebase path to various collection of hubs
 class RootCollection {
@@ -71,39 +72,48 @@ class RootHub {
 }
 
 // collects the userInfo  like how many hub a user has joined
-class UserCollection {
-  final String hubname;
-  final String hubCode;
-  final Timestamp timeStamp;
-  final String admin;
-  final String createdBy;
-  final String token;
-  final String uid;
-  final String status;
+// To parse this JSON data, do
+//
+//     final welcome = welcomeFromJson(jsonString);
 
+UserCollection welcomeFromJson(String str) =>
+    UserCollection.fromJson(json.decode(str));
+
+String welcomeToJson(UserCollection data) => json.encode(data.toJson());
+
+class UserCollection {
   UserCollection({
     this.token,
     this.uid,
     this.hubname,
-    this.createdBy,
     this.hubCode,
     this.timeStamp,
     this.admin,
+    this.createdBy,
     this.status,
   });
 
-  factory UserCollection.fromJson(Map<String, dynamic> map) => UserCollection(
-        token: map["token"],
-        uid: map["uid"],
-        hubname: map["hubname"],
-        hubCode: map["hubcode"],
-        timeStamp: map["timeStamp"],
-        admin: map["admin"],
-        createdBy: map["createdBy"],
-        status: map["status"],
+  String token;
+  String uid;
+  String hubname;
+  String hubCode;
+  String timeStamp;
+  String admin;
+  String createdBy;
+  String status;
+
+  factory UserCollection.fromJson(Map<String, dynamic> json) => UserCollection(
+        token: json["token"],
+        uid: json["uid"],
+        hubname: json["hubname"],
+        hubCode: json["hubCode"],
+        timeStamp: json["timeStamp"],
+        admin: json["admin"],
+        createdBy: json["createdBy"],
+        status: json["status"],
       );
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toJson() => {
         "token": token,
         "uid": uid,
         "hubname": hubname,
@@ -111,18 +121,6 @@ class UserCollection {
         "timeStamp": timeStamp,
         "admin": admin,
         "createdBy": createdBy,
-        "status": status
+        "status": status,
       };
-
-  static UserCollection mapUserCollection(Map<String, dynamic> map) =>
-      UserCollection(
-        token: map["token"],
-        uid: map["uid"],
-        hubname: map["hubname"],
-        hubCode: map["hubcode"],
-        timeStamp: map["timeStamp"],
-        admin: map["admin"],
-        createdBy: map["createdBy"],
-        status: map["status"],
-      );
 }

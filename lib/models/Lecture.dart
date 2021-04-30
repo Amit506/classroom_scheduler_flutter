@@ -1,49 +1,97 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'dart:convert';
+import '../models/notification.dart';
+
+Lecture welcomeFromJson(String str) => Lecture.fromJson(json.decode(str));
+
+String welcomeToJson(Lecture data) => json.encode(data.toJson());
 
 class Lecture {
-  final String hubName;
-  final String subCode;
-  final String startTime;
-  final String endTime;
-  final String specificDateTime;
-  final List<bool> lectureDays;
-  final String teacherName;
-  final FieldValue timeStamp;
-  final int notificationId;
-  final String title;
-  final String hubCode;
-  final String body;
-  final int nth;
-//  List<dynamic>.from(coordinates.map((x) => x)),
-  Lecture(
-      {this.hubName,
-      this.startTime,
-      this.body,
-      this.title,
-      this.specificDateTime,
-      this.endTime,
-      this.hubCode,
-      this.teacherName,
-      this.timeStamp,
-      this.lectureDays,
-      this.notificationId,
-      this.nth,
-      this.subCode});
+  Lecture({
+    this.hubName,
+    this.title,
+    this.body,
+    this.isSpecificDateTime,
+    this.specificDateTime,
+    this.hubCode,
+    this.notificationData,
+    this.nth,
+    this.notificationId,
+    this.subCode,
+    this.startTime,
+    this.endTime,
+    this.lectureDays,
+    this.teacherName,
+    this.timeStamp,
+  });
+
+  String hubName;
+  String title;
+  String body;
+  bool isSpecificDateTime;
+  String specificDateTime;
+  String hubCode;
+  NotificationData notificationData;
+  int nth;
+  int notificationId;
+  String subCode;
+  String startTime;
+  String endTime;
+  List<bool> lectureDays;
+  String teacherName;
+  String timeStamp;
+
+  factory Lecture.fromJson(Map<String, dynamic> json) => Lecture(
+        hubName: json["hubName"],
+        title: json["title"],
+        body: json["body"],
+        isSpecificDateTime: json["isSpecificDateTime"],
+        specificDateTime: json["specificDateTime"],
+        hubCode: json["hubCode"],
+        notificationData: NotificationData.fromJson(json["notificationData"]),
+        nth: json["nth"],
+        notificationId: json["notificationId"],
+        subCode: json["subCode"],
+        startTime: json["startTime"],
+        endTime: json["endTime"],
+        lectureDays: List<bool>.from(json["lectureDays"].map((x) => x)),
+        teacherName: json["teacherName"],
+        timeStamp: json["timeStamp"],
+      );
 
   Map<String, dynamic> toJson() => {
         "hubName": hubName,
         "title": title,
         "body": body,
+        "isSpecificDateTime": isSpecificDateTime,
         "specificDateTime": specificDateTime,
         "hubCode": hubCode,
+        "notificationData": notificationData.toJson(),
         "nth": nth,
         "notificationId": notificationId,
         "subCode": subCode,
         "startTime": startTime,
         "endTime": endTime,
-        "lectureDays": List<bool>.from(lectureDays.map((x) => x)),
+        "lectureDays": List<dynamic>.from(lectureDays.map((x) => x)),
         "teacherName": teacherName,
-        "timeStamp": timeStamp
+        "timeStamp": timeStamp,
       };
 }
+
+//  "hubName": "hubName",
+//         "title": "title",
+//         "body": "body",
+//         "isSpecificDateTime": "isSpecificDateTime",
+//         "specificDateTime": "specificDateTime",
+//         "hubCode": "hubCode",
+//         "notificationData": "notificationData",
+//         "nth": "nth",
+//         "notificationId": " notificationId",
+//         "subCode": "subCode",
+//         "startTime":" startTime",
+//         "endTime": "endTime",
+//         "lectureDays": [
+//                 true,
+//                 false,
+//             ],
+//         "teacherName": "teacherName",
+//         "timeStamp": "timeStamp",
