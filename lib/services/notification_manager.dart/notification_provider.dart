@@ -109,7 +109,7 @@ class NotificationProvider extends ChangeNotifier {
     await _localNotificationManagerFlutter.flnp.cancelAll();
   }
 
-// to implememnt
+  // to implememnt
   // updateHubNotification() async {}
 
   tz.TZDateTime _nextInstanceOfWeekDay(String time) {

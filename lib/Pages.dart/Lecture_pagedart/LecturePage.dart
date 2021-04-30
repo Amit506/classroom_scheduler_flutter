@@ -58,7 +58,7 @@ class _LecturePageState extends State<LecturePage> {
                       sheetLectureData = lecture[0];
                       return GestureDetector(
                         onTap: () {
-                          widget.isAdmin && sheetLectureData == lecture[0]
+                          widget.isAdmin && !sheetLectureData.isSpecificDateTime
                               ? showModalBottomSheet(
                                   context: context,
                                   isScrollControlled: true,

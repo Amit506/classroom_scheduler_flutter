@@ -17,7 +17,7 @@ class FireBaseNotificationService {
       RemoteNotification notification = message.notification;
       AndroidNotification android = message.notification?.android;
       AppLogger.print("fcm message");
-      np.showNotification();
+      // np.showNotification();
       final NotificationData data = NotificationData.fromJson(message.data);
 
       AppLogger.print('firebase mesggaing recived');
