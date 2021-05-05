@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 //import 'package:classroom_scheduler_flutter/widget/Notices_item_widget.dart';
 class NoticesItemWidget extends StatelessWidget {
-  final NoticesItem item;
+  final NoticeItem item;
   final Animation animation;
   final VoidCallback onClicked;
 
@@ -27,9 +27,9 @@ class NoticesItemWidget extends StatelessWidget {
             contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             leading: CircleAvatar(
               radius: 32,
-              backgroundImage: NetworkImage(item.urlImage),
+              backgroundImage: NetworkImage(item.urlImage[0]),
             ),
-            title: Text(item.noticeTitle, style: TextStyle(fontSize: 20)),
+            title: Text('lll', style: TextStyle(fontSize: 20)),
             trailing: IconButton(
               icon: Icon(Icons.remove_circle, color: Colors.green, size: 32),
               onPressed: onClicked,

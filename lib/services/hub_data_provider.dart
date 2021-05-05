@@ -1,4 +1,5 @@
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
+import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,6 +32,10 @@ class HubDataProvider extends ChangeNotifier {
 
   Stream<QuerySnapshot> getNotices() {
     return _rootCollection.notice.snapshots();
+  }
+
+  sendNotice(NoticeItem noticesItem) {
+    // _rootCollection.notice.add(data);
   }
 
   Future<RootHub> getRootHub(String hubcode) async {

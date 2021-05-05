@@ -112,13 +112,14 @@ class HubRootData extends ChangeNotifier {
         }
       }
     });
+
     return rootHub;
   }
 
-  /// join Hub .. firstc checking already joined if not then join it
+  /// join Hub .. first checking already joined if not then join it
   Future<bool> joinHub(UserCollection userCollection, String token) async {
     bool isJoined = false;
-    print(userCollection.hubname);
+
     final collection = rootCollectionReference(userCollection.hubname,
         userCollection.hubCode, authService.currentUser.uid);
 
@@ -131,7 +132,7 @@ class HubRootData extends ChangeNotifier {
         notificationData.add(NotificationData.fromJson(value.data()));
       }
     } else {
-      AppLogger.print('lecture docs is empty');
+      AppLogger.print('lecture/timetable docs is empty');
     }
     AppLogger.print(notificationData[0].startTime);
 
@@ -174,9 +175,9 @@ class HubRootData extends ChangeNotifier {
 // creating root data for hub
   Future createRootHub(String hubname, String userId, String token) async {
     final hubcode = await uniqueHubCode(rootCollection());
-    print(hubcode);
-    bool status = await fcm.subscribeTopic(hubname);
-    if (hubcode != null && status) {
+    AppLogger.print(hubcode);
+
+    if (hubcode != null) {
       final collection = rootCollectionReference(
           hubname, hubcode, authService.currentUser.uid);
       await fcm.subscribeTopic(hubname);

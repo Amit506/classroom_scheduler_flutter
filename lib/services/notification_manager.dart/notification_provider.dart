@@ -16,7 +16,7 @@ class NotificationProvider extends ChangeNotifier {
       ) async {
     tz.initializeTimeZones();
     if (data.specificDateTime != null) {
-      AppLogger.print('nooooooooo');
+      AppLogger.print('one time notification');
       final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
       tz.TZDateTime scheduledDate =
           tz.TZDateTime.parse(tz.local, data.specificDateTime);
@@ -24,7 +24,7 @@ class NotificationProvider extends ChangeNotifier {
 
       await createSpecificNotificationUtil(scheduledDate, data);
     } else {
-      AppLogger.print('yess');
+      AppLogger.print('lecture time table notification');
       for (int i = 0; i < data.lectureDays.length; i++) {
         if (data.lectureDays[i]) {
           if (i == 0) {

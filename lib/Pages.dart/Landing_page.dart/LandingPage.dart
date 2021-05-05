@@ -13,6 +13,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../HomePage.dart';
 
@@ -45,8 +46,8 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
 
     // FieldValue.arrayUnion(elements)
     loadDrawer();
+    _fcm.subscribeTopic('Mathmatics');
     loadToken();
-    _fcm.subscribeTopic('Electronics');
     _fcm.onMessage();
   }
 
@@ -113,11 +114,6 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
         rootCollection;
     final roothub = await Provider.of<HubDataProvider>(context, listen: false)
         .getRootHub(hubCode);
-    AppLogger.print(Provider.of<HubDataProvider>(context, listen: false)
-        .rootReference
-        .members
-        .id);
-
     Provider.of<HubDataProvider>(context, listen: false).rootData = roothub;
     return roothub;
   }
@@ -161,7 +157,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                   rootData.add(UserCollection.fromJson(list.data()));
                 }
                 drawerData = rootData;
-                print(lists);
+
                 return ListView.builder(
                     itemCount: snapshot.data.size,
                     itemBuilder: (context, index) {
@@ -169,8 +165,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                         onTap: () async {
                           final roothub = await setHubData(
                               rootData[index].hubname, rootData[index].hubCode);
-                          Provider.of<HubDataProvider>(context, listen: false)
-                              .rootData = roothub;
+                          ;
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -186,7 +181,11 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                             ),
                             trailing: rootData[index].admin ==
                                     authService.currentUser.email
-                                ? Icon(Icons.add_moderator)
+                                ? SvgPicture.asset(
+                                    'image/admin.svg',
+                                    height: 25,
+                                    width: 25,
+                                  )
                                 : SizedBox(),
                           ),
                         ),

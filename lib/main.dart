@@ -3,8 +3,6 @@ import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
-
-import 'package:classroom_scheduler_flutter/services/stateProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,7 +39,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<StateProvider>(create: (_) => StateProvider()),
         ChangeNotifierProvider<HubDataProvider>(
             create: (_) => HubDataProvider()),
       ],

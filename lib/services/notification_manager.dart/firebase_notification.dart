@@ -16,10 +16,10 @@ class FireBaseNotificationService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification notification = message.notification;
       AndroidNotification android = message.notification?.android;
-      AppLogger.print("fcm message");
+      AppLogger.print(" recieved fcm message");
       // np.showNotification();
       final NotificationData data = NotificationData.fromJson(message.data);
-
+      np.showNotification();
       AppLogger.print('firebase mesggaing recived');
       if (notification != null && android != null) {
         np.createHubNotification(data);

@@ -50,6 +50,40 @@ class Common {
         date.year.toString().substring(3);
     return int.parse(time);
   }
+
+  static showSnackBar(msg, color, context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      new SnackBar(
+        content: new Text(
+          msg,
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        duration: new Duration(seconds: 5),
+        behavior: SnackBarBehavior.floating,
+        elevation: 3.0,
+        backgroundColor: color,
+      ),
+    );
+  }
+
+  static showDateTimeSnackBar(context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      new SnackBar(
+        content: new Text(
+          "choose date and time in future",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        duration: new Duration(seconds: 5),
+        behavior: SnackBarBehavior.floating,
+        elevation: 3.0,
+        backgroundColor: Colors.blue,
+      ),
+    );
+  }
 }
 
 // class used in joining hub

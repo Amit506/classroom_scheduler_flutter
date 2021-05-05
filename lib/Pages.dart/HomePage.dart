@@ -1,3 +1,4 @@
+import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/LecturePage.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';

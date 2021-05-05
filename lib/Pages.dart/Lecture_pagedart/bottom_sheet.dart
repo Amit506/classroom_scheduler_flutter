@@ -30,6 +30,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
   // PersistentBottomSheetController _controller;
   // final _scaffoldKey = GlobalKey<ScaffoldState>();
   String messageTitle = 'Empty';
+
   String notificarionAlert = 'Alert';
   String _token;
   TimeOfDay startTime;
@@ -44,8 +45,8 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final values = <bool>[false, false, false, false, false, false, false];
 
-  TextEditingController _timeController1 = TextEditingController();
-  TextEditingController _timeController2 = TextEditingController();
+  // TextEditingController _timeController1 = TextEditingController();
+  // TextEditingController _timeController2 = TextEditingController();
   TimeOfDay selectedTime = TimeOfDay.now();
   Future _selectTime(int timePicker) async {
     final TimeOfDay picked = await showTimePicker(
@@ -58,10 +59,10 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
         selectedTime = picked;
         if (timePicker == 1) {
           startTime = picked;
-          _timeController1.text = Common.getTimeString(selectedTime);
+          // _timeController1.text = Common.getTimeString(selectedTime);
         } else {
           endTime = selectedTime;
-          _timeController2.text = Common.getTimeString(selectedTime);
+          // _timeController2.text = Common.getTimeString(selectedTime);
         }
       });
   }
@@ -86,8 +87,8 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
     AppLogger.print(isTimetableSet.toString());
 
     pickedDate = DateTime.now();
-    _timeController1.text = Common.getTimeString(selectedTime);
-    _timeController2.text = Common.getTimeString(selectedTime);
+    // _timeController1.text = Common.getTimeString(selectedTime);
+    // _timeController2.text = Common.getTimeString(selectedTime);
     _lectureData = LectureData(
         rootCollection:
             Provider.of<HubDataProvider>(context, listen: false).rootReference);
@@ -113,7 +114,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
         title = '$hubName';
         AppLogger.print(body);
         int notificationId = Common.generateNotificationId();
-        AppLogger.print(startTime.toString());
+
         String starttime = Common.getNotificationTimeString(startTime);
         String endtime = Common.getNotificationTimeString(endTime);
         AppLogger.print(starttime);
@@ -157,6 +158,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
               body: body,
               title: title,
             ));
+        AppLogger.print('sending fcm msg');
         await fcm.sendCustomMessage(m.toJson());
         return true;
       } else {
@@ -213,7 +215,15 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          await setSpecificCLassTime();
+                          DateTime current = DateTime.now();
+                          // TimeOfDay.fromDateTime(DateTime time)
+                          if (current.isBefore(pickedDate) &&
+                              current.hour < selectedTime.hour &&
+                              current.minute < selectedTime.minute) {
+                            await setSpecificCLassTime();
+                          } else {
+                            Common.showDateTimeSnackBar(context);
+                          }
                         },
                         child: Text('save'),
                       ),
@@ -240,44 +250,34 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 23.0),
-                              child: Text(
-                                'from',
-                                style: TextStyle(fontSize: 26),
-                              ),
+                            Text(
+                              'Start',
+                              style: TextStyle(fontSize: 22),
                             ),
                             InkWell(
                               onTap: () {
                                 _selectTime(1);
                               },
                               child: Container(
-                                margin: EdgeInsets.only(top: 30),
+                                padding: EdgeInsets.all(8.0),
                                 width: 100,
                                 height: 40,
                                 alignment: Alignment.center,
-                                decoration:
-                                    BoxDecoration(color: Colors.grey[200]),
-                                child: TextFormField(
-                                  style: TextStyle(fontSize: 25),
-                                  textAlign: TextAlign.center,
-                                  onSaved: (String val) {},
-                                  enabled: false,
-                                  keyboardType: TextInputType.text,
-                                  controller: _timeController1,
-                                  decoration: InputDecoration(
-                                      disabledBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide.none),
-                                      // labelText: 'Time',
-                                      contentPadding: EdgeInsets.all(1)),
+                                decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(8.0)),
+                                child: Center(
+                                  child: Text(startTime == null
+                                      ? Common.getTimeString(selectedTime)
+                                      : Common.getTimeString(startTime)),
                                 ),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 23.0),
                               child: Text(
-                                'To',
-                                style: TextStyle(fontSize: 26),
+                                'End',
+                                style: TextStyle(fontSize: 22),
                               ),
                             ),
                             InkWell(
@@ -285,27 +285,16 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
                                 _selectTime(2);
                               },
                               child: Container(
-                                margin: EdgeInsets.only(top: 30),
+                                padding: EdgeInsets.all(8.0),
                                 width: 100,
                                 height: 40,
                                 alignment: Alignment.center,
-                                decoration:
-                                    BoxDecoration(color: Colors.grey[200]),
-                                child: TextFormField(
-                                  style: TextStyle(fontSize: 25),
-                                  textAlign: TextAlign.center,
-                                  onSaved: (String val) {
-                                    final _setTime = val;
-                                  },
-                                  enabled: false,
-                                  keyboardType: TextInputType.text,
-                                  controller: _timeController2,
-                                  decoration: InputDecoration(
-                                      disabledBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide.none),
-                                      // labelText: 'Time',
-                                      contentPadding: EdgeInsets.all(1)),
-                                ),
+                                decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(8.0)),
+                                child: Text(endTime == null
+                                    ? Common.getTimeString(selectedTime)
+                                    : Common.getTimeString(endTime)),
                               ),
                             ),
                           ],
@@ -396,6 +385,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
             body: body,
             title: title,
           ));
+      AppLogger.print('sending fcm msg');
       await fcm.sendCustomMessage(m.toJson());
       return true;
     } else {
@@ -447,9 +437,9 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
               body: widget.sheetLectureData.body,
               title: widget.sheetLectureData.title,
             ));
-        AppLogger.print('sending');
+        AppLogger.print('sending fcm msg');
         await fcm.sendCustomMessage(m.toJson());
-        AppLogger.print('sending');
+
         return true;
       } else {
         AppLogger.print('something went wrong in updating time table');
@@ -460,3 +450,29 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
     }
   }
 }
+
+//  TextField(
+//                                     style: TextStyle(
+//                                         fontSize: 23, color: Colors.black),
+//                                     textAlign: TextAlign.center,
+//                                     enabled: false,
+//                                     keyboardType: TextInputType.text,
+//                                     controller: _timeController1,
+//                                     decoration: InputDecoration(
+
+//                                     ),
+//  TextFormField(
+//                                   style: TextStyle(fontSize: 25),
+//                                   textAlign: TextAlign.center,
+//                                   onSaved: (String val) {
+//                                     final _setTime = val;
+//                                   },
+//                                   enabled: false,
+//                                   keyboardType: TextInputType.text,
+//                                   controller: _timeController2,
+//                                   decoration: InputDecoration(
+//                                       disabledBorder: UnderlineInputBorder(
+//                                           borderSide: BorderSide.none),
+//                                       // labelText: 'Time',
+//                                       contentPadding: EdgeInsets.all(1)),
+//                                 ),

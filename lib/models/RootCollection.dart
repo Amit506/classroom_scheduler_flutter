@@ -39,7 +39,7 @@ class RootHub {
 
   factory RootHub.fromJson(Map<String, dynamic> json) => RootHub(
         hubname: json["hubname"],
-        hubCode: json["hubcode"],
+        hubCode: json["hubCode"],
         timeStamp: json["timeStamp"],
         admin: json["admin"],
         createdBy: json["createdBy"],
