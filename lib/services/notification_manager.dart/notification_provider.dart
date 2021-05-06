@@ -47,10 +47,10 @@ class NotificationProvider extends ChangeNotifier {
 
   Future createSpecificNotificationUtil(
       tz.TZDateTime time, NotificationData data) async {
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'high_importance_channel', // id
-      'High Importance Notifications', // title
-      'This channel is used for important notifications.',
+    AndroidNotificationChannel channel = AndroidNotificationChannel(
+      data.hubName, // id
+      data.hubName, // title
+      'This channel is used for important ${data.hubName} notifications',
       ledColor: Colors.red,
       // description
       importance: Importance.high,
@@ -77,13 +77,13 @@ class NotificationProvider extends ChangeNotifier {
 
   Future createHubNotificationUtil(
       tz.TZDateTime time, NotificationData data, int notificationId) async {
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'high_importance', // id
-      'High Importance ', // title
-      'This channel is used for ',
+    AndroidNotificationChannel channel = AndroidNotificationChannel(
+      data.hubName, // id
+      data.hubName, // title
+      'This channel is used for ${data.hubName} ',
       ledColor: Colors.red,
       // description
-      importance: Importance.high,
+      importance: Importance.min,
     );
 
     await _localNotificationManagerFlutter.flnp.zonedSchedule(
@@ -141,7 +141,7 @@ class NotificationProvider extends ChangeNotifier {
   showNotification() async {
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance', // id
-      'High Importance ', // title
+      'amit', // title
       'This channel is used for ',
       ledColor: Colors.red,
       // description

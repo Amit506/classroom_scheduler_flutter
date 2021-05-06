@@ -5,6 +5,7 @@ import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/lecture_data.dart';
+import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/notification_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -37,6 +38,8 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
   TimeOfDay endTime;
   NotificationProvider np = NotificationProvider();
   FireBaseNotificationService fcm = FireBaseNotificationService();
+  LocalNotificationManagerFlutter _localNotificationManagerFlutter =
+      LocalNotificationManagerFlutter.getInstance();
   LectureData _lectureData;
   String title;
   String body;
@@ -113,7 +116,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
         body = '$hubName will start in 5 minutes';
         title = '$hubName';
         AppLogger.print(body);
-        int notificationId = Common.generateNotificationId();
+        int notificationId = Common.generateNotificationId(hubName);
 
         String starttime = Common.getNotificationTimeString(startTime);
         String endtime = Common.getNotificationTimeString(endTime);
@@ -215,15 +218,31 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          DateTime current = DateTime.now();
+                          // await _localNotificationManagerFlutter.flnp
+                          //     .show(
+                          //   7,
+                          //   'sunile',
+                          //   'go to chattisgarh',
+                          //   NotificationDetails(
+                          //     android: AndroidNotificationDetails(
+                          //       'high_importance', // id
+                          //       'High Importance ', // title
+                          //       'This channel is used for ',
+                          //       icon: 'launch_background',
+                          //     ),
+                          //   ),
+                          // )
+                          //     .catchError((onError) {
+                          //   AppLogger.print(onError);
+                          // });
 
-                          if (current.isBefore(pickedDate) &&
-                              current.hour < startTime.hour &&
-                              current.minute < startTime.minute) {
-                            await setSpecificCLassTime();
-                          } else {
-                            Common.showDateTimeSnackBar(context);
-                          }
+                          // if (current.isBefore(pickedDate) &&
+                          //     current.hour < startTime.hour &&
+                          //     current.minute < startTime.minute) {
+                          await setSpecificCLassTime();
+                          // } else {
+                          //   Common.showDateTimeSnackBar(context);
+                          // }
                         },
                         child: Text('save'),
                       ),
@@ -344,7 +363,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
       body = '$hubName extra class will start in 5 minutes';
       title = '$hubName';
 
-      int notificationId = Common.generateNotificationId();
+      int notificationId = Common.generateNotificationId(hubName);
 
       String specifcDateTime = Common.getNotificationTimeString(selectedTime,
           date: pickedDate, isSpecificDate: true);
@@ -404,7 +423,8 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
         String endtime = Common.getNotificationTimeString(endTime);
         AppLogger.print(starttime);
 
-        int notificationId = Common.generateNotificationId();
+        int notificationId =
+            Common.generateNotificationId(widget.sheetLectureData.hubName);
         Lecture lecture = Lecture(
           startTime: starttime,
           endTime: endtime,

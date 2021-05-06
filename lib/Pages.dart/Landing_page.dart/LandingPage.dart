@@ -46,7 +46,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
 
     // FieldValue.arrayUnion(elements)
     loadDrawer();
-    // _fcm.subscribeTopic('Mathmatics');
+    _fcm.subscribeTopic('Electronics');
     loadToken();
     _fcm.onMessage();
   }

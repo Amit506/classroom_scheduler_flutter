@@ -3,13 +3,17 @@ import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import 'package:system_settings/system_settings.dart';
 
 class LandingScreenDrawer extends StatelessWidget {
   final List<UserCollection> drawerData;
 
   final AuthService authService = AuthService();
-
+  static const MethodChannel _channel = const MethodChannel('settings');
   LandingScreenDrawer({Key key, this.drawerData}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     AppLogger.print(drawerData.length.toString());
@@ -40,8 +44,16 @@ class LandingScreenDrawer extends StatelessWidget {
         Align(
             alignment: Alignment.bottomCenter,
             child: TextButton(
-              onPressed: () {},
-              child: Text('Setting'),
+              onPressed: () async {
+                await SystemSettings.appNotifications();
+                // await _channel
+                //     .invokeMethod('notification_channel',
+                //         '{chanId:high_importance_channel}')
+                //     .catchError((error) {
+                //   AppLogger.print(error.toString());
+                // });
+              },
+              child: Text('Notification Setting'),
             )),
       ]),
     );

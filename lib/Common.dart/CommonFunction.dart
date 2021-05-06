@@ -43,7 +43,7 @@ class Common {
     }
   }
 
-  static int generateNotificationId() {
+  static int generateNotificationId(String hubName) {
     DateTime date = DateTime.now();
     String time = date.day.toString().padLeft(2, '0') +
         date.month.toString().padLeft(2, '0') +
