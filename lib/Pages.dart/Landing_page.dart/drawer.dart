@@ -14,27 +14,37 @@ class LandingScreenDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     AppLogger.print(drawerData.length.toString());
     return Drawer(
-        child: ListView.builder(
-            itemCount: drawerData.length + 1,
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return UserAccountsDrawerHeader(
-                  accountName: Text(authService.currentUser.displayName),
-                  accountEmail: Text(authService.currentUser.email),
-                  currentAccountPicture: CircleAvatar(
-                    backgroundColor: Colors.green,
-                    backgroundImage: NetworkImage(
-                      authService.currentUser.photoURL,
-                    ),
-                  ),
-                );
-              } else {
-                AppLogger.print(drawerData[index - 1].hubname);
-                return ListTile(
-                  title: Text(drawerData[index - 1].hubname),
-                );
-              }
-            }));
+      child: Column(children: [
+        Align(
+          alignment: Alignment.topCenter,
+          child: UserAccountsDrawerHeader(
+            accountName: Text(authService.currentUser.displayName),
+            accountEmail: Text(authService.currentUser.email),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: Colors.green,
+              backgroundImage: NetworkImage(
+                authService.currentUser.photoURL,
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Column(
+            children: drawerData.map((item) {
+              return ListTile(
+                title: Text(item.hubname),
+              );
+            }).toList(),
+          ),
+        ),
+        Align(
+            alignment: Alignment.bottomCenter,
+            child: TextButton(
+              onPressed: () {},
+              child: Text('Setting'),
+            )),
+      ]),
+    );
   }
 }
 
@@ -48,3 +58,24 @@ class LandingScreenDrawer extends StatelessWidget {
 //             ),
 //           ),
 // ),
+//  ListView.builder(
+//             itemCount: drawerData.length + 2,
+//             itemBuilder: (context, index) {
+//               if (index == 0) {
+//                 return UserAccountsDrawerHeader(
+//                   accountName: Text(authService.currentUser.displayName),
+//                   accountEmail: Text(authService.currentUser.email),
+//                   currentAccountPicture: CircleAvatar(
+//                     backgroundColor: Colors.green,
+//                     backgroundImage: NetworkImage(
+//                       authService.currentUser.photoURL,
+//                     ),
+//                   ),
+//                 );
+//               } else {
+//                 AppLogger.print(drawerData[index - 1].hubname);
+//                 return ListTile(
+//                   title: Text(drawerData[index - 1].hubname),
+//                 );
+//               }
+//             }),

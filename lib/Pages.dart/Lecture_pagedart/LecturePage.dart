@@ -30,6 +30,8 @@ class _LectureTabBarState extends State<LectureTabBar> {
   PersistentBottomSheetController _controller;
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  TextEditingController teacherNameController = TextEditingController();
+  TextEditingController subCodeController = TextEditingController();
   Lecture sheetLectureData;
   @override
   void initState() {
@@ -57,23 +59,10 @@ class _LectureTabBarState extends State<LectureTabBar> {
                     itemCount: snapshot.data.size,
                     itemBuilder: (conext, index) {
                       sheetLectureData = lecture[0];
-                      return GestureDetector(
-                        onTap: () {
-                          widget.isAdmin && !sheetLectureData.isSpecificDateTime
-                              ? showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  backgroundColor: Colors.transparent,
-                                  builder: (context) {
-                                    return CustomBottomSheet(
-                                      sheetLectureData: lecture[index],
-                                      isSpecicifTime: false,
-                                    );
-                                  },
-                                )
-                              : AppLogger.print("admin: ${widget.isAdmin}");
-                        },
-                        child: Container(
+                      if (lecture[index].isSpecificDateTime) {
+                        return Container(
+                          margin: EdgeInsets.symmetric(
+                              vertical: 5.0, horizontal: 5.0),
                           decoration: ShapeDecoration(
                             color: Colors.red,
                             shape: RoundedRectangleBorder(
@@ -84,31 +73,217 @@ class _LectureTabBarState extends State<LectureTabBar> {
                             child: Column(
                               children: [
                                 ListTile(
-                                    title: Text(
-                                        '${lecture[index].hubName} time table'),
-                                    trailing: IconButton(
-                                        icon: Icon(Icons.edit_rounded),
-                                        onPressed: () {})),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Text(lecture[index]
-                                        .startTime
-                                        .substring(11, 16)),
-                                    Text(lecture[index]
-                                        .endTime
-                                        .substring(11, 16))
-                                  ],
+                                  title: Text(
+                                      '${lecture[index].hubName} one time class'),
                                 ),
-                                WeekdaySelector(
-                                    onChanged: null,
-                                    values: lecture[index].lectureDays)
+                                Text(lecture[index].specificDateTime),
                               ],
                             ),
                           ),
-                        ),
-                      );
+                        );
+                      } else {
+                        return GestureDetector(
+                          onTap: () {
+                            widget.isAdmin
+                                ? showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.transparent,
+                                    builder: (context) {
+                                      return CustomBottomSheet(
+                                        sheetLectureData: lecture[index],
+                                        isSpecicifTime: false,
+                                      );
+                                    },
+                                  )
+                                : AppLogger.print("admin: ${widget.isAdmin}");
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5.0, horizontal: 5.0),
+                            decoration: ShapeDecoration(
+                              color: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            child: Card(
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                    title: Text(
+                                        '${lecture[index].hubName} time table'),
+                                    trailing: IconButton(
+                                      icon: Icon(Icons.edit_rounded),
+                                      onPressed: () {
+                                        // to implement function of adding teacher name and subject code
+                                        showDialog(
+                                            context: context,
+                                            builder: (_) {
+                                              return AlertDialog(
+                                                title: Text('class details'),
+                                                content: Container(
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.2,
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.8,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceAround,
+                                                    children: [
+                                                      TextField(
+                                                        controller:
+                                                            teacherNameController,
+                                                        decoration:
+                                                            InputDecoration(
+                                                          labelText:
+                                                              'Teacher name',
+                                                          labelStyle: TextStyle(
+                                                            color:
+                                                                Colors.black54,
+                                                          ),
+                                                          hintText:
+                                                              'Teacher  name',
+                                                          contentPadding:
+                                                              EdgeInsets
+                                                                  .symmetric(
+                                                                      vertical:
+                                                                          10.0,
+                                                                      horizontal:
+                                                                          20.0),
+                                                          border:
+                                                              OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(
+                                                              Radius.circular(
+                                                                  8.0),
+                                                            ),
+                                                          ),
+                                                          enabledBorder:
+                                                              OutlineInputBorder(
+                                                            borderSide:
+                                                                BorderSide(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    width: 1.0),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            8.0)),
+                                                          ),
+                                                          filled: true,
+                                                          hintStyle: TextStyle(
+                                                            color:
+                                                                Colors.black38,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      TextField(
+                                                        controller:
+                                                            subCodeController,
+                                                        decoration:
+                                                            InputDecoration(
+                                                          labelText:
+                                                              'Course code',
+                                                          labelStyle: TextStyle(
+                                                            color:
+                                                                Colors.black54,
+                                                          ),
+                                                          hintText:
+                                                              'Course code',
+                                                          contentPadding:
+                                                              EdgeInsets
+                                                                  .symmetric(
+                                                                      vertical:
+                                                                          10.0,
+                                                                      horizontal:
+                                                                          20.0),
+                                                          border:
+                                                              OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            8.0)),
+                                                          ),
+                                                          enabledBorder:
+                                                              OutlineInputBorder(
+                                                            borderSide:
+                                                                BorderSide(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    width: 1.0),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            8.0)),
+                                                          ),
+                                                          filled: true,
+                                                          hintStyle: TextStyle(
+                                                            color:
+                                                                Colors.black38,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            Provider.of<HubDataProvider>(
+                                                                    context,
+                                                                    listen:
+                                                                        false)
+                                                                .addClassDetails(
+                                                                    lecture[index]
+                                                                        .nth
+                                                                        .toString(),
+                                                                    subCodeController
+                                                                        .text,
+                                                                    teacherNameController
+                                                                        .text);
+                                                          },
+                                                          child: Text('update'))
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            });
+                                      },
+                                    ),
+                                  ),
+                                  lecture[index].subCode != null
+                                      ? Text(lecture[index].subCode)
+                                      : SizedBox(),
+                                  lecture[index].teacherName != null
+                                      ? Text(lecture[index].teacherName)
+                                      : SizedBox(),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text(lecture[index]
+                                          .startTime
+                                          .substring(11, 16)),
+                                      Text(lecture[index]
+                                          .endTime
+                                          .substring(11, 16))
+                                    ],
+                                  ),
+                                  WeekdaySelector(
+                                      onChanged: null,
+                                      values: lecture[index].lectureDays)
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }
                     });
               } else {
                 return Text('nothong to show');
@@ -125,41 +300,44 @@ class _LectureTabBarState extends State<LectureTabBar> {
                         builder: (_) {
                           return AlertDialog(
                             title: Text('choose'),
-                            content: Column(
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      backgroundColor: Colors.transparent,
-                                      builder: (context) {
-                                        return CustomBottomSheet(
-                                          sheetLectureData: sheetLectureData,
-                                          isSpecicifTime: false,
-                                        );
-                                      },
-                                    );
-                                  },
-                                  child: Text('set weekly time table'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      backgroundColor: Colors.transparent,
-                                      builder: (context) {
-                                        return CustomBottomSheet(
-                                          sheetLectureData: sheetLectureData,
-                                          isSpecicifTime: true,
-                                        );
-                                      },
-                                    );
-                                  },
-                                  child: Text('set one time schedule'),
-                                ),
-                              ],
+                            content: Container(
+                              height: MediaQuery.of(context).size.height * 0.2,
+                              child: Column(
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (context) {
+                                          return CustomBottomSheet(
+                                            sheetLectureData: sheetLectureData,
+                                            isSpecicifTime: false,
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Text('set weekly time table'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (context) {
+                                          return CustomBottomSheet(
+                                            sheetLectureData: sheetLectureData,
+                                            isSpecicifTime: true,
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Text('set one time schedule'),
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         })

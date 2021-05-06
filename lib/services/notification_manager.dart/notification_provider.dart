@@ -1,3 +1,5 @@
+import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +13,7 @@ class NotificationProvider extends ChangeNotifier {
   LocalNotificationManagerFlutter _localNotificationManagerFlutter =
       LocalNotificationManagerFlutter.getInstance();
 
-  Future createHubNotification(NotificationData data
-      // AndroidNotification androidNotification
-      ) async {
+  Future createHubNotification(NotificationData data) async {
     tz.initializeTimeZones();
     if (data.specificDateTime != null) {
       AppLogger.print('one time notification');
@@ -22,7 +22,12 @@ class NotificationProvider extends ChangeNotifier {
           tz.TZDateTime.parse(tz.local, data.specificDateTime);
       AppLogger.print('$now    :  $scheduledDate');
 
-      await createSpecificNotificationUtil(scheduledDate, data);
+      if (scheduledDate.isAfter(now)) {
+        await createSpecificNotificationUtil(scheduledDate, data);
+      } else {
+        AppLogger.print("time should be in future");
+        // Common.showDateTimeSnackBar(context);
+      }
     } else {
       AppLogger.print('lecture time table notification');
       for (int i = 0; i < data.lectureDays.length; i++) {

@@ -1,5 +1,6 @@
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
+import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,6 +25,15 @@ class HubDataProvider extends ChangeNotifier {
     _rootHub = rootHub;
 
     notifyListeners();
+  }
+
+  Future addClassDetails(String id, String subCode, String teacherName) async {
+    // AppLogger.print(id);
+    AppLogger.print(_rootCollection.lectures.path);
+    await _rootCollection.lectures.doc(id).update({
+      "subCode": subCode,
+      "teacherName": teacherName,
+    });
   }
 
   Stream<QuerySnapshot> getMembers() {

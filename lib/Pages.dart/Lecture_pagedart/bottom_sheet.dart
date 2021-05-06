@@ -216,10 +216,10 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
                       ElevatedButton(
                         onPressed: () async {
                           DateTime current = DateTime.now();
-                          // TimeOfDay.fromDateTime(DateTime time)
+
                           if (current.isBefore(pickedDate) &&
-                              current.hour < selectedTime.hour &&
-                              current.minute < selectedTime.minute) {
+                              current.hour < startTime.hour &&
+                              current.minute < startTime.minute) {
                             await setSpecificCLassTime();
                           } else {
                             Common.showDateTimeSnackBar(context);
@@ -450,29 +450,3 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
     }
   }
 }
-
-//  TextField(
-//                                     style: TextStyle(
-//                                         fontSize: 23, color: Colors.black),
-//                                     textAlign: TextAlign.center,
-//                                     enabled: false,
-//                                     keyboardType: TextInputType.text,
-//                                     controller: _timeController1,
-//                                     decoration: InputDecoration(
-
-//                                     ),
-//  TextFormField(
-//                                   style: TextStyle(fontSize: 25),
-//                                   textAlign: TextAlign.center,
-//                                   onSaved: (String val) {
-//                                     final _setTime = val;
-//                                   },
-//                                   enabled: false,
-//                                   keyboardType: TextInputType.text,
-//                                   controller: _timeController2,
-//                                   decoration: InputDecoration(
-//                                       disabledBorder: UnderlineInputBorder(
-//                                           borderSide: BorderSide.none),
-//                                       // labelText: 'Time',
-//                                       contentPadding: EdgeInsets.all(1)),
-//                                 ),
