@@ -1,10 +1,11 @@
 import 'dart:convert';
+import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:http/http.dart' as http;
 
 class FcmServiceApi {
   static final fcmUrl = 'https://fcm.googleapis.com/fcm/send';
 
-  Future sendMessage(Map data) async {
+  Future<bool> sendMessage(Map data) async {
     try {
       final msg = jsonEncode(data);
       Map<String, String> headers = {
@@ -15,9 +16,14 @@ class FcmServiceApi {
       http.Response response =
           await http.post(Uri.parse(fcmUrl), headers: headers, body: msg);
 
-      print(response.body);
-      print(response.statusCode);
+      AppLogger.print(response.statusCode.toString());
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
+      return false;
       print(e);
     }
   }

@@ -28,12 +28,8 @@ class CustomBottomSheet extends StatefulWidget {
 }
 
 class _CustomBottomSheet extends State<CustomBottomSheet> {
-  // PersistentBottomSheetController _controller;
-  // final _scaffoldKey = GlobalKey<ScaffoldState>();
   String messageTitle = 'Empty';
-
   String notificarionAlert = 'Alert';
-  String _token;
   TimeOfDay startTime;
   TimeOfDay endTime;
   NotificationProvider np = NotificationProvider();
@@ -45,11 +41,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
   String body;
   DateTime pickedDate;
   bool isTimetableSet = true;
-  FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final values = <bool>[false, false, false, false, false, false, false];
-
-  // TextEditingController _timeController1 = TextEditingController();
-  // TextEditingController _timeController2 = TextEditingController();
   TimeOfDay selectedTime = TimeOfDay.now();
   Future _selectTime(int timePicker) async {
     final TimeOfDay picked = await showTimePicker(
@@ -62,10 +54,8 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
         selectedTime = picked;
         if (timePicker == 1) {
           startTime = picked;
-          // _timeController1.text = Common.getTimeString(selectedTime);
         } else {
           endTime = selectedTime;
-          // _timeController2.text = Common.getTimeString(selectedTime);
         }
       });
   }
@@ -90,8 +80,6 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
     AppLogger.print(isTimetableSet.toString());
 
     pickedDate = DateTime.now();
-    // _timeController1.text = Common.getTimeString(selectedTime);
-    // _timeController2.text = Common.getTimeString(selectedTime);
     _lectureData = LectureData(
         rootCollection:
             Provider.of<HubDataProvider>(context, listen: false).rootReference);
@@ -144,7 +132,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
           notificationId: notificationId,
           timeStamp: FieldValue.serverTimestamp().toString(),
         );
-        await _lectureData.addLectureData(lecture, nth.toString());
+
         NotificationMessage m = NotificationMessage(
             to: "/topics/$hubName",
             notification: NotificationA(
@@ -162,7 +150,14 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
               title: title,
             ));
         AppLogger.print('sending fcm msg');
-        await fcm.sendCustomMessage(m.toJson());
+        final isFcmMessagSent = await fcm.sendCustomMessage(m.toJson());
+        if (isFcmMessagSent) {
+          await _lectureData.addLectureData(lecture, nth.toString());
+        } else {
+          Common.showSnackBar(
+              "Something went Wrong try again", Colors.redAccent, context);
+        }
+
         return true;
       } else {
         AppLogger.print('something went wrong in creating timetable');
@@ -218,24 +213,6 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          // await _localNotificationManagerFlutter.flnp
-                          //     .show(
-                          //   7,
-                          //   'sunile',
-                          //   'go to chattisgarh',
-                          //   NotificationDetails(
-                          //     android: AndroidNotificationDetails(
-                          //       'high_importance', // id
-                          //       'High Importance ', // title
-                          //       'This channel is used for ',
-                          //       icon: 'launch_background',
-                          //     ),
-                          //   ),
-                          // )
-                          //     .catchError((onError) {
-                          //   AppLogger.print(onError);
-                          // });
-
                           // if (current.isBefore(pickedDate) &&
                           //     current.hour < startTime.hour &&
                           //     current.minute < startTime.minute) {
@@ -388,7 +365,6 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
         notificationId: notificationId,
         timeStamp: FieldValue.serverTimestamp().toString(),
       );
-      await _lectureData.addLectureData(lecture, nth.toString());
       NotificationMessage m = NotificationMessage(
           to: "/topics/$hubName",
           notification: NotificationA(
@@ -405,10 +381,18 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
             title: title,
           ));
       AppLogger.print('sending fcm msg');
-      await fcm.sendCustomMessage(m.toJson());
+      final isFcmMessageSent = await fcm.sendCustomMessage(m.toJson());
+      AppLogger.print(isFcmMessageSent.toString());
+      if (isFcmMessageSent) {
+        await _lectureData.addLectureData(lecture, nth.toString());
+      } else {
+        Common.showSnackBar("Something went Wrong", Colors.redAccent, context);
+      }
+
       return true;
     } else {
-      AppLogger.print('something went wrong in setting specific time');
+      Common.showSnackBar(
+          "Something went Wrong try again", Colors.redAccent, context);
       return false;
     }
   }
@@ -438,9 +422,6 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
           notificationId: notificationId,
           timeStamp: FieldValue.serverTimestamp().toString(),
         );
-        await _lectureData.addLectureData(
-            lecture, widget.sheetLectureData.nth.toString());
-        await np.cancelNotification(widget.sheetLectureData.notificationId);
         NotificationMessage m = NotificationMessage(
             to: "/topics/${widget.sheetLectureData.hubName}",
             notification: NotificationA(
@@ -458,7 +439,15 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
               title: widget.sheetLectureData.title,
             ));
         AppLogger.print('sending fcm msg');
-        await fcm.sendCustomMessage(m.toJson());
+        final isFcmMessageSent = await fcm.sendCustomMessage(m.toJson());
+        if (isFcmMessageSent) {
+          await _lectureData.addLectureData(
+              lecture, widget.sheetLectureData.nth.toString());
+          await np.cancelNotification(widget.sheetLectureData.notificationId);
+        } else {
+          Common.showSnackBar(
+              "Something went Wrong try again", Colors.redAccent, context);
+        }
 
         return true;
       } else {

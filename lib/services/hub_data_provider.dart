@@ -44,33 +44,33 @@ class HubDataProvider extends ChangeNotifier {
     return _rootCollection.notice.snapshots();
   }
 
-  sendNotice(NoticeItem noticesItem) {
-    // _rootCollection.notice.add(data);
-  }
+  // sendNotice(NoticeItem noticesItem) {
+  //   // _rootCollection.notice.add(data);
+  // }
 
   Future<RootHub> getRootHub(String hubcode) async {
     return await hubRootData.getRootHub(hubcode);
   }
 
-  Future getJoinedDocs(RootCollection collection) async {
-    final quer = await collection.members.get();
-    print('-------------------------------------------------');
-    print(quer.docs.length);
-  }
+  // Future getJoinedDocs(RootCollection collection) async {
+  //   final quer = await collection.members.get();
+  //   print('-------------------------------------------------');
+  //   print(quer.docs.length);
+  // }
 
   Stream<QuerySnapshot> getLectureSream() {
     return _rootCollection.lectures.snapshots();
   }
 
-  Future getNoticedocs(RootCollection collection) async {
-    final quer = await collection.notice.get();
-    print('-------------------------------------------------');
-    print(quer.docs.length);
-  }
+  // Future getNoticedocs(RootCollection collection) async {
+  //   final quer = await collection.notice.get();
+  //   print('-------------------------------------------------');
+  //   print(quer.docs.length);
+  // }
 
-  Future getLectureDocs(RootCollection collection) async {
-    final quer = await collection.lectures.get();
-    print('-------------------------------------------------');
-    print(quer.docs.length);
-  }
+  // Future getLectureDocs(RootCollection collection) async {
+  //   final quer = await collection.lectures.get();
+  //   print('-------------------------------------------------');
+  //   print(quer.docs.length);
+  // }
 }

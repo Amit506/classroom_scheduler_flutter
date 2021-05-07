@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/drawer.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
@@ -28,6 +29,7 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   final AuthService authService = AuthService();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FireBaseNotificationService _fcm = FireBaseNotificationService();
   final HubRootData hubRootData = HubRootData();
   List<UserCollection> drawerData = [];
@@ -46,7 +48,6 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
 
     // FieldValue.arrayUnion(elements)
     loadDrawer();
-    _fcm.subscribeTopic('Electronics');
     loadToken();
     _fcm.onMessage();
   }
@@ -99,7 +100,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
 
     if (hubname != null && token != null) {
       await hubRootData.createRootHub(
-          hubname, authService.currentUser.uid, token);
+          hubname, authService.currentUser.uid, token, context);
     } else {
       AppLogger.print('token & hubname are null');
     }
@@ -165,7 +166,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                         onTap: () async {
                           final roothub = await setHubData(
                               rootData[index].hubname, rootData[index].hubCode);
-                          ;
+
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -201,205 +202,208 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
       floatingActionButton: FloatingActionButton(
         child: _loading ? CircularProgressIndicator() : Icon(Icons.add),
         onPressed: () {
-          AlertDialog alertDialog_1 = AlertDialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(40.0))),
-            backgroundColor: Theme.of(context).primaryColor,
-            titleTextStyle: TextStyle(
-                color: Colors.white,
-                fontSize: 32.0,
-                fontWeight: FontWeight.w300),
-            titlePadding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 40.0),
-            title: Center(
-              child: Text(
-                'Hub Actions',
-                style: TextStyle(
-                  fontFamily: 'Lato',
-                  fontSize: 30,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-            content: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  child: Text(
-                    'Join',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w300),
-                  ),
-                  onPressed: () {
-                    AlertDialog alertDialog_2 = AlertDialog(
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20.0))),
-                        backgroundColor: Colors.lightBlueAccent,
-                        titleTextStyle: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w300),
-                        titlePadding:
-                            EdgeInsets.fromLTRB(10.0, 20.0, 60.0, 15.0),
-                        contentPadding:
-                            EdgeInsets.fromLTRB(15.0, 20.0, 20.0, 0.0),
-                        title: Text('enter a valid hub code:'),
-                        content: Container(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              TextField(
-                                onChanged: (value) async {
-                                  setState(() {
-                                    hubcode = value;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                    border: UnderlineInputBorder(),
-                                    hintText: 'Input code here',
-                                    hintStyle: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.w100,
-                                    )),
-                              ),
-                              SizedBox(height: 30.0),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  TextButton(
-                                      child: Text(
-                                        'Cancel',
-                                        style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.w300,
-                                            color: Colors.red[700]),
-                                      ),
-                                      onPressed: () => Navigator.pop(context)),
-                                  TextButton(
-                                      child: Text(
-                                        'Join',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w300),
-                                      ),
-                                      onPressed: () async {
-                                        await joinHub();
-                                      }),
-                                ],
-                              )
-                            ],
-                          ),
-                        ));
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return alertDialog_2;
-                      },
-                      barrierDismissible: false,
-                    );
-                  },
-                ),
-                TextButton(
-                  child: Text(
-                    'Create',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w100),
-                  ),
-                  onPressed: () {
-                    AlertDialog alertDialog_3 = AlertDialog(
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20.0))),
-                        backgroundColor: Colors.lightBlueAccent,
-                        titleTextStyle: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w300),
-                        titlePadding:
-                            EdgeInsets.fromLTRB(10.0, 20.0, 60.0, 15.0),
-                        contentPadding:
-                            EdgeInsets.fromLTRB(15.0, 20.0, 20.0, 0.0),
-                        title: Text('Please enter a hub name:'),
-                        content: Container(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              TextField(
-                                onChanged: (String value) async {
-                                  setState(() {
-                                    hubname = value;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                    border: UnderlineInputBorder(),
-                                    hintText: 'Input name here',
-                                    hintStyle: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.w100,
-                                    )),
-                              ),
-                              SizedBox(height: 30.0),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  TextButton(
-                                      child: Text(
-                                        'Cancel',
-                                        style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.w300,
-                                            color: Colors.red[700]),
-                                      ),
-                                      onPressed: () => Navigator.pop(context)),
-                                  TextButton(
-                                      child: Text(
-                                        'Create',
-                                        style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.w300,
-                                            color: Colors.green[800]),
-                                      ),
-                                      onPressed: () async {
-                                        Navigator.pop(context);
-                                        Navigator.pop(context);
-                                        addHub();
-                                      })
-                                ],
-                              )
-                            ],
-                          ),
-                        ));
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return alertDialog_3;
-                      },
-                      barrierDismissible: false,
-                    );
-                  },
-                ),
-              ],
-            ),
-          );
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return alertDialog_1;
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(40.0))),
+                backgroundColor: Theme.of(context).primaryColor,
+                titleTextStyle: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32.0,
+                    fontWeight: FontWeight.w300),
+                titlePadding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 40.0),
+                title: Center(
+                  child: Text(
+                    'Hub Actions',
+                    style: TextStyle(
+                      fontFamily: 'Lato',
+                      fontSize: 30,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      child: Text(
+                        'Join',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w300),
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return buildJoinHubDialog(context);
+                          },
+                          barrierDismissible: false,
+                        );
+                      },
+                    ),
+                    TextButton(
+                      child: Text(
+                        'Create',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w100),
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return buildHubCreateDialog(context);
+                          },
+                          barrierDismissible: false,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              );
             },
             barrierDismissible: true,
           );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+    );
+  }
+
+  buildJoinHubDialog(BuildContext context) {
+    return AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0))),
+        backgroundColor: Colors.lightBlueAccent,
+        titleTextStyle: TextStyle(
+            color: Colors.black, fontSize: 18.0, fontWeight: FontWeight.w300),
+        titlePadding: EdgeInsets.fromLTRB(10.0, 20.0, 60.0, 15.0),
+        contentPadding: EdgeInsets.fromLTRB(15.0, 20.0, 20.0, 0.0),
+        title: Text('enter a valid hub code:'),
+        content: Container(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                onChanged: (value) async {
+                  setState(() {
+                    hubcode = value;
+                  });
+                },
+                decoration: InputDecoration(
+                    border: UnderlineInputBorder(),
+                    hintText: 'Input code here',
+                    hintStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w100,
+                    )),
+              ),
+              SizedBox(height: 30.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w300,
+                            color: Colors.red[700]),
+                      ),
+                      onPressed: () => Navigator.pop(context)),
+                  TextButton(
+                      child: Text(
+                        'Join',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w300),
+                      ),
+                      onPressed: () async {
+                        await joinHub();
+                      }),
+                ],
+              )
+            ],
+          ),
+        ));
+  }
+
+  buildHubCreateDialog(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20.0))),
+      backgroundColor: Colors.lightBlueAccent,
+      titleTextStyle: TextStyle(
+          color: Colors.black, fontSize: 18.0, fontWeight: FontWeight.w300),
+      titlePadding: EdgeInsets.fromLTRB(10.0, 20.0, 60.0, 15.0),
+      contentPadding: EdgeInsets.fromLTRB(15.0, 20.0, 20.0, 0.0),
+      title: Text('Please enter a hub name:'),
+      content: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Form(
+              key: _formKey,
+              child: TextFormField(
+                validator: validateHubName,
+                onChanged: (String value) async {
+                  setState(() {
+                    hubname = value;
+                  });
+                },
+                decoration: InputDecoration(
+                    border: UnderlineInputBorder(),
+                    hintText: 'Input name here',
+                    hintStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w100,
+                    )),
+              ),
+            ),
+            SizedBox(height: 30.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.red[700]),
+                    ),
+                    onPressed: () => Navigator.pop(context)),
+                TextButton(
+                    child: Text(
+                      'Create',
+                      style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.green[800]),
+                    ),
+                    onPressed: () async {
+                      if (_formKey.currentState.validate()) {
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        await addHub();
+                        AppLogger.print('valid');
+                      } else {
+                        AppLogger.print('not valid');
+                      }
+                    })
+              ],
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -431,20 +435,15 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
       final check = await hubRootData.isexist(
           hubRootData.rootCollection(), hubcode, token);
       if (check.isExist) {
-        final b = await hubRootData.joinHub(check.userCollection, token);
+        final b =
+            await hubRootData.joinHub(check.userCollection, token, context);
         floatingActionButtonLoading();
         print(b);
         Navigator.pop(context);
       } else {
         floatingActionButtonLoading();
         Navigator.pop(context);
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                content: Text('enter valide hubcode'),
-              );
-            });
+        Common.showSnackBar("enter valide hubcode", Colors.redAccent, context);
       }
     } else {
       print('hubcode is null');

@@ -71,8 +71,8 @@ class FireBaseNotificationService {
     }
   }
 
-  Future sendCustomMessage(Map<String, dynamic> data) async {
-    await fcmApi.sendMessage(data);
+  Future<bool> sendCustomMessage(Map<String, dynamic> data) async {
+    return await fcmApi.sendMessage(data);
   }
 }
 

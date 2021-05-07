@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/notice_page.dart/NoticeView.dart';
 import 'package:classroom_scheduler_flutter/services/StorageDataBase.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
-import 'package:classroom_scheduler_flutter/widget/notices_item_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
@@ -27,7 +27,6 @@ class NoticesPage extends StatefulWidget {
 class _NoticesPageState extends State<NoticesPage> {
   final key = GlobalKey<AnimatedListState>();
   List itemss;
-  File _image;
   List<File> files = [];
   TextEditingController noticeTitleController = TextEditingController();
   TextEditingController noticeBodyController = TextEditingController();
@@ -85,15 +84,32 @@ class _NoticesPageState extends State<NoticesPage> {
                                   ),
                                 ),
                               ),
+                              noticeItem[index].noticeDetails.body != null
+                                  ? Text(
+                                      noticeItem[index].noticeDetails.body,
+                                      style: TextStyle(),
+                                      maxLines: 3,
+                                    )
+                                  : SizedBox(),
                               noticeItem[index].urlImage != null
-                                  ? Chip(
-                                      label: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.burst_mode_outlined),
-                                        Text('photos')
-                                      ],
-                                    ))
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) => NoticeView(
+                                                    noticeItem:
+                                                        noticeItem[index])));
+                                      },
+                                      child: Chip(
+                                          label: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(Icons.burst_mode_outlined),
+                                          Text('photos')
+                                        ],
+                                      )),
+                                    )
                                   : SizedBox(),
                             ],
                           ),
@@ -134,38 +150,7 @@ class _NoticesPageState extends State<NoticesPage> {
           ),
           TextButton(
             onPressed: () async {
-              if (noticeTitleController != null) {
-                StorageDataBase storageDataBase = StorageDataBase(
-                    hubCode:
-                        Provider.of<HubDataProvider>(context, listen: false)
-                            .rootData
-                            .hubCode);
-                List<String> imageUrls =
-                    await storageDataBase.addNoticeData(files);
-                AppLogger.print(imageUrls.toString());
-                List<Comment> comment = [];
-                final notice = NoticeItem(
-                  noticeTitle: noticeTitleController.text,
-                  urlImage: imageUrls,
-                  noticeDetails: NoticeDetails(
-                    body: noticeBodyController.text,
-                  ),
-                  comments: comment,
-                );
-                await Provider.of<HubDataProvider>(context, listen: false)
-                    .rootReference
-                    .notice
-                    .add(notice.toJson())
-                    .then((value) {
-                  Provider.of<HubDataProvider>(context, listen: false)
-                      .rootReference
-                      .notice
-                      .doc(value.id)
-                      .update({
-                    "docId": value.id,
-                  });
-                });
-              }
+              await uploadNotice();
             },
             child: Text('send'),
           ),
@@ -250,24 +235,36 @@ class _NoticesPageState extends State<NoticesPage> {
     });
   }
 
-  Widget buildItem(item, int index, Animation<double> animation) =>
-      NoticesItemWidget(
-        item: item,
-        animation: animation,
-        onClicked: () => removeItem(index),
+  Future uploadNotice() async {
+    if (noticeTitleController != null) {
+      StorageDataBase storageDataBase = StorageDataBase(
+          hubCode: Provider.of<HubDataProvider>(context, listen: false)
+              .rootData
+              .hubCode);
+      List<String> imageUrls = await storageDataBase.addNoticeData(files);
+      AppLogger.print(imageUrls.toString());
+      List<Comment> comment = [];
+      final notice = NoticeItem(
+        noticeTitle: noticeTitleController.text,
+        urlImage: imageUrls,
+        noticeDetails: NoticeDetails(
+          body: noticeBodyController.text,
+        ),
+        comments: comment,
       );
-
-  // void insertItem(int index, NoticesItem item) {
-  //   items.insert(index, item);
-  //   key.currentState.insertItem(index);
-  // }
-
-  void removeItem(int index) {
-    final item = itemss.removeAt(index);
-
-    key.currentState.removeItem(
-      index,
-      (context, animation) => buildItem(item, index, animation),
-    );
+      await Provider.of<HubDataProvider>(context, listen: false)
+          .rootReference
+          .notice
+          .add(notice.toJson())
+          .then((value) {
+        Provider.of<HubDataProvider>(context, listen: false)
+            .rootReference
+            .notice
+            .doc(value.id)
+            .update({
+          "docId": value.id,
+        });
+      });
+    }
   }
 }
