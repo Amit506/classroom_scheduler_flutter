@@ -43,6 +43,30 @@ class Common {
     }
   }
 
+  static String noticetime(String dat) {
+    DateTime date = DateTime.parse(dat);
+    return date.hour.toString() +
+        ":" +
+        date.minute.toString() +
+        ' ' +
+        date.day.toString() +
+        '-' +
+        date.month.toString() +
+        '-' +
+        date.year.toString();
+  }
+
+  static List<String> lctureSpecificTime(String t) {
+    DateTime parseDate = DateTime.parse(t);
+    String date = parseDate.day.toString() +
+        ":" +
+        parseDate.month.toString() +
+        ":" +
+        parseDate.year.toString();
+    String time = parseDate.hour.toString() + ":" + parseDate.minute.toString();
+    return [date, time];
+  }
+
   static int generateNotificationId(String hubName) {
     DateTime date = DateTime.now();
     String time = date.day.toString().padLeft(2, '0') +

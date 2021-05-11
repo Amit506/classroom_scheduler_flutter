@@ -131,6 +131,11 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
       appBar: AppBar(
         title: Text(
           'Classroom Scheduler',
+          style: TextStyle(
+              fontSize: 30,
+              color: Colors.white,
+              fontFamily: 'Damion',
+              letterSpacing: 2),
         ),
         centerTitle: true,
         actions: [
@@ -178,7 +183,9 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                             title: Text(
                               rootData[index].hubname,
                               style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w300),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Lato'),
                             ),
                             trailing: rootData[index].admin ==
                                     authService.currentUser.email
@@ -200,6 +207,8 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        tooltip: "Add or join hub",
+        heroTag: 'add_hub',
         child: _loading ? CircularProgressIndicator() : Icon(Icons.add),
         onPressed: () {
           showDialog(

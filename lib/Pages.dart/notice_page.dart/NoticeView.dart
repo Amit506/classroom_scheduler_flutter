@@ -12,7 +12,7 @@ class NoticeView extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         body: Container(
-          margin: EdgeInsets.all(10),
+          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: Column(children: [
@@ -21,15 +21,19 @@ class NoticeView extends StatelessWidget {
               style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
             noticeItem.noticeDetails.body != null
-                ? Flexible(child: Text(noticeItem.noticeDetails.body))
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(noticeItem.noticeDetails.body),
+                  )
                 : SizedBox(),
-            Flexible(
+            Expanded(
               child: GridView.builder(
                 itemCount: noticeItem.urlImage.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2),
+                    crossAxisCount: noticeItem.urlImage.length),
                 itemBuilder: (BuildContext context, int index) {
-                  return Expanded(
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 15.0),
                     child: GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -40,12 +44,13 @@ class NoticeView extends StatelessWidget {
                                     )));
                       },
                       child: Hero(
-                          tag: "hero",
-                          child: Image.network(
-                            noticeItem.urlImage[index],
-                            alignment: Alignment.center,
-                            fit: BoxFit.contain,
-                          )),
+                        tag: "hero",
+                        child: Image.network(
+                          noticeItem.urlImage[index],
+                          alignment: Alignment.center,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
                     ),
                   );
                 },

@@ -1,3 +1,4 @@
+import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/bottom_sheet.dart';
 import 'package:classroom_scheduler_flutter/components/LecturesColumn.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
@@ -74,9 +75,38 @@ class _LectureTabBarState extends State<LectureTabBar> {
                               children: [
                                 ListTile(
                                   title: Text(
-                                      '${lecture[index].hubName} one time class'),
+                                      '${lecture[index].hubName} schedule changes',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600)),
                                 ),
-                                Text(lecture[index].specificDateTime),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text(
+                                        "Date  " +
+                                            Common.lctureSpecificTime(
+                                                lecture[index]
+                                                    .specificDateTime)[0],
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      Text(
+                                        "Time " +
+                                            Common.lctureSpecificTime(
+                                                lecture[index]
+                                                    .specificDateTime)[1],
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
+                                  ),
+                                )
                               ],
                             ),
                           ),
@@ -112,7 +142,11 @@ class _LectureTabBarState extends State<LectureTabBar> {
                                 children: [
                                   ListTile(
                                     title: Text(
-                                        '${lecture[index].hubName} time table'),
+                                      '${lecture[index].hubName} class time',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600),
+                                    ),
                                     trailing: IconButton(
                                       icon: Icon(Icons.edit_rounded),
                                       onPressed: () {
@@ -258,10 +292,18 @@ class _LectureTabBarState extends State<LectureTabBar> {
                                     ),
                                   ),
                                   lecture[index].subCode != null
-                                      ? Text(lecture[index].subCode)
+                                      ? Text(
+                                          lecture[index].subCode,
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500),
+                                        )
                                       : SizedBox(),
                                   lecture[index].teacherName != null
-                                      ? Text(lecture[index].teacherName)
+                                      ? Text(lecture[index].teacherName,
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500))
                                       : SizedBox(),
                                   Row(
                                     mainAxisAlignment:
@@ -292,6 +334,8 @@ class _LectureTabBarState extends State<LectureTabBar> {
       ),
       floatingActionButton: widget.isAdmin
           ? FloatingActionButton(
+              tooltip: 'Add lecture time',
+              heroTag: 'add_hub',
               child: Icon(Icons.add),
               onPressed: () {
                 widget.isAdmin
