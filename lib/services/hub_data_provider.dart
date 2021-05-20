@@ -1,5 +1,6 @@
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
+import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -44,6 +45,11 @@ class HubDataProvider extends ChangeNotifier {
     return _rootCollection.notice.snapshots();
   }
 
+  Future<String> getPhotoUrl(String uid) async {
+    return await AuthService.users.doc(uid).get().then((value) {
+      return value.data()['photoUrl'];
+    });
+  }
   // sendNotice(NoticeItem noticesItem) {
   //   // _rootCollection.notice.add(data);
   // }

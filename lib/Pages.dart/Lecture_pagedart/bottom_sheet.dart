@@ -1,4 +1,6 @@
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/SpecificTimeBottomSheet.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/WeeklyPageBottomSheet.dart';
 import 'package:classroom_scheduler_flutter/main.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
@@ -76,8 +78,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
   @override
   void initState() {
     super.initState();
-
-    AppLogger.print(isTimetableSet.toString());
+    startTime = endTime = selectedTime;
 
     pickedDate = DateTime.now();
     _lectureData = LectureData(
@@ -183,142 +184,47 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
             maxChildSize: 0.8,
             builder: (_, controller) {
               if (widget.sheetLectureData != null && widget.isSpecicifTime) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(25.0),
-                      topRight: const Radius.circular(25.0),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.remove,
-                        color: Colors.grey[600],
-                      ),
-                      ListTile(
-                        title: Text(
-                            "Date: ${pickedDate.year}, ${pickedDate.month}, ${pickedDate.day}"),
-                        trailing: Icon(Icons.keyboard_arrow_down),
-                        onTap: _pickDate,
-                      ),
-                      ListTile(
-                        title:
-                            Text("Time: ${Common.getTimeString(selectedTime)}"),
-                        trailing: Icon(Icons.keyboard_arrow_down),
-                        onTap: () {
-                          _selectTime(1);
-                        },
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          // if (current.isBefore(pickedDate) &&
-                          //     current.hour < startTime.hour &&
-                          //     current.minute < startTime.minute) {
-                          await setSpecificCLassTime();
-                          // } else {
-                          //   Common.showDateTimeSnackBar(context);
-                          // }
-                        },
-                        child: Text('save'),
-                      ),
-                    ],
-                  ),
+                return SpecifcTimeBottomSheet(
+                  pickedDate: pickedDate,
+                  selectedTime: selectedTime,
+                  onTapPickedTime: () {
+                    _selectTime(1);
+                  },
+                  onTapPickDate: _pickDate,
+                  onPressed: () async {
+                    if (Common.isValidNotificationTym(
+                        Common.getNotificationTimeString(selectedTime,
+                            date: pickedDate, isSpecificDate: true))) {
+                      // await setSpecificCLassTime();
+                    } else {
+                      AppLogger.print('not a valid time');
+                      // show snackbar here
+                    }
+                  },
                 );
               } else {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(25.0),
-                      topRight: const Radius.circular(25.0),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.remove,
-                        color: Colors.grey[600],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Start',
-                              style: TextStyle(fontSize: 22),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                _selectTime(1);
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(8.0),
-                                width: 100,
-                                height: 40,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(8.0)),
-                                child: Center(
-                                  child: Text(startTime == null
-                                      ? Common.getTimeString(selectedTime)
-                                      : Common.getTimeString(startTime)),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 23.0),
-                              child: Text(
-                                'End',
-                                style: TextStyle(fontSize: 22),
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                _selectTime(2);
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(8.0),
-                                width: 100,
-                                height: 40,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(8.0)),
-                                child: Text(endTime == null
-                                    ? Common.getTimeString(selectedTime)
-                                    : Common.getTimeString(endTime)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      WeekdaySelector(
-                        selectedFillColor: Colors.indigo,
-                        onChanged: (v) {
-                          setState(() {
-                            values[v % 7] = !values[v % 7];
-                          });
-                        },
-                        values: values,
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          widget.sheetLectureData == null
-                              ? await setLectureTime()
-                              : await updateLectureTime();
-                        },
-                        child: Text(widget.sheetLectureData == null
-                            ? 'save'
-                            : 'update'),
-                      ),
-                      Text(messageTitle),
-                      Text(notificarionAlert),
-                    ],
-                  ),
+                return WeeklyTimeBottomSheet(
+                  sheetLectureData: widget.sheetLectureData,
+                  startTime: startTime,
+                  selectedTime: selectedTime,
+                  endTime: endTime,
+                  onTapStartTime: () {
+                    _selectTime(1);
+                  },
+                  onTapEndTime: () {
+                    _selectTime(2);
+                  },
+                  values: values,
+                  onChanged: (int v) {
+                    setState(() {
+                      values[v % 7] = !values[v % 7];
+                    });
+                  },
+                  onPressed: () {
+                    // widget.sheetLectureData == null
+//                           //         ? await setLectureTime()
+//                           //         : await updateLectureTime();
+                  },
                 );
               }
             },

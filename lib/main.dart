@@ -1,7 +1,9 @@
+import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/AuthenticationScreen.dart/AuthCheckerScreen.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,6 +29,7 @@ void main() async {
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     AppLogger.print('${message.data.toString()}');
   });
+  AndroidAlarmManager.initialize();
   f.getActiveNotifications();
 
   runApp(MyApp());
@@ -40,12 +43,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<HubDataProvider>(
             create: (_) => HubDataProvider()),
       ],
-      child: MaterialApp(
-        home: AuthCheckerScreen(),
-        routes: routes,
-        debugShowCheckedModeBanner: false,
-        theme: theme,
-        // initialRoute: LogInPage.routeName,
+      child: FeatureDiscovery(
+        child: MaterialApp(
+          home: AuthCheckerScreen(),
+          routes: routes,
+          debugShowCheckedModeBanner: false,
+          theme: theme,
+          // initialRoute: LogInPage.routeName,
+        ),
       ),
     );
   }

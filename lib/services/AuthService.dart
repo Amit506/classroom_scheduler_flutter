@@ -1,38 +1,40 @@
-
-
+import 'package:classroom_scheduler_flutter/services/app_loger.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
-
-
-class AuthService  with ChangeNotifier{
-final googleSignIn = GoogleSignIn();
-static FirebaseAuth instance = FirebaseAuth.instance;
-
-Stream<User> get  authState => instance.authStateChanges();
+class AuthService with ChangeNotifier {
+  final googleSignIn = GoogleSignIn();
+  static FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static FirebaseAuth instance = FirebaseAuth.instance;
+  static CollectionReference users = _firestore.collection('Users');
+  Stream<User> get authState => instance.authStateChanges();
 
 // GoogleSignInAccount get  currentUser => googleSignIn.currentUser;
-User get currentUser => instance.currentUser;
-Future<UserCredential> login() async{
+  User get currentUser => instance.currentUser;
+  Future<UserCredential> login() async {
     final GoogleSignInAccount user = await googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth = await user.authentication;
-    final AuthCredential credential =  GoogleAuthProvider.credential(
+    final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-    final UserCredential userCredential = await instance.signInWithCredential(credential);
-    
+    final UserCredential userCredential =
+        await instance.signInWithCredential(credential);
+    await users.doc(userCredential.user.uid).set({
+      "userName": userCredential.user.displayName,
+      "userEmail": userCredential.user.email,
+      "phoneNumber": userCredential.user.phoneNumber,
+      "photoUrl": userCredential.user.photoURL,
+      "uid": userCredential.user.uid,
+    });
 
-  return userCredential;
-}
+    return userCredential;
+  }
 
-logout() async{
-  await instance.signOut();
-  await googleSignIn.signOut();
-  
-}
-
-
+  logout() async {
+    await instance.signOut();
+    await googleSignIn.signOut();
+  }
 }

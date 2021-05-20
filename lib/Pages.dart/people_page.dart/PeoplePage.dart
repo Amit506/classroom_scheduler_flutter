@@ -1,3 +1,5 @@
+import 'package:classroom_scheduler_flutter/Pages.dart/people_page.dart/CircleAvatar.dart';
+import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/dynamic_link.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,21 +28,16 @@ class _PeoplePageState extends State<PeoplePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
         child: SingleChildScrollView(
           child: Container(
             height: MediaQuery.of(context).size.height,
             child: StreamBuilder(
               stream: Provider.of<HubDataProvider>(context, listen: false)
                   .getMembers(),
-              // Provider.of<HubDataProvider>(context, listen: false)
-              //     .rootReference),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   List list = snapshot.data.docs;
-                  print('---------------------------------------');
-                  print(list.length);
-                  print(list[0]['memberInfo']);
 
                   return ListView.builder(
                       itemCount: list.length + 1,
@@ -58,17 +55,27 @@ class _PeoplePageState extends State<PeoplePage> {
                                     },
                                     child: Container(
                                       width: double.infinity,
-                                      height: 80,
+                                      height: 60,
                                       color: Colors.blue,
-                                      child: Center(
-                                        child: Text(
-                                          'share',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 15.0,
-                                            color: Colors.white,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Text(
+                                            'share',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              letterSpacing: 2,
+                                              fontFamily: 'AkayaTelivigala',
+                                              fontSize: 20.0,
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                        ),
+                                          Icon(
+                                            Icons.share,
+                                            color: Colors.white,
+                                          )
+                                        ],
                                       ),
                                     ));
                               } else {
@@ -84,8 +91,86 @@ class _PeoplePageState extends State<PeoplePage> {
                             },
                           );
                         } else {
-                          return ListTile(
-                            title: Text(list[index - 1]["memberInfo"]["name"]),
+                          return FutureBuilder<String>(
+                            future: Provider.of<HubDataProvider>(context,
+                                    listen: false)
+                                .getPhotoUrl(
+                                    list[index - 1]['memberInfo']['uid']),
+                            builder: (_, future) {
+                              if (future.hasData) {
+                                return Container(
+                                  padding: EdgeInsets.all(6.0),
+                                  height: 80,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          CircularPeopleAvatar(
+                                            imageUrl: future.data,
+                                            radius: 26,
+                                            text: list[index - 1]["memberInfo"]
+                                                    ["name"]
+                                                .toString()
+                                                .substring(0, 2),
+                                          ),
+                                          SizedBox(
+                                            width: 80,
+                                          ),
+                                          Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              list[index - 1]["memberInfo"]
+                                                  ["name"],
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      Divider()
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                return Container(
+                                  height: 80,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          CircularPeopleAvatar(
+                                            // imageUrl: future.data,
+                                            radius: 26,
+                                            text: list[index - 1]["memberInfo"]
+                                                    ["name"]
+                                                .toString()
+                                                .substring(0, 2),
+                                          ),
+                                          SizedBox(
+                                            width: 80,
+                                          ),
+                                          Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              list[index - 1]["memberInfo"]
+                                                  ["name"],
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  letterSpacing: 1,
+                                                  fontWeight: FontWeight.w400),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      Divider()
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
                           );
                         }
                       });

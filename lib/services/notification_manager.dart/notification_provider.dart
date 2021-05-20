@@ -59,7 +59,7 @@ class NotificationProvider extends ChangeNotifier {
       int.parse(data.notificationId),
       data.title,
       data.body,
-      time,
+      time.subtract(Duration(minutes: 5)),
       NotificationDetails(
         android: AndroidNotificationDetails(
           channel.id,
@@ -90,7 +90,7 @@ class NotificationProvider extends ChangeNotifier {
         notificationId,
         data.title,
         data.body,
-        time,
+        time.subtract(Duration(minutes: 5)),
         NotificationDetails(
           android: AndroidNotificationDetails(
             channel.id,
@@ -148,17 +148,18 @@ class NotificationProvider extends ChangeNotifier {
       importance: Importance.high,
     );
     await _localNotificationManagerFlutter.flnp.show(
-      1,
-      'sunile',
-      'go to chattisgarh',
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          channel.id,
-          channel.name,
-          channel.description,
-          icon: 'launch_background',
+        1,
+        'sunile',
+        'go to chattisgarh',
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            channel.id,
+            channel.name,
+            channel.description,
+            icon: 'launch_background',
+          ),
         ),
-      ),
-    );
+        payload:
+            "{amrita is fooooooooooooooooooooooooooooooooooooooooooooooool}");
   }
 }

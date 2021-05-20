@@ -9,8 +9,11 @@ import 'package:classroom_scheduler_flutter/services/dynamic_link.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
+import 'package:classroom_scheduler_flutter/services/notification_manager.dart/notification_provider.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:feature_discovery/feature_discovery.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -31,6 +34,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   final AuthService authService = AuthService();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FireBaseNotificationService _fcm = FireBaseNotificationService();
+  NotificationProvider nf = NotificationProvider();
   final HubRootData hubRootData = HubRootData();
   List<UserCollection> drawerData = [];
   final DynamicLink dynamicLink = DynamicLink();
@@ -43,10 +47,22 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      FeatureDiscovery.discoverFeatures(context, <String>[
+        'feature1',
+        'feature2',
+        'feature3',
+        'feature4',
+      ]);
+    });
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
 
+    WidgetsBinding.instance.addObserver(this);
+    Future.delayed(Duration(seconds: 5), () {
+      nf.showNotification();
+    });
     // FieldValue.arrayUnion(elements)
+
     loadDrawer();
     loadToken();
     _fcm.onMessage();
@@ -209,7 +225,26 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
       floatingActionButton: FloatingActionButton(
         tooltip: "Add or join hub",
         heroTag: 'add_hub',
-        child: _loading ? CircularProgressIndicator() : Icon(Icons.add),
+        child: _loading
+            ? CircularProgressIndicator()
+            : DescribedFeatureOverlay(
+                featureId: 'feature1',
+                targetColor: Colors.white,
+                textColor: Colors.white,
+                backgroundColor: Colors.blue,
+                contentLocation: ContentLocation.above,
+                title: Text(
+                  'Add Hub',
+                  style: TextStyle(fontSize: 20.0),
+                ),
+                pulseDuration: Duration(seconds: 1),
+                enablePulsingAnimation: true,
+                overflowMode: OverflowMode.clipContent,
+                openDuration: Duration(seconds: 1),
+                description: Text(
+                    'This is Button you can join existing hub  or create new one!'),
+                tapTarget: Icon(Icons.add),
+                child: Icon(Icons.add)),
         onPressed: () {
           showDialog(
             context: context,

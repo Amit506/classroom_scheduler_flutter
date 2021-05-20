@@ -6,6 +6,7 @@ import 'package:classroom_scheduler_flutter/services/StorageDataBase.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:provider/provider.dart';
@@ -151,7 +152,23 @@ class _NoticesPageState extends State<NoticesPage> {
             ? FloatingActionButton(
                 tooltip: 'Add notice',
                 heroTag: 'add_hub',
-                child: Icon(Icons.add),
+                child: DescribedFeatureOverlay(
+                    featureId: 'feature2',
+                    targetColor: Colors.white,
+                    textColor: Colors.white,
+                    backgroundColor: Colors.blue,
+                    contentLocation: ContentLocation.above,
+                    title: Text(
+                      'Add Notice',
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                    pulseDuration: Duration(seconds: 1),
+                    enablePulsingAnimation: true,
+                    overflowMode: OverflowMode.clipContent,
+                    openDuration: Duration(seconds: 1),
+                    description: Text('This is Button you can add notice'),
+                    tapTarget: Icon(Icons.add),
+                    child: Icon(Icons.add)),
                 onPressed: () {
                   AppLogger.print('pressed');
                   showDialog(

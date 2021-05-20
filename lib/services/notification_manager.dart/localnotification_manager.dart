@@ -31,7 +31,8 @@ class LocalNotificationManagerFlutter {
   }
 
   Future selectNotification(String payload) async {
-    print('---------------on-----select-----notification----------$payload');
+    AppLogger.print(
+        '---------------on-----select-----notification----------$payload');
   }
 
   Future<List<PendingNotificationRequest>> pendingNotifications() async {

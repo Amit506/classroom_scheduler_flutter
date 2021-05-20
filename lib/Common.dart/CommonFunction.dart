@@ -69,7 +69,9 @@ class Common {
 
   static int generateNotificationId(String hubName) {
     DateTime date = DateTime.now();
-    String time = date.day.toString().padLeft(2, '0') +
+    String time = date.second.toString().padLeft(2, '0') +
+        date.minute.toString().padLeft(2, '0') +
+        date.day.toString().padLeft(2, '0') +
         date.month.toString().padLeft(2, '0') +
         date.year.toString().substring(3);
     return int.parse(time);
@@ -107,6 +109,21 @@ class Common {
         backgroundColor: Colors.blue,
       ),
     );
+  }
+
+  static bool isValidNotificationTym(String date) {
+    DateTime curr = DateTime.now();
+    try {
+      DateTime time =
+          DateTime.parse(date).subtract(Duration(minutes: 5, seconds: 10));
+      if (time.isAfter(curr)) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      return false;
+    }
   }
 }
 

@@ -1,11 +1,13 @@
 import 'dart:convert';
+import 'package:equatable/equatable.dart';
+
 import '../models/notification.dart';
 
 Lecture welcomeFromJson(String str) => Lecture.fromJson(json.decode(str));
 
 String welcomeToJson(Lecture data) => json.encode(data.toJson());
 
-class Lecture {
+class Lecture extends Equatable {
   Lecture({
     this.hubName,
     this.title,
@@ -75,6 +77,25 @@ class Lecture {
         "teacherName": teacherName,
         "timeStamp": timeStamp,
       };
+
+  @override
+  List<Object> get props => [
+        hubName,
+        title,
+        body,
+        isSpecificDateTime,
+        specificDateTime,
+        hubCode,
+        notificationData,
+        nth,
+        notificationId,
+        subCode,
+        startTime,
+        endTime,
+        lectureDays,
+        teacherName,
+        timeStamp,
+      ];
 }
 
 //  "hubName": "hubName",
