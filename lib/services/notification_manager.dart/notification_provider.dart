@@ -1,6 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -9,13 +12,13 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:classroom_scheduler_flutter/models/notification.dart';
 import 'localnotification_manager.dart';
 
-class NotificationProvider extends ChangeNotifier {
+class NotificationProvider {
   LocalNotificationManagerFlutter _localNotificationManagerFlutter =
       LocalNotificationManagerFlutter.getInstance();
 
   Future createHubNotification(NotificationData data) async {
     tz.initializeTimeZones();
-    if (data.specificDateTime != null) {
+    if (data.isSpecificDateTime) {
       AppLogger.print('one time notification');
       final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
       tz.TZDateTime scheduledDate =
@@ -30,6 +33,8 @@ class NotificationProvider extends ChangeNotifier {
       }
     } else {
       AppLogger.print('lecture time table notification');
+      AppLogger.print(data.lectureDays.toString());
+      AppLogger.print(data.startTime);
       for (int i = 0; i < data.lectureDays.length; i++) {
         if (data.lectureDays[i]) {
           if (i == 0) {
@@ -38,6 +43,7 @@ class NotificationProvider extends ChangeNotifier {
                 time, data, int.parse(data.notificationId));
           }
           tz.TZDateTime time = _nextInstanceOfDay(data.startTime, i);
+          AppLogger.print(time.toString());
           await createHubNotificationUtil(
               time, data, int.parse(data.notificationId));
         }
@@ -47,6 +53,12 @@ class NotificationProvider extends ChangeNotifier {
 
   Future createSpecificNotificationUtil(
       tz.TZDateTime time, NotificationData data) async {
+    AppLogger.print('reahce here');
+    var vibrationPattern = new Int64List(4);
+    vibrationPattern[0] = 5000;
+    vibrationPattern[1] = 5000;
+    vibrationPattern[2] = 5000;
+    vibrationPattern[3] = 5000;
     AndroidNotificationChannel channel = AndroidNotificationChannel(
       data.hubName, // id
       data.hubName, // title
@@ -54,6 +66,8 @@ class NotificationProvider extends ChangeNotifier {
       ledColor: Colors.red,
       // description
       importance: Importance.high,
+      enableVibration: true,
+      vibrationPattern: vibrationPattern,
     );
     await _localNotificationManagerFlutter.flnp.zonedSchedule(
       int.parse(data.notificationId),
@@ -65,25 +79,39 @@ class NotificationProvider extends ChangeNotifier {
           channel.id,
           channel.name,
           channel.description,
-          icon: 'launch_background',
+          importance: Importance.high,
+          priority: Priority.high,
+          playSound: true,
+          enableVibration: true,
+          ticker: 'ticker',
+          additionalFlags: Int32List.fromList(<int>[4]),
+          // channelAction: AndroidNotificationChannelAction.update,
+          vibrationPattern: vibrationPattern,
+          sound: RawResourceAndroidNotificationSound('sound'),
         ),
       ),
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
-      androidAllowWhileIdle: false,
+      androidAllowWhileIdle: true,
     );
     AppLogger.print(" specificdateTime notification message set");
   }
 
   Future createHubNotificationUtil(
       tz.TZDateTime time, NotificationData data, int notificationId) async {
+    var vibrationPattern = new Int64List(4);
+    vibrationPattern[0] = 5000;
+    vibrationPattern[1] = 5000;
+    vibrationPattern[2] = 5000;
+    vibrationPattern[3] = 5000;
     AndroidNotificationChannel channel = AndroidNotificationChannel(
       data.hubName, // id
       data.hubName, // title
       'This channel is used for ${data.hubName} ',
       ledColor: Colors.red,
-      // description
-      importance: Importance.min,
+      enableVibration: true,
+      vibrationPattern: vibrationPattern,
+      importance: Importance.high,
     );
 
     await _localNotificationManagerFlutter.flnp.zonedSchedule(
@@ -96,7 +124,15 @@ class NotificationProvider extends ChangeNotifier {
             channel.id,
             channel.name,
             channel.description,
-            icon: 'launch_background',
+            importance: Importance.high,
+            priority: Priority.high,
+            playSound: true,
+            enableVibration: true,
+            ticker: 'ticker',
+            additionalFlags: Int32List.fromList(<int>[4]),
+            // channelAction: AndroidNotificationChannelAction.update,
+            vibrationPattern: vibrationPattern,
+            sound: RawResourceAndroidNotificationSound('sound'),
           ),
         ),
         uiLocalNotificationDateInterpretation:
@@ -110,12 +146,11 @@ class NotificationProvider extends ChangeNotifier {
     await _localNotificationManagerFlutter.flnp.cancel(id);
   }
 
-  cancelAllNotification() async {
-    await _localNotificationManagerFlutter.flnp.cancelAll();
-  }
-
   // to implememnt
-  // updateHubNotification() async {}
+  updateNotification(NotificationData data) async {
+    await cancelNotification(int.parse(data.notificationId));
+    createHubNotification(data);
+  }
 
   tz.TZDateTime _nextInstanceOfWeekDay(String time) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
@@ -138,25 +173,72 @@ class NotificationProvider extends ChangeNotifier {
     return scheduledDate;
   }
 
-  showNotification() async {
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'high_importance', // id
-      'amit', // title
-      'This channel is used for ',
+  // showNotification() async {
+  //   var vibrationPattern = new Int64List(4);
+  //   vibrationPattern[0] = 5000;
+  //   vibrationPattern[1] = 5000;
+  //   vibrationPattern[2] = 5000;
+  //   vibrationPattern[3] = 5000;
+  //   AndroidNotificationChannel channel = AndroidNotificationChannel(
+  //     'fulkmnm', // id
+  //     'amittn', // title
+  //     'This channel is used forvbh ',
+
+  //     ledColor: Colors.red,
+  //     // description
+  //     enableVibration: true,
+  //     vibrationPattern: vibrationPattern,
+  //     importance: Importance.high,
+  //   );
+
+  //   await _localNotificationManagerFlutter.flnp.show(
+  //       1,
+  //       'sunile',
+  //       'go to chattisgarh',
+  //       NotificationDetails(
+  //         android: AndroidNotificationDetails(
+  //           channel.id,
+  //           channel.name,
+
+  //           channel.description,
+  //           importance: Importance.high,
+  //           priority: Priority.high,
+  //           playSound: true,
+  //           enableVibration: true,
+  //           ticker: 'ticker',
+  //           icon: 'launch_background',
+  //           additionalFlags: Int32List.fromList(<int>[4]),
+  //           // channelAction: AndroidNotificationChannelAction.update,
+  //           vibrationPattern: vibrationPattern,
+  //           sound: RawResourceAndroidNotificationSound('sound'),
+  //         ),
+  //       ),
+  //       payload:
+  //           "{amrita is fooooooooooooooooooooooooooooooooooooooooooooooool}");
+  // }
+
+  showNoticeNotification(RemoteNotification message) async {
+    AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'Notice', // id
+      'Notice', // title
+      'This channel is used Notice purpose',
+
       ledColor: Colors.red,
       // description
-      importance: Importance.high,
+      enableVibration: true,
+      importance: Importance.defaultImportance,
     );
     await _localNotificationManagerFlutter.flnp.show(
         1,
-        'sunile',
-        'go to chattisgarh',
+        message.title,
+        message.body,
         NotificationDetails(
           android: AndroidNotificationDetails(
             channel.id,
             channel.name,
             channel.description,
-            icon: 'launch_background',
+            priority: Priority.high,
+            enableVibration: true,
           ),
         ),
         payload:

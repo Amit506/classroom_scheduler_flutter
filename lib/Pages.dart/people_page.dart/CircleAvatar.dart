@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -25,11 +26,11 @@ class CircularPeopleAvatar extends StatelessWidget {
                 buildCircleAvatar(imageUrl),
                 Container(
                   decoration: BoxDecoration(
-                    color: color12.withOpacity(0.4),
+                    // color: color12.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(radius),
                   ),
                 ),
-                Center(child: Text(text))
+                // Center(child: Text(text))
               ],
             ),
     );
@@ -44,7 +45,7 @@ class CircularPeopleAvatar extends StatelessWidget {
   Widget buildCircleAvatar(String url) {
     return CircleAvatar(
       backgroundColor: color12,
-      backgroundImage: NetworkImage(url),
+      backgroundImage: CachedNetworkImageProvider(url),
     );
   }
 }

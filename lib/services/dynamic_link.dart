@@ -1,12 +1,17 @@
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/LandingPage.dart';
+import 'package:classroom_scheduler_flutter/services/app_loger.dart';
+import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 
 class DynamicLink {
+  HubRootData hubRootData = HubRootData();
   Future<Uri> createDynamicLink(String hubCode, String hubName) async {
     final DynamicLinkParameters parameters = DynamicLinkParameters(
         uriPrefix: "http://classscheduler.page.link",
-        link: Uri.parse("http://classscheduler.page.link/$hubName/$hubCode"),
+        // &apn=package_name
+        link: Uri.parse(
+            "http://classscheduler.page.link/joinHub?hubName=$hubName&hubCode =$hubCode"),
         androidParameters: AndroidParameters(
           packageName: "com.example.classroom_scheduler_flutter",
           minimumVersion: 0,
@@ -26,21 +31,23 @@ class DynamicLink {
     try {
       final PendingDynamicLinkData data =
           await FirebaseDynamicLinks.instance.getInitialLink();
-      final Uri deepLink = data?.link;
+      final Uri deepLink = data.link;
 
       if (deepLink != null) {
-        print('---------------------------');
-        print(deepLink.pathSegments);
-// implemnt hub joining extracting hubcode from deeplink
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => LandingPage()));
+        handleDynamicLink(deepLink, context);
+        // handleDynamicLink(data);
+//         print('downloaded using link');
+//         print(deepLink.pathSegments);
+// // implemnt hub joining extracting hubcode from deeplink
+//         Navigator.of(context)
+//             .push(MaterialPageRoute(builder: (context) => LandingPage()));
       }
 
       FirebaseDynamicLinks.instance.onLink(
           onSuccess: (PendingDynamicLinkData dynamicLink) async {
-        print('---------------------------on');
-        print(deepLink.data);
-// implemnt hub joining extracting hubcode from deeplink
+        AppLogger.print('opened from link');
+        handleDynamicLink(dynamicLink.link, context);
+
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => LandingPage()));
       });
@@ -49,22 +56,15 @@ class DynamicLink {
     }
   }
 
-  // Future handleDynamicLinks() async {
-  //   final PendingDynamicLinkData data =
-  //       await FirebaseDynamicLinks.instance.getInitialLink();
-  //   handleDeepLink(data);
-  //   FirebaseDynamicLinks.instance.onLink(
-  //       onSuccess: (PendingDynamicLinkData dynamicLinkData) async {},
-  //       onError: (OnLinkErrorException e) async {
-  //         print("dynamic link fails : $e");
-  //       });
-  // }
-
-  // void handleDeepLink(PendingDynamicLinkData data) {
-  //   final Uri deepLink = data?.link;
-  //   if (deepLink != null) {
-  //     print("----------------------------------------------------");
-  //     print("handkeeeee : $deepLink");
-  //   }
-  // }
+  handleDynamicLink(Uri data, BuildContext context) async {
+    final hubName = data.queryParameters.values.first;
+    final hubCode = data.queryParameters.values.last;
+    AppLogger.print(hubName);
+    AppLogger.print(hubCode);
+    final token = 'poiugfdgcvhjkhfdsazdxfcvhcxzd';
+    if (hubName != null && hubCode != null) {
+      hubRootData.joinHub(token, context,
+          hubName: hubName, hubCode: hubCode, isRetriving: true);
+    }
+  }
 }

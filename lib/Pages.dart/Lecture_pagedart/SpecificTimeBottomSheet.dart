@@ -60,7 +60,7 @@ class SpecifcTimeBottomSheet extends StatelessWidget {
                             Chip(
                                 backgroundColor: color10,
                                 label: Text(
-                                  '12',
+                                  pickedDate.day.toString(),
                                   style: TextStyle(color: Colors.white),
                                 )),
                             Text(
@@ -74,7 +74,7 @@ class SpecifcTimeBottomSheet extends StatelessWidget {
                             Chip(
                                 backgroundColor: color10,
                                 label: Text(
-                                  '12',
+                                  pickedDate.month.toString(),
                                   style: TextStyle(color: Colors.white),
                                 )),
                             Text(
@@ -88,7 +88,7 @@ class SpecifcTimeBottomSheet extends StatelessWidget {
                             Chip(
                                 backgroundColor: color10,
                                 label: Text(
-                                  '2024',
+                                  pickedDate.year.toString(),
                                   style: TextStyle(color: Colors.white),
                                 )),
                             Text(
@@ -106,7 +106,7 @@ class SpecifcTimeBottomSheet extends StatelessWidget {
                   children: [
                     TextButton(
                         style: style,
-                        onPressed: onTapPickDate,
+                        onPressed: onTapPickedTime,
                         child: Text(
                           'start time',
                           style: TextStyle(color: Colors.white),
@@ -119,7 +119,7 @@ class SpecifcTimeBottomSheet extends StatelessWidget {
                             Chip(
                               backgroundColor: color10,
                               label: Text(
-                                '12',
+                                selectedTime.hour.toString(),
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),
@@ -139,7 +139,7 @@ class SpecifcTimeBottomSheet extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'minutes',
+                              selectedTime.minute.toString(),
                               style: TextStyle(fontSize: 10),
                             )
                           ],

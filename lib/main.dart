@@ -1,7 +1,9 @@
-import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/AuthenticationScreen.dart/AuthCheckerScreen.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
+import 'package:classroom_scheduler_flutter/services/dynamic_link.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
+import 'package:classroom_scheduler_flutter/services/notification_manager.dart/AlarmManager.dart';
+import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -13,23 +15,18 @@ import 'routes.dart';
 import 'Theme.dart/app_theme.dart';
 import 'package:flutter/services.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('---------------------b--a---c--k------------------------------');
-  await Firebase.initializeApp();
-  AppLogger.print('Handling a background message ${message.messageId}');
-}
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // AlarmManager.getInstance();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage((_firebaseMessagingBackgroundHandler));
+  FirebaseMessaging.onBackgroundMessage((firebaseMessagingBackgroundHandler));
   LocalNotificationManagerFlutter f = LocalNotificationManagerFlutter.init();
   f.pendingNotifications();
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     AppLogger.print('${message.data.toString()}');
   });
-  AndroidAlarmManager.initialize();
+  // AndroidAlarmManager.initialize();
   f.getActiveNotifications();
 
   runApp(MyApp());

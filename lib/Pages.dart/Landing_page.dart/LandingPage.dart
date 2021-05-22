@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/HubContainer.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/drawer.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
@@ -17,7 +19,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../HomePage.dart';
 
@@ -37,16 +38,17 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   NotificationProvider nf = NotificationProvider();
   final HubRootData hubRootData = HubRootData();
   List<UserCollection> drawerData = [];
-  final DynamicLink dynamicLink = DynamicLink();
   String hubname;
   String hubcode;
   String token;
-  Timer _timerLink;
+
   bool _loading = false;
+
   TextEditingController textEditingController = TextEditingController();
 
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       FeatureDiscovery.discoverFeatures(context, <String>[
         'feature1',
@@ -55,53 +57,20 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
         'feature4',
       ]);
     });
-    super.initState();
-
-    WidgetsBinding.instance.addObserver(this);
-    Future.delayed(Duration(seconds: 5), () {
-      nf.showNotification();
-    });
-    // FieldValue.arrayUnion(elements)
-
     loadDrawer();
-    loadToken();
-    _fcm.onMessage();
-  }
+    _fcm.tokenRefresh();
 
-  loadToken() async {
-    token = await _fcm.token();
-    AppLogger.print(" fcm token : $token");
+    // _fcm.onMessage();
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed) {
-      _timerLink = new Timer(const Duration(milliseconds: 100), () {});
-    }
-    switch (state) {
-      case AppLifecycleState.resumed:
-        AppLogger.print("app in resumed");
-        break;
-      case AppLifecycleState.inactive:
-        AppLogger.print("app in inactive");
-        break;
-      case AppLifecycleState.paused:
-        AppLogger.print("app in paused");
-        break;
-      case AppLifecycleState.detached:
-        AppLogger.print("app in detached");
-        break;
-    }
-    super.didChangeAppLifecycleState(state);
-  }
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    if (_timerLink != null) {
-      _timerLink.cancel();
+    for (int i = 0; i <= 3; i++) {
+      precacheImage(AssetImage(assetImages[i]), context);
     }
-    super.dispose();
+    // precacheImage(provider, context);
   }
 
   floatingActionButtonLoading() {
@@ -113,8 +82,8 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   Future addHub() async {
     AppLogger.print('creating new hub');
     floatingActionButtonLoading();
-
-    if (hubname != null && token != null) {
+    token = await _fcm.token();
+    if (hubname != null) {
       await hubRootData.createRootHub(
           hubname, authService.currentUser.uid, token, context);
     } else {
@@ -146,12 +115,13 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          'Classroom Scheduler',
+          'Classroom scheduler',
           style: TextStyle(
-              fontSize: 30,
-              color: Colors.white,
-              fontFamily: 'Damion',
-              letterSpacing: 2),
+            fontSize: 30,
+            color: Colors.white,
+            fontFamily: 'Damion',
+            // letterSpacing: 1
+          ),
         ),
         centerTitle: true,
         actions: [
@@ -183,36 +153,31 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                 return ListView.builder(
                     itemCount: snapshot.data.size,
                     itemBuilder: (context, index) {
-                      return GestureDetector(
+                      return HubContainer(
+                        hubName: rootData[index].hubname,
+                        isAdmin: rootData[index].admin ==
+                            authService.currentUser.email,
+                        date: rootData[index].timeStamp.toString(),
+                        createdBy: rootData[index].createdBy,
                         onTap: () async {
                           final roothub = await setHubData(
                               rootData[index].hubname, rootData[index].hubCode);
-
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
                                       HomePage(rootData: roothub)));
                         },
-                        child: Card(
-                          child: ListTile(
-                            title: Text(
-                              rootData[index].hubname,
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Lato'),
-                            ),
-                            trailing: rootData[index].admin ==
-                                    authService.currentUser.email
-                                ? SvgPicture.asset(
-                                    'image/admin.svg',
-                                    height: 25,
-                                    width: 25,
-                                  )
-                                : SizedBox(),
-                          ),
-                        ),
+                        ondelete: (value) async {
+                          AppLogger.print('presses');
+                          final rootCollection =
+                              hubRootData.rootCollectionReference(
+                                  rootData[index].hubname,
+                                  rootData[index].hubCode,
+                                  authService.currentUser.uid);
+                          await hubRootData.deleteHub(
+                              rootCollection, rootData[index].hubCode);
+                        },
                       );
                     });
               } else {
@@ -473,14 +438,19 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
 
   Future joinHub() async {
     AppLogger.print('joining hub');
-    if (hubcode != null && token != null) {
+    token = await _fcm.token();
+    AppLogger.print(token);
+    if (hubcode != null) {
       floatingActionButtonLoading();
       Navigator.pop(context);
       final check = await hubRootData.isexist(
           hubRootData.rootCollection(), hubcode, token);
       if (check.isExist) {
-        final b =
-            await hubRootData.joinHub(check.userCollection, token, context);
+        final b = await hubRootData.joinHub(
+          token,
+          context,
+          userCollection: check.userCollection,
+        );
         floatingActionButtonLoading();
         print(b);
         Navigator.pop(context);

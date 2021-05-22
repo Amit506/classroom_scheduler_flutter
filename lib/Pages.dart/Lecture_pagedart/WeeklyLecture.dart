@@ -24,64 +24,71 @@ class WeeklyLecture extends StatelessWidget {
           ),
         ),
         child: Card(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 7.0),
-            child: Column(
-              children: [
-                ListTile(
-                  title: Text(
-                    '${lecture.hubName} class time',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.edit_rounded),
-                    onPressed: () {
-                      // to implement function of adding teacher name and subject code
-                      showDialog(
-                        context: context,
-                        builder: (_) {
-                          return ClassDetails(
-                            id: lecture.nth.toString(),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-                lecture.subCode != null
-                    ? Text(
-                        lecture.subCode,
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w500),
-                      )
-                    : SizedBox(),
-                lecture.teacherName != null
-                    ? Text(lecture.teacherName,
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w500))
-                    : SizedBox(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(
-                      lecture.startTime.substring(11, 16),
+          child: Container(
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: AssetImage('image/time_glass.png'))),
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 7.0),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text(
+                      '${lecture.hubName} class time',
                       style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    Text(
-                      lecture.endTime.substring(11, 16),
-                      style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                    )
-                  ],
-                ),
-                WeekdaySelector(
-                    selectedFillColor: color10,
-                    color: Colors.blueGrey,
-                    disabledFillColor: Colors.blueGrey,
-                    onChanged: null,
-                    values: lecture.lectureDays)
-              ],
+                    trailing: IconButton(
+                      icon: Icon(Icons.edit_rounded),
+                      onPressed: () {
+                        // to implement function of adding teacher name and subject code
+                        showDialog(
+                          context: context,
+                          builder: (_) {
+                            return ClassDetails(
+                              id: lecture.nth.toString(),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  lecture.subCode != null
+                      ? Text(
+                          lecture.subCode,
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w500),
+                        )
+                      : SizedBox(),
+                  lecture.teacherName != null
+                      ? Text(lecture.teacherName,
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w500))
+                      : SizedBox(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(
+                        lecture.startTime.substring(11, 16),
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500),
+                      ),
+                      Text(
+                        lecture.endTime.substring(11, 16),
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500),
+                      )
+                    ],
+                  ),
+                  WeekdaySelector(
+                      selectedFillColor: color10,
+                      color: Colors.blueGrey,
+                      disabledFillColor: Colors.blueGrey,
+                      onChanged: null,
+                      values: lecture.lectureDays)
+                ],
+              ),
             ),
           ),
         ),

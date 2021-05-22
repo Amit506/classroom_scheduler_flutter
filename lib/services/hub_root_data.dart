@@ -53,19 +53,42 @@ class HubRootData extends ChangeNotifier {
     return _collection;
   }
 
-// extra  data needed in hub  like teacher name  and subject code
-  // Future extraRootHubDetail(HubRootData hubRootData, String hubCode,
-  //     String hubname, String teacherName, String subCode) async {
-  //   final rootData = hubRootData.rootCollection()..doc(hubCode);
-  //   await rootData.doc(hubCode).update({
-  //     'teacherName': teacherName,
-  //     'subCode': subCode,
-  //   });
-  //   await rootData.doc(hubCode).collection(hubname).doc(hubCode).update({
-  //     'teacherName': teacherName,
-  //     'subCode': subCode,
-  //   });
-  // }
+  Future deleteHub(RootCollection rootCollection, String hubId) async {
+    // rootCollection.lectures.get().then((value) {
+
+    //   value.docs.forEach((element)async {
+    //     if(element.data()['isSpecificDateTime']==true){
+
+    //     }
+    //     final data = element.data()['notificationData'];
+    //           NotificationMessage msg = NotificationMessage(
+    //     to: "/topics/${data.hubname}",
+    //     notification: NotificationA(title: "", body: ""),
+    //     data: NotificationData(
+    //       notificationType:
+    //           notificationTypeToString(NotificationType.deleteNotification),
+    //       specificDateTime:data.specificDateTime,
+    //       notificationId: data.notificationId.toString(),
+    //       isSpecificDateTime: true,
+    //       lectureDays: [false],
+    //     ));
+    // await fcm.sendCustomMessage(msg.toJson());
+
+    //   });
+    // });
+    rootCollection.members.get().then((value) {
+      value.docs.forEach((element) async {
+        final uid = element.data()['memberInfo']['uid'];
+
+        AppLogger.print(element.data().toString());
+        AppLogger.print(uid);
+        final CollectionReference user = userCollection(uid);
+
+        await user.doc(hubId).delete();
+        // user.doc(hubId).delete();
+      });
+    });
+  }
 
 // checking if entered hub id already exist or not , if exist then return rootHub data
 // Exist is class having two value bool and roothub
@@ -117,27 +140,38 @@ class HubRootData extends ChangeNotifier {
   }
 
   /// join Hub .. first checking already joined if not then join it
-  Future<bool> joinHub(
-      UserCollection userCollection, String token, BuildContext context) async {
+  Future<bool> joinHub(String token, BuildContext context,
+      {UserCollection userCollection,
+      String hubName,
+      String hubCode,
+      bool isRetriving = false}) async {
+    AppLogger.print('reched joining');
     try {
       bool isJoined = false;
-
-      final collection = rootCollectionReference(userCollection.hubname,
-          userCollection.hubCode, authService.currentUser.uid);
-
+      RootCollection collection;
+      if (!isRetriving) {
+        collection = rootCollectionReference(userCollection.hubname,
+            userCollection.hubCode, authService.currentUser.uid);
+      } else {
+        collection = rootCollectionReference(
+            hubName, hubCode, authService.currentUser.uid);
+      }
+      AppLogger.print(userCollection.hubname);
 //  set notification to device joining after creating the hub
       List<NotificationData> notificationData = [];
       final lectures = await collection.lectures.get();
-
+      AppLogger.print(lectures.toString());
       if (lectures.docs.isNotEmpty) {
+        AppLogger.print('notification is not empty');
         final lists = lectures.docs;
         for (var value in lists) {
-          notificationData.add(NotificationData.fromJson(value.data()));
+          notificationData
+              .add(NotificationData.fromJson(value.data()['notificationData']));
         }
       } else {
         AppLogger.print('lecture/timetable docs is empty');
       }
-      AppLogger.print(notificationData[0].startTime);
+      AppLogger.print('notification -----------------------');
 
       final members = Members(
         memberInfo: MemberInfo(
@@ -180,7 +214,7 @@ class HubRootData extends ChangeNotifier {
   }
 
 // creating root data for hub
-  Future createRootHub(
+  Future<bool> createRootHub(
       String hubname, String userId, String token, BuildContext context) async {
     final hubcode = await uniqueHubCode(rootCollection());
     AppLogger.print(hubcode);
@@ -199,7 +233,7 @@ class HubRootData extends ChangeNotifier {
         final userCollection = UserCollection(
             admin: authService.currentUser.email,
             hubname: hubname,
-            timeStamp: Timestamp.now().toString(),
+            timeStamp: Timestamp.now(),
             createdBy: authService.currentUser.displayName,
             hubCode: hubcode,
             uid: authService.currentUser.uid,
@@ -222,7 +256,8 @@ class HubRootData extends ChangeNotifier {
             .doc(userId)
             .collection('joinedHubs')
             .doc(hubcode)
-            .set(userCollection.toJson());
+            .set(userCollection.toJson())
+            .then((value) {});
       } catch (error) {
         Common.showSnackBar("something went wrong", Colors.redAccent, context);
       }

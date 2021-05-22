@@ -97,7 +97,7 @@ class UserCollection {
   String uid;
   String hubname;
   String hubCode;
-  String timeStamp;
+  Timestamp timeStamp;
   String admin;
   String createdBy;
   String status;

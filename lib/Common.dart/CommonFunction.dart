@@ -4,6 +4,21 @@ import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:flutter/material.dart';
 
 class Common {
+  static List<String> months = [
+    'Jan',
+    'Feb',
+    'March',
+    'Apr',
+    'May',
+    'June',
+    'July',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
+
   static String getTimeString(TimeOfDay time) {
     print(time);
     return time.hour.toString().padLeft(2, '0') +
@@ -45,14 +60,15 @@ class Common {
 
   static String noticetime(String dat) {
     DateTime date = DateTime.parse(dat);
-    return date.hour.toString() +
-        ":" +
-        date.minute.toString() +
+    return date.hour.toString() + ":" + date.minute.toString();
+  }
+
+  static String noticeDate(String dat) {
+    DateTime date = DateTime.parse(dat);
+    return date.day.toString() +
         ' ' +
-        date.day.toString() +
-        '-' +
-        date.month.toString() +
-        '-' +
+        months[date.month] +
+        ' ' +
         date.year.toString();
   }
 
@@ -63,7 +79,9 @@ class Common {
         parseDate.month.toString() +
         ":" +
         parseDate.year.toString();
-    String time = parseDate.hour.toString() + ":" + parseDate.minute.toString();
+    String time = parseDate.hour.toString().padLeft(2, '0') +
+        ":" +
+        parseDate.minute.toString().padLeft(2, '0');
     return [date, time];
   }
 

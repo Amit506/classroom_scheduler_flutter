@@ -1,12 +1,9 @@
-import 'package:classroom_scheduler_flutter/archived/tempLogin.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 import '../Landing_page.dart/LandingPage.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
-
-
 
 class LogInPage extends StatefulWidget {
   static String routeName = 'loginpage';
@@ -15,7 +12,7 @@ class LogInPage extends StatefulWidget {
 }
 
 class _LogInPageState extends State<LogInPage> {
-  AuthService authService= AuthService();
+  AuthService authService = AuthService();
   bool progress = false;
   @override
   void initState() {
@@ -123,13 +120,13 @@ class _LogInPageState extends State<LogInPage> {
                       primary: color6,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30))),
-                  onPressed: () async{
+                  onPressed: () async {
                     //Navigator.pushNamed(context, LandingPage.routename);
                     // Navigator.pushNamed(context, TempLogin.routename);
                     setState(() {
-                      progress=true;
+                      progress = true;
                     });
-                 await   authService.login();
+                    await authService.login();
                   },
                   child: Padding(
                     padding: EdgeInsets.all(5.0),
@@ -137,18 +134,19 @@ class _LogInPageState extends State<LogInPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                     progress?SizedBox(
-                       height: 20,
-                       width: 20,
-                                            child: CircularProgressIndicator(
-                         backgroundColor: Colors.white,
-                        
-                       ),
-                     ):   CircleAvatar(
-                          backgroundImage: AssetImage('image/google.png'),
-                          radius: 14,
-                          backgroundColor: Colors.white,
-                        ),
+                        progress
+                            ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  backgroundColor: Colors.white,
+                                ),
+                              )
+                            : CircleAvatar(
+                                backgroundImage: AssetImage('image/google.png'),
+                                radius: 14,
+                                backgroundColor: Colors.white,
+                              ),
                         Text(
                           'Sign In with Google',
                           style: TextStyle(

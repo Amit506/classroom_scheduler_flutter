@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 import '../models/notification.dart';
@@ -40,7 +41,7 @@ class Lecture extends Equatable {
   String endTime;
   List<bool> lectureDays;
   String teacherName;
-  String timeStamp;
+  Timestamp timeStamp;
 
   factory Lecture.fromJson(Map<String, dynamic> json) => Lecture(
         hubName: json["hubName"],
@@ -97,22 +98,3 @@ class Lecture extends Equatable {
         timeStamp,
       ];
 }
-
-//  "hubName": "hubName",
-//         "title": "title",
-//         "body": "body",
-//         "isSpecificDateTime": "isSpecificDateTime",
-//         "specificDateTime": "specificDateTime",
-//         "hubCode": "hubCode",
-//         "notificationData": "notificationData",
-//         "nth": "nth",
-//         "notificationId": " notificationId",
-//         "subCode": "subCode",
-//         "startTime":" startTime",
-//         "endTime": "endTime",
-//         "lectureDays": [
-//                 true,
-//                 false,
-//             ],
-//         "teacherName": "teacherName",
-//         "timeStamp": "timeStamp",

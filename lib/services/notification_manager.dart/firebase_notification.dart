@@ -1,13 +1,22 @@
+import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/fcm_service_api.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/notification_provider.dart';
 import 'package:classroom_scheduler_flutter/models/notification.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print('---------------------b--a---c--k------------------------------');
+  await Firebase.initializeApp();
+  AppLogger.print('Handling a background message ${message.messageId}');
+}
+
 class FireBaseNotificationService {
-  LocalNotificationManagerFlutter _localNotificationManagerFlutter =
-      LocalNotificationManagerFlutter.getInstance();
+  // LocalNotificationManagerFlutter _localNotificationManagerFlutter =
+  //     LocalNotificationManagerFlutter.getInstance();
   static FirebaseMessaging fcm = FirebaseMessaging.instance;
   static FcmServiceApi fcmApi = FcmServiceApi();
   NotificationProvider np = NotificationProvider();
@@ -15,14 +24,47 @@ class FireBaseNotificationService {
   onMessage() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification notification = message.notification;
-      AndroidNotification android = message.notification?.android;
+      // AndroidNotification android = message.notification?.android;
+
       AppLogger.print(" recieved fcm message");
-      // np.showNotification();
-      final NotificationData data = NotificationData.fromJson(message.data);
-      np.showNotification();
-      AppLogger.print('firebase mesggaing recived');
-      if (notification != null && android != null) {
-        np.createHubNotification(data);
+
+      switch (message.data["notificationType"]) {
+        case "deleteNotification":
+          {
+            AppLogger.print("deletessssss");
+            final NotificationData data =
+                NotificationData.fromNotificationData(message.data);
+            AppLogger.print(message.data.toString());
+            AppLogger.print(data.toString());
+            np.cancelNotification(int.parse(data.notificationId));
+          }
+          break;
+        case "lectureNotification":
+          {
+            AppLogger.print("lecturesssssssss");
+            final NotificationData data =
+                NotificationData.fromNotificationData(message.data);
+            AppLogger.print(message.data.toString());
+            AppLogger.print(data.toString());
+
+            np.createHubNotification(data);
+          }
+          break;
+        case "noticeNotification":
+          {
+            AppLogger.print('noticessssssssss');
+            np.showNoticeNotification(notification);
+          }
+          break;
+        case "updateWeekNotification":
+          {
+            AppLogger.print("updatesssssss");
+            final NotificationData data =
+                NotificationData.fromNotificationData(message.data);
+            AppLogger.print(message.data.toString());
+            AppLogger.print(data.toString());
+            np.updateNotification(data);
+          }
       }
     });
   }
@@ -45,8 +87,21 @@ class FireBaseNotificationService {
     return await fcm.getToken();
   }
 
-  Future tokenRefresh() async {
-    return fcm.onTokenRefresh;
+  tokenRefresh() async {
+    return fcm.onTokenRefresh.listen((event) {
+      CollectionReference collec = FirebaseFirestore.instance
+          .collection('UserData')
+          .doc(AuthService.instance.currentUser.uid)
+          .collection('joinedHubs');
+      collec.get().then((value) {
+        value.docs.forEach((element) {
+          final hubname = element.data()['hubname'];
+          final hubCode = element.data()['hubCode'];
+          subscribeTopic(hubname);
+          collec.doc(hubCode).update({"token": event});
+        });
+      });
+    });
   }
 
   Future<bool> subscribeTopic(String topic) async {
@@ -75,19 +130,3 @@ class FireBaseNotificationService {
     return await fcmApi.sendMessage(data);
   }
 }
-
-// example of sending notification to a topic only for android .. here classroom is name of topic (first of all subscribe this, topic should match a regular expression given in api)
-// if want sent to specific user use their token in "to" key
-// final data = {
-//   "to": "/topics/classroom",
-//   "notification": {
-//     "body": "Body of Your Notification",
-//     "title": "Title of Your Notification"
-//   },
-//   "data": {
-//     "body": "Body of Your Notification in Data",
-//     "title": "Title of Your Notification in Title",
-//     "key_1": "Value for key_1",
-//     "key_2": "Value for key_2"
-//   }
-// };

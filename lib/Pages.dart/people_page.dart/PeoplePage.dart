@@ -22,6 +22,8 @@ class _PeoplePageState extends State<PeoplePage> {
   @override
   void initState() {
     super.initState();
+    AppLogger.print(
+        Provider.of<HubDataProvider>(context, listen: false).rootData.hubCode);
   }
 
   @override
@@ -44,39 +46,77 @@ class _PeoplePageState extends State<PeoplePage> {
                       itemBuilder: (context, index) {
                         if (index == 0) {
                           return FutureBuilder<Uri>(
-                            future:
-                                dynamicLink.createDynamicLink('test', 'test'),
+                            future: dynamicLink.createDynamicLink(
+                                Provider.of<HubDataProvider>(context,
+                                        listen: false)
+                                    .rootData
+                                    .hubCode,
+                                Provider.of<HubDataProvider>(context,
+                                        listen: false)
+                                    .rootData
+                                    .hubname),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 Uri uri = snapshot.data;
+
                                 return TextButton(
                                     onPressed: () {
+                                      AppLogger.print(uri.toString());
                                       Share.share(uri.toString());
                                     },
-                                    child: Container(
-                                      width: double.infinity,
-                                      height: 60,
-                                      color: Colors.blue,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Text(
-                                            'share',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              letterSpacing: 2,
-                                              fontFamily: 'AkayaTelivigala',
-                                              fontSize: 20.0,
-                                              color: Colors.white,
-                                            ),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                  colorFilter: ColorFilter.mode(
+                                                      Colors.white12
+                                                          .withOpacity(0.6),
+                                                      BlendMode.dstATop),
+                                                  fit: BoxFit.contain,
+                                                  alignment:
+                                                      Alignment.bottomCenter,
+                                                  image: AssetImage(
+                                                      'image/dash.png'))),
+                                          height: 60,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Text(
+                                                'share',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    letterSpacing: 2,
+                                                    fontFamily:
+                                                        'AkayaTelivigala',
+                                                    fontSize: 20.0,
+                                                    color: Colors.black),
+                                              ),
+                                              Icon(
+                                                Icons.share,
+                                                size: 40,
+                                                color: Colors.black,
+                                              )
+                                            ],
                                           ),
-                                          Icon(
-                                            Icons.share,
-                                            color: Colors.white,
-                                          )
-                                        ],
-                                      ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            'Members',
+                                            style: TextStyle(
+                                                letterSpacing: 2,
+                                                fontSize: 16.0,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.black),
+                                          ),
+                                        ),
+                                        Divider(
+                                          thickness: 2,
+                                        )
+                                      ],
                                     ));
                               } else {
                                 return Text(
@@ -123,7 +163,7 @@ class _PeoplePageState extends State<PeoplePage> {
                                               list[index - 1]["memberInfo"]
                                                   ["name"],
                                               style: TextStyle(
-                                                  fontSize: 18,
+                                                  fontSize: 16,
                                                   fontWeight: FontWeight.w500),
                                             ),
                                           )
@@ -185,98 +225,3 @@ class _PeoplePageState extends State<PeoplePage> {
     );
   }
 }
-
-//  Container(
-//                 margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-//                 decoration: BoxDecoration(
-//                   borderRadius: BorderRadius.circular(10.0),
-//                   color: Colors.blue,
-//                 ),
-//                 child: Row(
-//                   children: <Widget>[
-//                     Expanded(
-//                       flex: 2,
-//                       child: Column(
-//                         mainAxisAlignment: MainAxisAlignment.center,
-//                         children: <Widget>[
-//                           Row(
-//                             mainAxisAlignment: MainAxisAlignment.center,
-//                             children: <Widget>[
-//                               //   Text(
-//                               //     'Invite people to join your hub',
-//                               //     textAlign: TextAlign.center,
-//                               //     style: TextStyle(
-//                               //       fontSize: 15.0,
-//                               //       color: Colors.white,
-//                               //     ),
-//                               //   ),
-//                               //
-//                               FutureBuilder<Uri>(
-//                                 future: dynamicLink.createDynamicLink(),
-//                                 builder: (context, snapshot) {
-//                                   if (snapshot.hasData) {
-//                                     Uri uri = snapshot.data;
-//                                     return TextButton(
-//                                         onPressed: () {
-//                                           Share.share(uri.toString());
-//                                         },
-//                                         child: Text(
-//                                           'share',
-//                                           textAlign: TextAlign.center,
-//                                           style: TextStyle(
-//                                             fontSize: 15.0,
-//                                             color: Colors.white,
-//                                           ),
-//                                         ));
-//                                   } else {
-//                                     return Text(
-//                                       'Invite people to join your hub',
-//                                       textAlign: TextAlign.center,
-//                                       style: TextStyle(
-//                                         fontSize: 15.0,
-//                                         color: Colors.white,
-//                                       ),
-//                                     );
-//                                   }
-//                                 },
-//                               )
-//                             ],
-//                           ),
-//                           Row(
-//                             mainAxisAlignment: MainAxisAlignment.center,
-//                             children: <Widget>[
-//                               Text(
-//                                 'tchn9ne',
-//                                 style: TextStyle(
-//                                   fontSize: 30.0,
-//                                   fontWeight: FontWeight.w900,
-//                                   color: Colors.white,
-//                                 ),
-//                                 textAlign: TextAlign.center,
-//                               ),
-//                             ],
-//                           )
-//                         ],
-//                       ),
-//                     ),
-//                     Expanded(
-//                       child: Icon(
-//                         Icons.share,
-//                         size: 50,
-//                         color: Colors.lightBlue[100],
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//             Expanded(
-//               flex: 5,
-//               child: Container(
-//                 decoration: BoxDecoration(
-//                   borderRadius: BorderRadius.circular(10.0),
-//                 ),
-//                 child: ListView(
-//                   children: adminList + userList,
-//                 ),
-//               ),

@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/notice_page.dart/NoticeCard.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/notice_page.dart/NoticeView.dart';
+import 'package:classroom_scheduler_flutter/models/notification.dart';
 import 'package:classroom_scheduler_flutter/services/StorageDataBase.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
+import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +35,7 @@ class _NoticesPageState extends State<NoticesPage> {
   List<File> files = [];
   final RoundedLoadingButtonController _btnController =
       RoundedLoadingButtonController();
-
+  FireBaseNotificationService fcm = FireBaseNotificationService();
   TextEditingController noticeTitleController = TextEditingController();
   TextEditingController noticeBodyController = TextEditingController();
 
@@ -65,124 +68,67 @@ class _NoticesPageState extends State<NoticesPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        body: Container(
-          child: StreamBuilder<QuerySnapshot>(
-              stream: Provider.of<HubDataProvider>(context, listen: false)
-                  .getNotices(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  List<QueryDocumentSnapshot> items = snapshot.data.docs;
+  Widget build(BuildContext context) {
+    final hubRootData = Provider.of<HubDataProvider>(context, listen: false);
+    return Scaffold(
+      body: Container(
+        child: StreamBuilder<QuerySnapshot>(
+            stream: hubRootData.getNotices(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<QueryDocumentSnapshot> items = snapshot.data.docs;
 
-                  List<NoticeItem> noticeItem = [];
-                  for (var list in items) {
-                    noticeItem.add(NoticeItem.fromJson(list.data()));
-                  }
-                  return ListView.builder(
-                      itemCount: noticeItem.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          child: Padding(
-                            padding: EdgeInsets.all(5.0),
-                            child: Column(
-                              children: [
-                                Align(
-                                  alignment: Alignment.topCenter,
-                                  child: Text(
-                                    noticeItem[index].noticeTitle,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 25,
-                                    ),
-                                  ),
-                                ),
-                                noticeItem[index].noticeDetails.body != null
-                                    ? Text(
-                                        noticeItem[index].noticeDetails.body,
-                                        style: TextStyle(),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 3,
-                                      )
-                                    : SizedBox(),
-                                Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      noticeItem[index].urlImage != null
-                                          ? GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            NoticeView(
-                                                                noticeItem:
-                                                                    noticeItem[
-                                                                        index])));
-                                              },
-                                              child: Chip(
-                                                  label: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Icon(Icons
-                                                      .burst_mode_outlined),
-                                                  Text('photos')
-                                                ],
-                                              )),
-                                            )
-                                          : SizedBox(),
-                                      Text(Common.noticetime(
-                                          noticeItem[index].noticeTime))
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      });
-                } else {
-                  return CircularProgressIndicator();
+                List<NoticeItem> noticeItem = [];
+                for (var list in items) {
+                  noticeItem.add(NoticeItem.fromJson(list.data()));
                 }
-              }),
-        ),
-        floatingActionButton: widget.isAdmin
-            ? FloatingActionButton(
-                tooltip: 'Add notice',
-                heroTag: 'add_hub',
-                child: DescribedFeatureOverlay(
-                    featureId: 'feature2',
-                    targetColor: Colors.white,
-                    textColor: Colors.white,
-                    backgroundColor: Colors.blue,
-                    contentLocation: ContentLocation.above,
-                    title: Text(
-                      'Add Notice',
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                    pulseDuration: Duration(seconds: 1),
-                    enablePulsingAnimation: true,
-                    overflowMode: OverflowMode.clipContent,
-                    openDuration: Duration(seconds: 1),
-                    description: Text('This is Button you can add notice'),
-                    tapTarget: Icon(Icons.add),
-                    child: Icon(Icons.add)),
-                onPressed: () {
-                  AppLogger.print('pressed');
-                  showDialog(
-                      context: context, builder: (_) => noticeDialog(context));
+                return ListView.builder(
+                    itemCount: noticeItem.length,
+                    itemBuilder: (context, index) {
+                      return NoticeCard(
+                        noticeTitle: noticeItem[index].noticeTitle,
+                        body: noticeItem[index].noticeDetails.body,
+                        urlImage: noticeItem[index].urlImage,
+                        noticeItem: noticeItem[index],
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => NoticeView(
+                                      noticeItem: noticeItem[index])));
+                        },
+                        onDeleteNotice: (value) async {
+                          AppLogger.print('pressed');
+                          AppLogger.print(hubRootData.rootData.hubCode);
+                          await hubRootData
+                              .deleteNotice(noticeItem[index].docId);
+                        },
+                      );
+                    });
+              } else {
+                return CircularProgressIndicator();
+              }
+            }),
+      ),
+      floatingActionButton: widget.isAdmin
+          ? FloatingActionButton(
+              tooltip: 'Add notice',
+              heroTag: 'add_hub',
+              child: Icon(Icons.add),
+              onPressed: () {
+                AppLogger.print('pressed');
+                showDialog(
+                    context: context, builder: (_) => noticeDialog(context));
 
-                  // insertItem(3, Data.noticesList.first);
-                })
-            : SizedBox(),
-      );
+                // insertItem(3, Data.noticesList.first);
+              })
+          : SizedBox(),
+    );
+  }
 
   noticeDialog(BuildContext context) {
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
-      AppLogger.print('12');
       return AlertDialog(
         actions: [
           Row(
@@ -205,6 +151,9 @@ class _NoticesPageState extends State<NoticesPage> {
             ],
           ),
           RoundedLoadingButton(
+            height: 40,
+            width: 200,
+            color: Colors.greenAccent,
             child: Text('upload', style: TextStyle(color: Colors.white)),
             controller: _btnController,
             onPressed: () async {
@@ -220,7 +169,17 @@ class _NoticesPageState extends State<NoticesPage> {
           //   child: Text('send'),
           // ),
         ],
-        title: Center(child: Text('Notice')),
+        title: Center(
+            child: Column(
+          children: [
+            Text('Notice'),
+            Divider(
+              thickness: 2,
+              indent: 40,
+              endIndent: 40,
+            )
+          ],
+        )),
         content: SingleChildScrollView(
           child: Container(
             width: MediaQuery.of(context).size.width,
@@ -323,10 +282,9 @@ class _NoticesPageState extends State<NoticesPage> {
 
   Future uploadNotice() async {
     if (noticeTitleController != null) {
-      StorageDataBase storageDataBase = StorageDataBase(
-          hubCode: Provider.of<HubDataProvider>(context, listen: false)
-              .rootData
-              .hubCode);
+      final hubRootData = Provider.of<HubDataProvider>(context, listen: false);
+      StorageDataBase storageDataBase =
+          StorageDataBase(hubCode: hubRootData.rootData.hubCode);
       List<String> imageUrls = await storageDataBase.addNoticeData(files);
       AppLogger.print(imageUrls.toString());
       List<Comment> comment = [];
@@ -340,49 +298,28 @@ class _NoticesPageState extends State<NoticesPage> {
         ),
         comments: comment,
       );
-      await Provider.of<HubDataProvider>(context, listen: false)
-          .rootReference
-          .notice
-          .add(notice.toJson())
-          .then((value) {
-        Provider.of<HubDataProvider>(context, listen: false)
-            .rootReference
-            .notice
-            .doc(value.id)
-            .update({
+      await hubRootData.rootReference.notice.add(notice.toJson()).then((value) {
+        hubRootData.rootReference.notice.doc(value.id).update({
           "docId": value.id,
         }).then((value) {
           _btnController.success();
         });
       });
+      final body = "tomorrow is extra class";
+      NotificationMessage msg = NotificationMessage(
+          to: "/topics/${hubRootData.rootData.hubname}",
+          notification: NotificationA(
+            title: hubRootData.rootData.hubname,
+            body: body,
+          ),
+          data: NotificationData(
+              title: hubRootData.rootData.hubname,
+              lectureDays: [false],
+              body: body,
+              notificationType: notificationTypeToString(
+                  NotificationType.noticeNotification)));
+      final isFcmMessageSent = await fcm.sendCustomMessage(msg.toJson());
+      AppLogger.print("notice sended succesfully $isFcmMessageSent");
     }
   }
 }
-//  Container(
-//                               // height: 100,
-//                               width: 80,
-//                               color: Colors.blue,
-//                               margin: EdgeInsets.symmetric(
-//                                   vertical: 3, horizontal: 2),
-//                               child: Image.file(
-//                                 files[index],
-//                                 fit: BoxFit.cover,
-//                               ),
-//                             );
-//  ListView.builder(
-//                           scrollDirection: Axis.horizontal,
-//                           itemCount: files.length,
-//                           itemBuilder: (context, index) {
-//                             AppLogger.print(files[index].path);
-//                             return Container(
-//                               // height: 100,
-//                               width: 80,
-//                               color: Colors.blue,
-//                               margin: EdgeInsets.symmetric(
-//                                   vertical: 3, horizontal: 2),
-//                               child: Image.file(
-//                                 files[index],
-//                                 fit: BoxFit.cover,
-//                               ),
-//                             );
-//                           }),

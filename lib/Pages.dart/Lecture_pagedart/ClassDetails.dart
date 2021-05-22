@@ -12,7 +12,9 @@ class ClassDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('class details'),
+      title: Column(
+        children: [Text('class details'), Divider()],
+      ),
       content: Container(
         height: MediaQuery.of(context).size.height * 0.2,
         width: MediaQuery.of(context).size.width * 0.8,
@@ -68,6 +70,11 @@ class ClassDetails extends StatelessWidget {
               ),
             ),
             TextButton(
+                style: TextButton.styleFrom(
+                    primary: Colors.white,
+                    backgroundColor: Colors.greenAccent,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6.0))),
                 onPressed: () {
                   Provider.of<HubDataProvider>(context, listen: false)
                       .addClassDetails(id, subCodeController.text,

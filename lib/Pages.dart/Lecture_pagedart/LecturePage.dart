@@ -1,10 +1,8 @@
-import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/ClassDetails.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/OneTimeLecture.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/WeeklyLecture.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/bottom_sheet.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/showLectureBottomSheet.dart';
-import 'package:classroom_scheduler_flutter/components/LecturesColumn.dart';
+
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
@@ -13,10 +11,8 @@ import 'package:feature_discovery/feature_discovery.dart';
 
 import "package:flutter/material.dart";
 import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
-import 'package:giffy_dialog/giffy_dialog.dart';
+
 import 'package:provider/provider.dart';
-import 'package:weekday_selector/weekday_selector.dart';
-import '../../components/LecturesColumn.dart';
 
 DateTime date = DateTime.now();
 
@@ -56,13 +52,13 @@ class _LectureTabBarState extends State<LectureTabBar> {
 
   @override
   Widget build(BuildContext context) {
+    final hubRootData = Provider.of<HubDataProvider>(context, listen: false);
     return Scaffold(
       body: Container(
         child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: StreamBuilder<QuerySnapshot>(
-              stream: Provider.of<HubDataProvider>(context, listen: false)
-                  .getLectureSream(),
+              stream: hubRootData.getLectureSream(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasData) {
                   List<QueryDocumentSnapshot> lists = snapshot.data.docs;
@@ -100,6 +96,20 @@ class _LectureTabBarState extends State<LectureTabBar> {
                             if (lectures[index].isSpecificDateTime) {
                               return OneTimeSchedule(
                                 lecture: lectures[index],
+                                onDelete: (value) async {
+                                  await hubRootData
+                                      .deleteOneTimeschedule(
+                                          lectures[index].nth.toString(),
+                                          lectures[index])
+                                      .then((value) {
+                                    _animateListKey.currentState.removeItem(
+                                        index, (context, animation) {
+                                      return OneTimeSchedule(
+                                        lecture: lectures[index],
+                                      );
+                                    });
+                                  });
+                                },
                               );
                             } else {
                               return WeeklyLecture(
@@ -126,122 +136,6 @@ class _LectureTabBarState extends State<LectureTabBar> {
                           }),
                         );
                       });
-                  // return ListView.builder(
-                  //     itemCount: snapshot.data.size,
-                  //     itemBuilder: (conext, index) {
-                  //       sheetLectureData = lecture[0];
-                  //       if (lecture[index].isSpecificDateTime) {
-                  //         return OneTimeSchedule(
-                  //           lecture: lecture[index],
-                  //         );
-                  //       } else {
-                  //         return WeeklyLecture(
-                  //           isAdmin: widget.isAdmin,
-                  //           lecture: lecture[index],
-                  //           onTap: () {
-                  //             widget.isAdmin
-                  //                 ? showModalBottomSheet(
-                  //                     context: context,
-                  //                     isScrollControlled: true,
-                  //                     backgroundColor: Colors.transparent,
-                  //                     builder: (context) {
-                  //                       return CustomBottomSheet(
-                  //                         sheetLectureData: lecture[index],
-                  //                         isSpecicifTime: false,
-                  //                       );
-                  //                     },
-                  //                   )
-                  //                 : AppLogger.print("admin: ${widget.isAdmin}");
-                  //           },
-                  //         );
-                  //         // GestureDetector(
-                  //         //   onTap: () {
-                  //         //     widget.isAdmin
-                  //         //         ? showModalBottomSheet(
-                  //         //             context: context,
-                  //         //             isScrollControlled: true,
-                  //         //             backgroundColor: Colors.transparent,
-                  //         //             builder: (context) {
-                  //         //               return CustomBottomSheet(
-                  //         //                 sheetLectureData: lecture[index],
-                  //         //                 isSpecicifTime: false,
-                  //         //               );
-                  //         //             },
-                  //         //           )
-                  //         //         : AppLogger.print("admin: ${widget.isAdmin}");
-                  //         //   },
-                  //         //   child: Container(
-                  //         //     margin: EdgeInsets.symmetric(
-                  //         //         vertical: 5.0, horizontal: 5.0),
-                  //         //     decoration: ShapeDecoration(
-                  //         //       color: Colors.red,
-                  //         //       shape: RoundedRectangleBorder(
-                  //         //         borderRadius: BorderRadius.circular(8.0),
-                  //         //       ),
-                  //         //     ),
-                  //         //     child: Card(
-                  //         //       child: Column(
-                  //         //         children: [
-                  //         //           ListTile(
-                  //         //             title: Text(
-                  //         //               '${lecture[index].hubName} class time',
-                  //         //               style: TextStyle(
-                  //         //                   fontSize: 18,
-                  //         //                   fontWeight: FontWeight.w600),
-                  //         //             ),
-                  //         //             trailing: IconButton(
-                  //         //               icon: Icon(Icons.edit_rounded),
-                  //         //               onPressed: () {
-                  //         //                 // to implement function of adding teacher name and subject code
-                  //         //                 showDialog(
-                  //         //                   context: context,
-                  //         //                   builder: (_) {
-                  //         //                     return ClassDetails(
-                  //         //                       id: lecture[index]
-                  //         //                           .nth
-                  //         //                           .toString(),
-                  //         //                     );
-                  //         //                   },
-                  //         //                 );
-                  //         //               },
-                  //         //             ),
-                  //         //           ),
-                  //         //           lecture[index].subCode != null
-                  //         //               ? Text(
-                  //         //                   lecture[index].subCode,
-                  //         //                   style: TextStyle(
-                  //         //                       fontSize: 16,
-                  //         //                       fontWeight: FontWeight.w500),
-                  //         //                 )
-                  //         //               : SizedBox(),
-                  //         //           lecture[index].teacherName != null
-                  //         //               ? Text(lecture[index].teacherName,
-                  //         //                   style: TextStyle(
-                  //         //                       fontSize: 16,
-                  //         //                       fontWeight: FontWeight.w500))
-                  //         //               : SizedBox(),
-                  //         //           Row(
-                  //         //             mainAxisAlignment:
-                  //         //                 MainAxisAlignment.spaceAround,
-                  //         //             children: [
-                  //         //               Text(lecture[index]
-                  //         //                   .startTime
-                  //         //                   .substring(11, 16)),
-                  //         //               Text(lecture[index]
-                  //         //                   .endTime
-                  //         //                   .substring(11, 16))
-                  //         //             ],
-                  //         //           ),
-                  //         //           WeekdaySelector(
-                  //         //               onChanged: null,
-                  //         //               values: lecture[index].lectureDays)
-                  //         //         ],
-                  //         //       ),
-                  //         //     ),
-                  //         //   ),
-                  //         // );
-                  //       }
-                  //     });
                 } else {
                   return Text('nothong to show');
                 }
@@ -270,14 +164,12 @@ class _LectureTabBarState extends State<LectureTabBar> {
                   tapTarget: Icon(Icons.add),
                   child: Icon(Icons.add)),
               onPressed: () {
-                widget.isAdmin
-                    ? showAnimatedDialog(
-                        animationType: DialogTransitionType.slideFromLeft,
-                        context: context,
-                        builder: (_) => ShowLectureBottomSheet(
-                              sheetLectureData: sheetLectureData,
-                            ))
-                    : AppLogger.print("admin: ${widget.isAdmin}");
+                showAnimatedDialog(
+                    animationType: DialogTransitionType.slideFromLeft,
+                    context: context,
+                    builder: (_) => ShowLectureBottomSheet(
+                          sheetLectureData: sheetLectureData,
+                        ));
               })
           : SizedBox(),
     );

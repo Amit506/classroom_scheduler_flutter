@@ -1,4 +1,4 @@
-import 'package:classroom_scheduler_flutter/archived/tempLogin.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
@@ -26,21 +26,28 @@ class LandingScreenDrawer extends StatelessWidget {
             accountEmail: Text(authService.currentUser.email),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.green,
-              backgroundImage: NetworkImage(
+              backgroundImage: CachedNetworkImageProvider(
                 authService.currentUser.photoURL,
               ),
             ),
           ),
         ),
         Expanded(
-          child: Column(
-            children: drawerData.map((item) {
+            child: ListView(
+          children: ListTile.divideTiles(
+            color: Colors.black,
+            //          <-- ListTile.divideTiles
+            context: context,
+            tiles: drawerData.map((item) {
               return ListTile(
-                title: Text(item.hubname),
+                title: Text(
+                  item.hubname,
+                  style: TextStyle(letterSpacing: 1),
+                ),
               );
             }).toList(),
-          ),
-        ),
+          ).toList(),
+        )),
         Align(
             alignment: Alignment.bottomCenter,
             child: TextButton(
@@ -59,35 +66,22 @@ class LandingScreenDrawer extends StatelessWidget {
     );
   }
 }
+// ListView(
+//   children: ListTile.divideTiles( //          <-- ListTile.divideTiles
+//       context: context,
+//       tiles: [
+//         ListTile(
+//           title: Text(drawerData[index]),
+//         ),
 
-//  UserAccountsDrawerHeader(
-//           accountName: Text(authService.currentUser.displayName),
-//           accountEmail: Text(authService.currentUser.email),
-//           currentAccountPicture: CircleAvatar(
-//             backgroundColor: Colors.green,
-//             backgroundImage: NetworkImage(
-//               authService.currentUser.photoURL,
-//             ),
-//           ),
-// ),
-//  ListView.builder(
-//             itemCount: drawerData.length + 2,
-//             itemBuilder: (context, index) {
-//               if (index == 0) {
-//                 return UserAccountsDrawerHeader(
-//                   accountName: Text(authService.currentUser.displayName),
-//                   accountEmail: Text(authService.currentUser.email),
-//                   currentAccountPicture: CircleAvatar(
-//                     backgroundColor: Colors.green,
-//                     backgroundImage: NetworkImage(
-//                       authService.currentUser.photoURL,
-//                     ),
-//                   ),
-//                 );
-//               } else {
-//                 AppLogger.print(drawerData[index - 1].hubname);
-//                 return ListTile(
-//                   title: Text(drawerData[index - 1].hubname),
-//                 );
-//               }
-//             }),
+//       ]
+//   ).toList(),
+// )
+//  drawerData.map((item) {
+//               return ListTile(
+//                 title: Text(
+//                   item.hubname,
+//                   style: TextStyle(letterSpacing: 1),
+//                 ),
+//               );
+//             }).toList(),

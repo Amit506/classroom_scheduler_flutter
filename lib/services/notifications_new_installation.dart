@@ -44,10 +44,10 @@ class InstallNotifications {
     final snap = await userData.get();
     if (snap.docs.isNotEmpty) {
       AppLogger.print('loading notification data is not empty');
-      AppLogger.print(snap.docs.first.data().toString());
       List list = snap.docs;
       for (var value in list) {
         AppLogger.print(value['hubCode']);
+        await fireBaseNotificationService.subscribeTopic(value['hubname']);
         notificationInstall.add(NotificationInstall(
           hubCode: value['hubCode'],
           hubName: value['hubname'],
@@ -62,8 +62,6 @@ class InstallNotifications {
   getNotificationInfo() async {
     if (notificationInstall != null) {
       for (var data in notificationInstall) {
-        AppLogger.print(data.hubName);
-        await fireBaseNotificationService.subscribeTopic(data.hubName);
         CollectionReference hub = _firestore
             .collection('Data')
             .doc(data.hubCode)
@@ -72,7 +70,6 @@ class InstallNotifications {
             .collection('lectures');
         AppLogger.print(hub.path);
         final snap = await hub.get();
-        AppLogger.print('${snap.size.toString()}  : length of lectures');
 
         if (snap.docs.isNotEmpty) {
           List<QueryDocumentSnapshot> lists = snap.docs;
@@ -81,10 +78,11 @@ class InstallNotifications {
             notificationData.add(
                 NotificationData.fromJson(list.data()['notificationData']));
           }
+
           AppLogger.print('length of notifications ${notificationData.length}');
           AppLogger.print('seting notification for new install');
           for (var notification in notificationData) {
-            AppLogger.print(notification.toString());
+            AppLogger.print(notification.lectureDays.toString());
             await np.createHubNotification(notification);
           }
         }

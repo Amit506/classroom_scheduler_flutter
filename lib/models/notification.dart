@@ -6,6 +6,25 @@ import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 //     NotificationData.fromJson(json.decode(str));
 
 // String welcomeToJson(NotificationData data) => json.encode(data.toJson());
+enum NotificationType {
+  deleteNotification,
+  lectureNotification,
+  noticeNotification,
+  updateWeekNotification,
+}
+
+notificationTypeToString(NotificationType time) {
+  switch (time) {
+    case NotificationType.deleteNotification:
+      return "deleteNotification";
+    case NotificationType.lectureNotification:
+      return "lectureNotification";
+    case NotificationType.noticeNotification:
+      return "noticeNotification";
+    case NotificationType.updateWeekNotification:
+      return "updateWeekNotification";
+  }
+}
 
 class NotificationData {
   NotificationData({
@@ -17,6 +36,7 @@ class NotificationData {
     this.isSpecificDateTime,
     this.notificationId,
     this.lectureDays,
+    this.notificationType,
     this.hubName,
   });
 
@@ -29,19 +49,20 @@ class NotificationData {
   String notificationId;
   List<bool> lectureDays;
   String hubName;
+  String notificationType;
 
   factory NotificationData.fromJson(Map<String, dynamic> json) =>
       NotificationData(
-        startTime: json["startTime"],
-        endTime: json["endTime"],
-        title: json["title"],
-        specificDateTime: json["specificDateTime"],
-        body: json["body"],
-        isSpecificDateTime: toBool(json["isSpecificDateTime"]),
-        notificationId: json["notificationId"],
-        lectureDays: _toList(json['lectureDays']),
-        hubName: json["hubName"],
-      );
+          startTime: json["startTime"],
+          endTime: json["endTime"],
+          title: json["title"],
+          specificDateTime: json["specificDateTime"],
+          body: json["body"],
+          isSpecificDateTime: json["isSpecificDateTime"],
+          notificationId: json["notificationId"],
+          lectureDays: List<bool>.from(json["lectureDays"].map((x) => x)),
+          hubName: json["hubName"],
+          notificationType: json["notificationType"]);
 
   Map<String, dynamic> toJson() => {
         "startTime": startTime,
@@ -53,10 +74,25 @@ class NotificationData {
         "notificationId": notificationId,
         "lectureDays": List<bool>.from(lectureDays.map((x) => x)),
         "hubName": hubName,
+        "notificationType": notificationType,
       };
+  static NotificationData fromNotificationData(Map<String, dynamic> json) {
+    return NotificationData(
+        startTime: json["startTime"],
+        endTime: json["endTime"],
+        title: json["title"],
+        specificDateTime: json["specificDateTime"],
+        body: json["body"],
+        isSpecificDateTime: toBool(json["isSpecificDateTime"]),
+        notificationId: json["notificationId"],
+        lectureDays: _toList(json["lectureDays"]),
+        hubName: json["hubName"],
+        notificationType: json["notificationType"]);
+  }
 }
 
 bool toBool(dynamic value) {
+  AppLogger.print(value.toString());
   if (value == 'true')
     return true;
   else
@@ -64,11 +100,17 @@ bool toBool(dynamic value) {
 }
 
 List<bool> _toList(dynamic value) {
+  AppLogger.print("here..........." + value.toString());
   if (value == null) {
     return <bool>[];
   }
   final str = value.toString();
   List<String> temp = str.toString().substring(1, str.length - 1).split(',');
+  AppLogger.print("here too......." + temp.toString());
+  AppLogger.print("result  :" +
+      List<bool>.from(
+              temp.map<bool>((String e) => e.length == 4 ? true : false))
+          .toString());
   return List<bool>.from(
       temp.map<bool>((String e) => e.length == 4 ? true : false));
 }
