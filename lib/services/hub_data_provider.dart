@@ -1,3 +1,4 @@
+import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
@@ -8,6 +9,7 @@ import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 // this class is used to  get data once inside in particular hub
 class HubDataProvider extends ChangeNotifier {
@@ -62,14 +64,17 @@ class HubDataProvider extends ChangeNotifier {
     return _rootCollection.lectures.snapshots();
   }
 
-  Future deleteNotice(String docId) async {
+  Future deleteNotice(String docId, BuildContext context) async {
     AppLogger.print(_rootCollection.notice.doc(docId).path);
-    await _rootCollection.notice.doc(docId).delete();
+    await _rootCollection.notice.doc(docId).delete().catchError((onError) {
+      Common.showSnackBar(onError.toString(), context);
+    });
   }
 
   Future deleteOneTimeschedule(
     String docId,
     Lecture lecture,
+    BuildContext context,
   ) async {
     AppLogger.print(_rootCollection.lectures.doc(docId).path);
     NotificationMessage msg = NotificationMessage(
@@ -83,8 +88,11 @@ class HubDataProvider extends ChangeNotifier {
           isSpecificDateTime: true,
           lectureDays: [false],
         ));
-    await fcm.sendCustomMessage(msg.toJson());
-    await _rootCollection.lectures.doc(lecture.nth.toString()).delete();
+    await fcm.sendCustomMessage(msg.toJson()).then((value) async {
+      await _rootCollection.lectures.doc(lecture.nth.toString()).delete();
+    }).catchError((onError) {
+      Common.showSnackBar(onError.toString(), context);
+    });
 
     // to implement delete set notifications drom device;
   }

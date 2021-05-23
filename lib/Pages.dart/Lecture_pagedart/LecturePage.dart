@@ -1,8 +1,11 @@
-import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/OneTimeLecture.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/WeeklyLecture.dart';
+import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
+import 'package:classroom_scheduler_flutter/services/notification_manager.dart/notification_provider.dart';
+import 'package:classroom_scheduler_flutter/widgets.dart/OneTimeLecture.dart';
+import 'package:classroom_scheduler_flutter/widgets.dart/WeeklyLecture.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/bottom_sheet.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/showLectureBottomSheet.dart';
-
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
@@ -30,16 +33,20 @@ class LectureTabBar extends StatefulWidget {
   _LectureTabBarState createState() => _LectureTabBarState();
 }
 
-class _LectureTabBarState extends State<LectureTabBar> {
+class _LectureTabBarState extends State<LectureTabBar>
+    with AutomaticKeepAliveClientMixin<LectureTabBar> {
   // PersistentBottomSheetController _controller;
 
   // final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<AnimatedListState> _animateListKey = GlobalKey();
+  NotificationProvider notificationProvider = NotificationProvider();
+  // final GlobalKey<AnimatedListState> _animateListKey = GlobalKey();
   TextEditingController teacherNameController = TextEditingController();
   TextEditingController subCodeController = TextEditingController();
   Lecture sheetLectureData;
-  List<Lecture> lectures = [];
+  // bool switchValue = false;
   int itemCount = 0;
+  // bool weekSwitchValue = true;
+  List<PendingNotificationRequest> pendingNotifications;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -48,6 +55,17 @@ class _LectureTabBarState extends State<LectureTabBar> {
       ]);
     });
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Provider.of<LocalNotificationManagerFlutter>(context)
+        .pendingNotificationStream
+        .listen((event) {
+      pendingNotifications = event.toList();
+      AppLogger.print(pendingNotifications.toString());
+    });
   }
 
   @override
@@ -62,82 +80,114 @@ class _LectureTabBarState extends State<LectureTabBar> {
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasData) {
                   List<QueryDocumentSnapshot> lists = snapshot.data.docs;
+                  List<Lecture> lectures = [];
+                  for (var list in lists)
+                    lectures.add(Lecture.fromJson(list.data()));
 
-                  for (var list in lists) {
-                    if (!lectures.contains(Lecture.fromJson(list.data()))) {
-                      lectures.add(Lecture.fromJson(list.data()));
-                    } else {
-                      AppLogger.print('true');
-                    }
-                  }
+                  return ListView.builder(
+                      itemCount: lectures.length,
+                      itemBuilder: (_, index) {
+                        sheetLectureData = lectures[0];
+                        if (lectures[index].isSpecificDateTime) {
+                          return OneTimeSchedule(
+                            lecture: lectures[index],
+                            onDelete: (value) async {
+                              AppLogger.print(value);
+                              await hubRootData.deleteOneTimeschedule(
+                                  lectures[index].nth.toString(),
+                                  lectures[index],
+                                  context);
+                            },
+                            switchValue: pendingNotifications
+                                .contains(lectures[index].notificationId),
+                            onChanged: (value) async {
+                              setState(() {
+                                // switchValue = value;
+                              });
 
-                  for (int i = itemCount; i < lists.length; i++) {
-                    Future.delayed(Duration(milliseconds: 100 * i), () {
-                      _animateListKey.currentState.insertItem(i);
-                    }).then((value) {
-                      itemCount = lists.length;
-                    });
-                  }
+                              if (!value) {
+                                notificationProvider.cancelNotification(
+                                    lectures[index].notificationId);
+                              } else {
+                                AppLogger.print('one time notification');
 
-                  return AnimatedList(
-                      key: _animateListKey,
-                      initialItemCount: itemCount,
-                      itemBuilder: (context, index, animation) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(-1, 0),
-                            end: Offset(0, 0),
-                          ).animate(CurvedAnimation(
-                              parent: animation,
-                              curve: Curves.bounceIn,
-                              reverseCurve: Curves.bounceOut)),
-                          child: Builder(builder: (_) {
-                            sheetLectureData = lectures[0];
-                            if (lectures[index].isSpecificDateTime) {
-                              return OneTimeSchedule(
-                                lecture: lectures[index],
-                                onDelete: (value) async {
-                                  await hubRootData
-                                      .deleteOneTimeschedule(
-                                          lectures[index].nth.toString(),
-                                          lectures[index])
-                                      .then((value) {
-                                    _animateListKey.currentState.removeItem(
-                                        index, (context, animation) {
-                                      return OneTimeSchedule(
-                                        lecture: lectures[index],
-                                      );
-                                    });
-                                  });
-                                },
-                              );
-                            } else {
-                              return WeeklyLecture(
-                                isAdmin: widget.isAdmin,
-                                lecture: lectures[index],
-                                onTap: () {
-                                  widget.isAdmin
-                                      ? showModalBottomSheet(
-                                          context: context,
-                                          isScrollControlled: true,
-                                          backgroundColor: Colors.transparent,
-                                          builder: (context) {
-                                            return CustomBottomSheet(
-                                              sheetLectureData: lectures[index],
-                                              isSpecicifTime: false,
-                                            );
-                                          },
-                                        )
-                                      : AppLogger.print(
-                                          "admin: ${widget.isAdmin}");
-                                },
-                              );
-                            }
-                          }),
-                        );
+                                final tz.TZDateTime now =
+                                    tz.TZDateTime.now(tz.local);
+                                tz.TZDateTime scheduledDate =
+                                    tz.TZDateTime.parse(tz.local,
+                                        lectures[index].specificDateTime);
+                                AppLogger.print('$now    :  $scheduledDate');
+
+                                if (scheduledDate.isAfter(now)) {
+                                  await notificationProvider
+                                      .createSpecificNotificationUtil(
+                                          scheduledDate, null,
+                                          lecture: lectures[index]);
+                                } else {
+                                  AppLogger.print("time should be in future");
+                                  // Common.showDateTimeSnackBar(context);
+                                }
+                              }
+                            },
+                          );
+                        } else {
+                          return WeeklyLecture(
+                            isAdmin: widget.isAdmin,
+                            lecture: lectures[index],
+                            weekSwitchValue: pendingNotifications
+                                .contains(lectures[index].notificationId),
+                            onTap: () {
+                              widget.isAdmin
+                                  ? showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      backgroundColor: Colors.transparent,
+                                      builder: (context) {
+                                        return CustomBottomSheet(
+                                          sheetLectureData: lectures[index],
+                                          isSpecicifTime: false,
+                                        );
+                                      },
+                                    )
+                                  : AppLogger.print("admin: ${widget.isAdmin}");
+                            },
+                            onChanged: (value) async {
+                              setState(() {
+                                // weekSwitchValue = value;
+                              });
+                              AppLogger.print(value.toString());
+                              if (!value) {
+                                AppLogger.print('cancel');
+                                notificationProvider.cancelNotification(
+                                    lectures[index].notificationId);
+                              } else {
+                                for (int i = 0;
+                                    i < lectures[index].lectureDays.length;
+                                    i++) {
+                                  if (i == 0) {
+                                    tz.TZDateTime time =
+                                        notificationProvider.nextInstanceOfDay(
+                                            lectures[index].startTime, 7);
+                                    await notificationProvider
+                                        .createHubNotificationUtil(time, null,
+                                            lecture: lectures[index]);
+                                  } else {
+                                    tz.TZDateTime time =
+                                        notificationProvider.nextInstanceOfDay(
+                                            lectures[index].startTime, i);
+                                    AppLogger.print(time.toString());
+                                    await notificationProvider
+                                        .createHubNotificationUtil(time, null,
+                                            lecture: lectures[index]);
+                                  }
+                                }
+                              }
+                            },
+                          );
+                        }
                       });
                 } else {
-                  return Text('nothong to show');
+                  return LinearProgressIndicator();
                 }
               }),
         ),
@@ -174,4 +224,7 @@ class _LectureTabBarState extends State<LectureTabBar> {
           : SizedBox(),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

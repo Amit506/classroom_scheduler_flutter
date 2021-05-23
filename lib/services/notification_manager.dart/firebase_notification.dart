@@ -1,7 +1,7 @@
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
+
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/fcm_service_api.dart';
-import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/notification_provider.dart';
 import 'package:classroom_scheduler_flutter/models/notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,7 +22,7 @@ class FireBaseNotificationService {
   NotificationProvider np = NotificationProvider();
   // 2012-02-27 13:27:00
   onMessage() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification notification = message.notification;
       // AndroidNotification android = message.notification?.android;
 
@@ -36,7 +36,7 @@ class FireBaseNotificationService {
                 NotificationData.fromNotificationData(message.data);
             AppLogger.print(message.data.toString());
             AppLogger.print(data.toString());
-            np.cancelNotification(int.parse(data.notificationId));
+            await np.cancelNotification(int.parse(data.notificationId));
           }
           break;
         case "lectureNotification":
@@ -63,8 +63,31 @@ class FireBaseNotificationService {
                 NotificationData.fromNotificationData(message.data);
             AppLogger.print(message.data.toString());
             AppLogger.print(data.toString());
-            np.updateNotification(data);
+            await np.updateNotification(data);
           }
+          break;
+        case "deleteHub":
+          {
+            AppLogger.print("hub delete");
+            AppLogger.print(message.data["notificationId"].toString());
+            if (message.data["notificationId"] != null) {
+              message.data.forEach((key, value) {
+                if (key == "notificationId") {
+                  List<String> ids = value
+                      .toString()
+                      .substring(1, value.toString().length - 1)
+                      .split(',');
+
+                  ids.forEach((element) async {
+                    await np.cancelNotification(int.parse(element.toString()));
+                  });
+                }
+              });
+            } else {
+              AppLogger.print('data not available');
+            }
+          }
+          break;
       }
     });
   }
@@ -88,7 +111,7 @@ class FireBaseNotificationService {
   }
 
   tokenRefresh() async {
-    return fcm.onTokenRefresh.listen((event) {
+    fcm.onTokenRefresh.listen((event) {
       CollectionReference collec = FirebaseFirestore.instance
           .collection('UserData')
           .doc(AuthService.instance.currentUser.uid)

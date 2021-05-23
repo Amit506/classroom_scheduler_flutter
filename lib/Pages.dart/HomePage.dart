@@ -1,4 +1,7 @@
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/LecturePage.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/notice_page.dart/NoticesPage.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/people_page.dart/PeoplePage.dart';
+import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
@@ -8,9 +11,6 @@ import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'Landing_page.dart/LandingPage.dart';
-import 'TabBars.dart/PeopleTabBar.dart';
-import 'TabBars.dart/LectureTabBar.dart';
-import 'TabBars.dart/NoticesTabBar.dart';
 
 class HomePage extends StatefulWidget {
   final RootHub rootData;
@@ -30,9 +30,13 @@ class _HomePageState extends State<HomePage> {
   bool isAdmin = false;
   RootCollection rootCollection;
   HubRootData hubRootData = HubRootData();
+  PageController _pageController;
+  int _pageIndex = 0;
+
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: _pageIndex);
     if (authService.currentUser.email == widget.rootData.admin) {
       setState(() {
         isAdmin = true;
@@ -42,37 +46,71 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(Provider.of<HubDataProvider>(context, listen: true)
-              .rootData
-              .hubname),
-          centerTitle: true,
-          bottom: TabBar(
-            tabs: [
-              Text('Notices'),
-              Text('Lecture'),
-              Text('People'),
-            ],
-          ),
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, LandingPage.routename);
-            },
-            icon: Icon(Icons.home),
-          ),
-        ),
-        body: TabBarView(
-          children: [
-            NoticesTabBar(isAdmin: isAdmin),
-            LectureTabBar(isAdmin: isAdmin),
-            PeopleTabBar(),
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Provider.of<HubDataProvider>(context, listen: true)
+            .rootData
+            .hubname),
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushNamed(context, LandingPage.routename);
+          },
+          icon: Icon(Icons.home),
         ),
       ),
+      body: PageView(
+        children: [
+          NoticesPage(isAdmin: isAdmin),
+          LectureTabBar(isAdmin: isAdmin),
+          PeoplePage(),
+        ],
+        onPageChanged: onPageChanged,
+        controller: _pageController,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+          selectedIconTheme: IconThemeData(color: color10),
+          unselectedIconTheme: IconThemeData(color: Colors.blueGrey),
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.assignment),
+              label: 'notice',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.schedule_rounded),
+              label: 'schedule',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.people_alt),
+              label: 'people',
+            ),
+          ],
+          type: BottomNavigationBarType.fixed,
+          currentIndex: _pageIndex,
+          iconSize: 30,
+          onTap: onTabTapped,
+          elevation: 5),
     );
+  }
+
+  void onTabTapped(int index) {
+    setState(() {
+      _pageIndex = index;
+    });
+    this._pageController.animateToPage(index,
+        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+  }
+
+  void onPageChanged(int page) {
+    setState(() {
+      this._pageIndex = page;
+    });
   }
 }

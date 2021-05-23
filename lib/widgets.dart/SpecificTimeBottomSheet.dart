@@ -1,6 +1,7 @@
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 // ignore: must_be_immutable
 class SpecifcTimeBottomSheet extends StatelessWidget {
@@ -9,6 +10,7 @@ class SpecifcTimeBottomSheet extends StatelessWidget {
   final Function onTapPickedTime;
   final Function onPressed;
   final Function onTapPickDate;
+  final RoundedLoadingButtonController btnController;
 
   SpecifcTimeBottomSheet(
       {Key key,
@@ -16,7 +18,8 @@ class SpecifcTimeBottomSheet extends StatelessWidget {
       this.selectedTime,
       this.onPressed,
       this.onTapPickedTime,
-      this.onTapPickDate})
+      this.onTapPickDate,
+      this.btnController})
       : super(key: key);
   var style = TextButton.styleFrom(
       primary: Colors.white,
@@ -134,12 +137,12 @@ class SpecifcTimeBottomSheet extends StatelessWidget {
                             Chip(
                               backgroundColor: color10,
                               label: Text(
-                                '12',
+                                selectedTime.minute.toString(),
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),
                             Text(
-                              selectedTime.minute.toString(),
+                              'min',
                               style: TextStyle(fontSize: 10),
                             )
                           ],
@@ -148,81 +151,19 @@ class SpecifcTimeBottomSheet extends StatelessWidget {
                     )
                   ],
                 ),
-                ElevatedButton(
+                RoundedLoadingButton(
+                  height: 40,
+                  width: 150,
+                  color: Colors.greenAccent,
+                  child: Text('save', style: TextStyle(color: Colors.white)),
+                  controller: btnController,
                   onPressed: onPressed,
-                  child: Text('save'),
-                ),
+                )
               ],
             ),
           ),
         ],
       ),
-      // child: Column(
-      //   children: [
-      //     Icon(
-      //       Icons.remove,
-      //       color: Colors.grey[600],
-      //     ),
-      //     ListTile(
-      //       title: Text(
-      //           "Date: ${pickedDate.year}, ${pickedDate.month}, ${pickedDate.day}"),
-      //       trailing: Icon(Icons.keyboard_arrow_down),
-      //       onTap: onTapPickDate,
-      //     ),
-      //     ListTile(
-      //         title: Text("Time: ${Common.getTimeString(selectedTime)}"),
-      //         trailing: Icon(Icons.keyboard_arrow_down),
-      //         onTap: onTapPickedTime),
-      //     ElevatedButton(
-      //       onPressed: onPressed,
-      //       child: Text('save'),
-      //     ),
-      //   ],
-      // ),
     );
   }
 }
-// Container(
-//                   decoration: BoxDecoration(
-//                     color: Colors.white,
-//                     borderRadius: BorderRadius.only(
-//                       topLeft: const Radius.circular(25.0),
-//                       topRight: const Radius.circular(25.0),
-//                     ),
-//                   ),
-//                   child: Column(
-//                     children: [
-//                       Icon(
-//                         Icons.remove,
-//                         color: Colors.grey[600],
-//                       ),
-//                       ListTile(
-//                         title: Text(
-//                             "Date: ${pickedDate.year}, ${pickedDate.month}, ${pickedDate.day}"),
-//                         trailing: Icon(Icons.keyboard_arrow_down),
-//                         onTap: _pickDate,
-//                       ),
-//                       ListTile(
-//                         title:
-//                             Text("Time: ${Common.getTimeString(selectedTime)}"),
-//                         trailing: Icon(Icons.keyboard_arrow_down),
-//                         onTap: () {
-//                           _selectTime(1);
-//                         },
-//                       ),
-//                       ElevatedButton(
-//                         onPressed: () async {
-//                           if (Common.isValidNotificationTym(
-//                               Common.getNotificationTimeString(selectedTime,
-//                                   date: pickedDate, isSpecificDate: true))) {
-//                             // await setSpecificCLassTime();
-//                           } else {
-//                             AppLogger.print('not a valid time');
-//                             // show snackbar here
-//                           }
-//                         },
-//                         child: Text('save'),
-//                       ),
-//                     ],
-//                   ),
-//                 );

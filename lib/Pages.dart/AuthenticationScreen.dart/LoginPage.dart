@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
-import '../Landing_page.dart/LandingPage.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 

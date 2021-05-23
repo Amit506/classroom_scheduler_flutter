@@ -27,24 +27,27 @@ class MemberInfo {
     this.token,
     this.email,
     this.name,
+    this.docId,
   });
 
   String uid;
   String token;
   String email;
   String name;
+  String docId;
 
   factory MemberInfo.fromJson(Map<String, dynamic> json) => MemberInfo(
-        uid: json["uid"],
-        token: json["token"],
-        email: json["email"],
-        name: json["name"],
-      );
+      uid: json["uid"],
+      token: json["token"],
+      email: json["email"],
+      name: json["name"],
+      docId: json["docId"]);
 
   Map<String, dynamic> toJson() => {
         "uid": uid,
         "token": token,
         "email": email,
         "name": name,
+        "docId": docId,
       };
 }

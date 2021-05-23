@@ -31,7 +31,7 @@ class DynamicLink {
     try {
       final PendingDynamicLinkData data =
           await FirebaseDynamicLinks.instance.getInitialLink();
-      final Uri deepLink = data.link;
+      final Uri deepLink = data?.link;
 
       if (deepLink != null) {
         handleDynamicLink(deepLink, context);
@@ -46,7 +46,7 @@ class DynamicLink {
       FirebaseDynamicLinks.instance.onLink(
           onSuccess: (PendingDynamicLinkData dynamicLink) async {
         AppLogger.print('opened from link');
-        handleDynamicLink(dynamicLink.link, context);
+        handleDynamicLink(dynamicLink?.link, context);
 
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => LandingPage()));

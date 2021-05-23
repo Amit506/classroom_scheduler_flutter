@@ -1,20 +1,23 @@
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
-import 'package:classroom_scheduler_flutter/services/app_loger.dart';
-import 'package:classroom_scheduler_flutter/services/notification_manager.dart/AlarmManager.dart';
+
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class OneTimeSchedule extends StatelessWidget {
   final Lecture lecture;
   final Function onDelete;
+  final Function(bool) onChanged;
+  final bool switchValue;
 
   var oneStyle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.bold,
   );
   var dateTimeStyle = TextStyle(fontSize: 14, fontWeight: FontWeight.w500);
-  OneTimeSchedule({Key key, this.lecture, this.onDelete}) : super(key: key);
+  OneTimeSchedule(
+      {Key key, this.lecture, this.onDelete, this.onChanged, this.switchValue})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     DateTime date = DateTime.parse(lecture.specificDateTime);
@@ -44,6 +47,7 @@ class OneTimeSchedule extends StatelessWidget {
                         return [
                           PopupMenuItem(
                               height: 26,
+                              value: "delete",
 
                               //  enabled: ,
                               child: Text('Delete')),
@@ -51,23 +55,7 @@ class OneTimeSchedule extends StatelessWidget {
                       }),
                 ],
               ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: [
-              //     // SwitchListTile(
-              //     //     value: false,
-              //     //     onChanged: (value) async {
-              //     //       // AppLogger.print(lecture.specificDateTime);
-              //     //       // AppLogger.print(lecture.notificationId.toString());
-              //     //       // final isSucess = await AlarmManager.getInstance().oneShot(
-              //     //       //     DateTime.parse(lecture.specificDateTime),
-              //     //       //     lecture.notificationId);
-              //     //       // AppLogger.print(isSucess.toString());
-              //     //     }),
-              //     // IconButton(icon: Icon(Icons.more_vert), onPressed: onDelete)
-              //   ],
-              // ),
-
+              SwitchListTile(value: switchValue, onChanged: onChanged),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

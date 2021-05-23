@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:device_info/device_info.dart';
 
-class LocalNotificationManagerFlutter {
+class LocalNotificationManagerFlutter extends ChangeNotifier {
+  Stream<List<PendingNotificationRequest>> _subscription;
   static LocalNotificationManagerFlutter _instance;
   static LocalNotificationManagerFlutter getInstance() {
     if (_instance == null) {
@@ -14,12 +17,17 @@ class LocalNotificationManagerFlutter {
     return _instance;
   }
 
+  Stream<List<PendingNotificationRequest>> get pendingNotificationStream =>
+      _subscription;
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   FlutterLocalNotificationsPlugin get flnp => flutterLocalNotificationsPlugin;
   var initSetting;
   LocalNotificationManagerFlutter.init() {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    _subscription =
+        flnp.pendingNotificationRequests().asStream().asBroadcastStream();
+
 // if want to initialize ios platform permission is required
     intitialzeAndroidPlatform();
   }
@@ -41,6 +49,7 @@ class LocalNotificationManagerFlutter {
     print(['----------------------------------------']);
 
     AppLogger.print(to.toString());
+    return to;
   }
 
   Future getActiveNotifications() async {
@@ -75,5 +84,10 @@ class LocalNotificationManagerFlutter {
         'message: ${error.message}',
       );
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

@@ -1,21 +1,18 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/HubContainer.dart';
+import 'package:classroom_scheduler_flutter/widgets.dart/HubContainer.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/drawer.dart';
+import 'package:classroom_scheduler_flutter/widgets.dart/drawer.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
-import 'package:classroom_scheduler_flutter/services/dynamic_link.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/notification_provider.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:feature_discovery/feature_discovery.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -41,7 +38,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   String hubname;
   String hubcode;
   String token;
-
+  bool isAdmin = false;
   bool _loading = false;
 
   TextEditingController textEditingController = TextEditingController();
@@ -49,18 +46,8 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      FeatureDiscovery.discoverFeatures(context, <String>[
-        'feature1',
-        'feature2',
-        'feature3',
-        'feature4',
-      ]);
-    });
-    loadDrawer();
-    _fcm.tokenRefresh();
 
-    // _fcm.onMessage();
+    loadDrawer();
   }
 
   @override
@@ -170,18 +157,27 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                         },
                         ondelete: (value) async {
                           AppLogger.print('presses');
-                          final rootCollection =
-                              hubRootData.rootCollectionReference(
-                                  rootData[index].hubname,
-                                  rootData[index].hubCode,
-                                  authService.currentUser.uid);
-                          await hubRootData.deleteHub(
-                              rootCollection, rootData[index].hubCode);
+                          if (rootData[index].admin ==
+                              authService.currentUser.email) {
+                            final rootCollection =
+                                hubRootData.rootCollectionReference(
+                                    rootData[index].hubname,
+                                    rootData[index].hubCode,
+                                    authService.currentUser.uid);
+                            AppLogger.print(rootData[index].hubname);
+                            await hubRootData.deleteAdminHub(
+                                rootCollection,
+                                rootData[index].hubCode,
+                                rootData[index].hubname,
+                                context);
+                          } else {
+                            hubRootData.deleteHub(rootData[index]);
+                          }
                         },
                       );
                     });
               } else {
-                return Text('no data available');
+                return LinearProgressIndicator();
               }
             },
           ),
@@ -457,7 +453,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
       } else {
         floatingActionButtonLoading();
         Navigator.pop(context);
-        Common.showSnackBar("enter valide hubcode", Colors.redAccent, context);
+        Common.showSnackBar("enter valide hubcode", context);
       }
     } else {
       print('hubcode is null');

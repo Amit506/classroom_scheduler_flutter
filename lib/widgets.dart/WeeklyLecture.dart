@@ -9,8 +9,16 @@ class WeeklyLecture extends StatelessWidget {
   final bool isAdmin;
   final Lecture lecture;
   final Function onTap;
+  final bool weekSwitchValue;
+  final Function(bool) onChanged;
 
-  const WeeklyLecture({Key key, this.isAdmin, this.lecture, this.onTap})
+  const WeeklyLecture(
+      {Key key,
+      this.isAdmin,
+      this.lecture,
+      this.onTap,
+      this.onChanged,
+      this.weekSwitchValue})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -54,6 +62,7 @@ class WeeklyLecture extends StatelessWidget {
                       },
                     ),
                   ),
+                  SwitchListTile(value: weekSwitchValue, onChanged: onChanged),
                   lecture.subCode != null
                       ? Text(
                           lecture.subCode,

@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
-import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
+
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/notification_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:classroom_scheduler_flutter/models/notification.dart';
@@ -24,7 +23,7 @@ class InstallNotifications {
 
   String userid;
   List<NotificationInstall> notificationInstall = [];
-  InstallNotifications({@required this.userid}) {
+  InstallNotifications.init({@required this.userid}) {
     syncsharePref();
     initData();
   }

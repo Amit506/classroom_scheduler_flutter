@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:classroom_scheduler_flutter/services/app_loger.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path/path.dart';

@@ -8,7 +8,6 @@ import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/notification_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -35,12 +34,12 @@ class HubRootData extends ChangeNotifier {
 
 // taking reference of all collections using hubname , hubode , userid
   RootCollection rootCollectionReference(
-      String hubname, String id, String userid) {
-    CollectionReference rootdata = _firestore.collection('Data')..doc(id);
-    CollectionReference hub = rootdata.doc(id).collection(hubname);
-    CollectionReference members = hub.doc(id).collection('people');
-    CollectionReference notices = hub.doc(id).collection('notices');
-    CollectionReference lectures = hub.doc(id).collection('lectures');
+      String hubname, String hubCode, String userid) {
+    CollectionReference rootdata = _firestore.collection('Data')..doc(hubCode);
+    CollectionReference hub = rootdata.doc(hubCode).collection(hubname);
+    CollectionReference members = hub.doc(hubCode).collection('people');
+    CollectionReference notices = hub.doc(hubCode).collection('notices');
+    CollectionReference lectures = hub.doc(hubCode).collection('lectures');
     CollectionReference userData = _firestore.collection('UserData')
       ..doc(userid).set({"timeStamp": Timestamp.now()});
     this._collection = RootCollection(
@@ -53,40 +52,38 @@ class HubRootData extends ChangeNotifier {
     return _collection;
   }
 
-  Future deleteHub(RootCollection rootCollection, String hubId) async {
-    // rootCollection.lectures.get().then((value) {
+  Future deleteAdminHub(RootCollection rootCollection, String hubId,
+      String hubName, BuildContext context) async {
+    rootCollection.lectures.get().then((value) async {
+      List<String> notificationId = ['423', '123'];
 
-    //   value.docs.forEach((element)async {
-    //     if(element.data()['isSpecificDateTime']==true){
-
-    //     }
-    //     final data = element.data()['notificationData'];
-    //           NotificationMessage msg = NotificationMessage(
-    //     to: "/topics/${data.hubname}",
-    //     notification: NotificationA(title: "", body: ""),
-    //     data: NotificationData(
-    //       notificationType:
-    //           notificationTypeToString(NotificationType.deleteNotification),
-    //       specificDateTime:data.specificDateTime,
-    //       notificationId: data.notificationId.toString(),
-    //       isSpecificDateTime: true,
-    //       lectureDays: [false],
-    //     ));
-    // await fcm.sendCustomMessage(msg.toJson());
-
-    //   });
-    // });
-    rootCollection.members.get().then((value) {
       value.docs.forEach((element) async {
-        final uid = element.data()['memberInfo']['uid'];
-
-        AppLogger.print(element.data().toString());
-        AppLogger.print(uid);
-        final CollectionReference user = userCollection(uid);
-
-        await user.doc(hubId).delete();
-        // user.doc(hubId).delete();
+        notificationId.add(element.data()['notificationId'].toString());
       });
+      AppLogger.print(hubName);
+      Map<String, dynamic> msg = {
+        "to": "/topics/$hubName",
+        "data": {
+          "notificationType": "deleteHub",
+          "notificationId": notificationId
+        }
+      };
+      await fcm.sendCustomMessage(msg);
+    }).then((value) {
+      rootCollection.members.get().then((value) {
+        value.docs.forEach((element) async {
+          final uid = element.data()['memberInfo']['uid'];
+
+          AppLogger.print(element.data().toString());
+
+          final CollectionReference user = userCollection(uid);
+
+          await user.doc(hubId).delete();
+          // user.doc(hubId).delete();
+        });
+      });
+    }).catchError((error) {
+      Common.showSnackBar(error.toString(), context);
     });
   }
 
@@ -137,6 +134,23 @@ class HubRootData extends ChangeNotifier {
     });
 
     return rootHub;
+  }
+
+  Future deleteHub(UserCollection userCollection) async {
+    final uid = userCollection.uid;
+    final root = rootCollectionReference(
+        userCollection.hubname, userCollection.hubCode, userCollection.uid);
+    final user = this.userCollection(
+      uid,
+    );
+    await user.doc(userCollection.hubCode).delete();
+    root.members.doc(userCollection.uid).delete();
+    root.lectures.get().then((value) {
+      value.docs.forEach((element) async {
+        await notificationProvider
+            .cancelNotification(int.parse(element.data()['notificationId']));
+      });
+    });
   }
 
   /// join Hub .. first checking already joined if not then join it
@@ -208,7 +222,7 @@ class HubRootData extends ChangeNotifier {
       }
       return isJoined;
     } catch (error) {
-      Common.showSnackBar("something went wrong", Colors.redAccent, context);
+      Common.showSnackBar("something went wrong", context);
       return false;
     }
   }
@@ -251,7 +265,9 @@ class HubRootData extends ChangeNotifier {
         await collection.hub.doc(roothub.hubCode).set({
           "timeStamp": FieldValue.serverTimestamp(),
         });
-        await collection.members.add(members.toJson());
+        await collection.members
+            .doc(authService.currentUser.uid)
+            .set(members.toJson());
         await collection.userData
             .doc(userId)
             .collection('joinedHubs')
@@ -259,7 +275,7 @@ class HubRootData extends ChangeNotifier {
             .set(userCollection.toJson())
             .then((value) {});
       } catch (error) {
-        Common.showSnackBar("something went wrong", Colors.redAccent, context);
+        Common.showSnackBar("something went wrong", context);
       }
     } else
       AppLogger.print('hubcode is null or topic(hubname) is inavlid');

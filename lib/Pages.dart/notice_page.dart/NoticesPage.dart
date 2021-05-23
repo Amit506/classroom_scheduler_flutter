@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/notice_page.dart/NoticeCard.dart';
+import 'package:classroom_scheduler_flutter/widgets.dart/NoticeCard.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/notice_page.dart/NoticeView.dart';
 import 'package:classroom_scheduler_flutter/models/notification.dart';
 import 'package:classroom_scheduler_flutter/services/StorageDataBase.dart';
@@ -9,7 +9,6 @@ import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +28,8 @@ class NoticesPage extends StatefulWidget {
   _NoticesPageState createState() => _NoticesPageState();
 }
 
-class _NoticesPageState extends State<NoticesPage> {
+class _NoticesPageState extends State<NoticesPage>
+    with AutomaticKeepAliveClientMixin<NoticesPage> {
   final key = GlobalKey<AnimatedListState>();
   List itemss;
   List<File> files = [];
@@ -50,8 +50,7 @@ class _NoticesPageState extends State<NoticesPage> {
       files.add(file);
       return files;
     } else {
-      Common.showSnackBar(
-          "only 2 items are allowed", Colors.blueAccent, context);
+      Common.showSnackBar("only 2 items are allowed", context);
       return files;
     }
   }
@@ -100,13 +99,13 @@ class _NoticesPageState extends State<NoticesPage> {
                         onDeleteNotice: (value) async {
                           AppLogger.print('pressed');
                           AppLogger.print(hubRootData.rootData.hubCode);
-                          await hubRootData
-                              .deleteNotice(noticeItem[index].docId);
+                          await hubRootData.deleteNotice(
+                              noticeItem[index].docId, context);
                         },
                       );
                     });
               } else {
-                return CircularProgressIndicator();
+                return LinearProgressIndicator();
               }
             }),
       ),
@@ -322,4 +321,7 @@ class _NoticesPageState extends State<NoticesPage> {
       AppLogger.print("notice sended succesfully $isFcmMessageSent");
     }
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

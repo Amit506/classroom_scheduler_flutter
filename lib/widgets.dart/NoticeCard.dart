@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/notice_page.dart/NoticeView.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:flutter/material.dart';
 

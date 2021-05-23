@@ -1,11 +1,9 @@
 import 'dart:math';
-import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 
-import 'cache_directory.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import '../Pages.dart/Landing_page.dart/cache_directory.dart';
+
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class HubContainer extends StatelessWidget {
   final String hubName;
@@ -56,11 +54,7 @@ class HubContainer extends StatelessWidget {
                               fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         isAdmin
-                            ?
-                            //  IconButton(
-                            //     icon: Icon(Icons.more_vert),
-                            //     onPressed: ondelete)
-                            PopupMenuButton(
+                            ? PopupMenuButton(
                                 onSelected: ondelete,
                                 itemBuilder: (_) {
                                   return [
@@ -68,15 +62,10 @@ class HubContainer extends StatelessWidget {
                                         height: 26,
                                         value: "delete",
                                         //  enabled: ,
-                                        child: Text('Delete')),
+                                        child:
+                                            Text(isAdmin ? 'Delete' : 'Exit')),
                                   ];
                                 })
-                            // SvgPicture.asset(
-                            //   'image/admin.svg',
-                            //   height: 25,
-                            //   width: 25,
-                            // ),
-
                             : SizedBox(),
                       ],
                     ),

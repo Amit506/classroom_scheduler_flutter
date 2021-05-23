@@ -1,10 +1,29 @@
-import 'package:classroom_scheduler_flutter/services/app_loger.dart';
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService with ChangeNotifier {
+  StreamSubscription<User> _subscription;
+  bool _isSignedIn = true;
+  AuthService() {
+    _subscription = instance.authStateChanges().listen(
+      (result) {
+        _isSignedIn = result != null;
+        notifyListeners();
+      },
+    );
+  }
+  bool get isSigned => _isSignedIn;
+
+  @override
+  void dispose() {
+    super.dispose();
+    _subscription.cancel();
+  }
+
   final googleSignIn = GoogleSignIn();
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static FirebaseAuth instance = FirebaseAuth.instance;

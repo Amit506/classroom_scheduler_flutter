@@ -1,8 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
-
 NoticeItem welcomeFromJson(String str) =>
     NoticeItem?.fromJson(json.decode(str));
 

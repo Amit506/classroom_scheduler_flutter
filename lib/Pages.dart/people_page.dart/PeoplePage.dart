@@ -1,4 +1,4 @@
-import 'package:classroom_scheduler_flutter/Pages.dart/people_page.dart/CircleAvatar.dart';
+import 'package:classroom_scheduler_flutter/widgets.dart/CircleAvatar.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/dynamic_link.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
@@ -16,7 +16,8 @@ class PeoplePage extends StatefulWidget {
   _PeoplePageState createState() => _PeoplePageState();
 }
 
-class _PeoplePageState extends State<PeoplePage> {
+class _PeoplePageState extends State<PeoplePage>
+    with AutomaticKeepAliveClientMixin<PeoplePage> {
   final DynamicLink dynamicLink = DynamicLink();
 
   @override
@@ -224,4 +225,7 @@ class _PeoplePageState extends State<PeoplePage> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

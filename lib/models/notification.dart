@@ -1,13 +1,10 @@
-import 'dart:convert';
-
-import 'package:classroom_scheduler_flutter/services/app_loger.dart';
-
 // NotificationData welcomeFromJson(String str) =>
 //     NotificationData.fromJson(json.decode(str));
 
 // String welcomeToJson(NotificationData data) => json.encode(data.toJson());
 enum NotificationType {
   deleteNotification,
+  deleteHub,
   lectureNotification,
   noticeNotification,
   updateWeekNotification,
@@ -23,6 +20,8 @@ notificationTypeToString(NotificationType time) {
       return "noticeNotification";
     case NotificationType.updateWeekNotification:
       return "updateWeekNotification";
+    case NotificationType.deleteHub:
+      return "deleteHub";
   }
 }
 
@@ -92,7 +91,6 @@ class NotificationData {
 }
 
 bool toBool(dynamic value) {
-  AppLogger.print(value.toString());
   if (value == 'true')
     return true;
   else
@@ -100,17 +98,12 @@ bool toBool(dynamic value) {
 }
 
 List<bool> _toList(dynamic value) {
-  AppLogger.print("here..........." + value.toString());
   if (value == null) {
     return <bool>[];
   }
   final str = value.toString();
   List<String> temp = str.toString().substring(1, str.length - 1).split(',');
-  AppLogger.print("here too......." + temp.toString());
-  AppLogger.print("result  :" +
-      List<bool>.from(
-              temp.map<bool>((String e) => e.length == 4 ? true : false))
-          .toString());
+
   return List<bool>.from(
       temp.map<bool>((String e) => e.length == 4 ? true : false));
 }

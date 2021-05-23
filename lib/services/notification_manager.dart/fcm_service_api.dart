@@ -23,8 +23,8 @@ class FcmServiceApi {
         return false;
       }
     } catch (e) {
-      return false;
       print(e);
+      return false;
     }
   }
 }

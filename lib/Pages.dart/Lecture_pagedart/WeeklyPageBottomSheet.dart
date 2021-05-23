@@ -2,6 +2,7 @@ import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 import 'package:flutter/material.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:weekday_selector/weekday_selector.dart';
 
 // ignore: must_be_immutable
@@ -15,7 +16,7 @@ class WeeklyTimeBottomSheet extends StatelessWidget {
   final Function() onTapEndTime;
   final Function(int) onChanged;
   final Function onPressed;
-
+  final RoundedLoadingButtonController btnController;
   WeeklyTimeBottomSheet(
       {Key key,
       this.sheetLectureData,
@@ -26,8 +27,10 @@ class WeeklyTimeBottomSheet extends StatelessWidget {
       this.onTapStartTime,
       this.onTapEndTime,
       this.onChanged,
-      this.onPressed})
+      this.onPressed,
+      this.btnController})
       : super(key: key);
+
   var style = TextButton.styleFrom(
       primary: Colors.white,
       backgroundColor: Colors.greenAccent,
@@ -164,54 +167,6 @@ class WeeklyTimeBottomSheet extends StatelessWidget {
                 )
               ],
             ),
-            // child: Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     Text(
-            //       'Start',
-            //       style: TextStyle(fontSize: 22),
-            //     ),
-            //     InkWell(
-            //       onTap: onTapStartTime,
-            //       child: Container(
-            //         padding: EdgeInsets.all(8.0),
-            //         width: 100,
-            //         height: 40,
-            //         alignment: Alignment.center,
-            //         decoration: BoxDecoration(
-            //             color: Colors.grey[200],
-            //             borderRadius: BorderRadius.circular(8.0)),
-            //         child: Center(
-            //           child: Text(startTime == null
-            //               ? Common.getTimeString(selectedTime)
-            //               : Common.getTimeString(startTime)),
-            //         ),
-            //       ),
-            //     ),
-            //     Padding(
-            //       padding: const EdgeInsets.only(top: 23.0),
-            //       child: Text(
-            //         'End',
-            //         style: TextStyle(fontSize: 22),
-            //       ),
-            //     ),
-            //     InkWell(
-            //       onTap: onTapEndTime,
-            //       child: Container(
-            //         padding: EdgeInsets.all(8.0),
-            //         width: 100,
-            //         height: 40,
-            //         alignment: Alignment.center,
-            //         decoration: BoxDecoration(
-            //             color: Colors.grey[200],
-            //             borderRadius: BorderRadius.circular(8.0)),
-            //         child: Text(endTime == null
-            //             ? Common.getTimeString(selectedTime)
-            //             : Common.getTimeString(endTime)),
-            //       ),
-            //     ),
-            //   ],
-            // ),
           ),
           WeekdaySelector(
             selectedFillColor: color10,
@@ -219,9 +174,14 @@ class WeeklyTimeBottomSheet extends StatelessWidget {
             onChanged: onChanged,
             values: values,
           ),
-          ElevatedButton(
+          RoundedLoadingButton(
+            height: 40,
+            width: 150,
+            color: Colors.greenAccent,
+            child: Text(sheetLectureData == null ? 'save' : 'update',
+                style: TextStyle(color: Colors.white)),
+            controller: btnController,
             onPressed: onPressed,
-            child: Text(sheetLectureData == null ? 'save' : 'update'),
           ),
         ],
       ),

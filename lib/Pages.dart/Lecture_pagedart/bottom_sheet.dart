@@ -1,5 +1,5 @@
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/SpecificTimeBottomSheet.dart';
+import 'package:classroom_scheduler_flutter/widgets.dart/SpecificTimeBottomSheet.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/WeeklyPageBottomSheet.dart';
 import 'package:classroom_scheduler_flutter/main.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:classroom_scheduler_flutter/models/notification.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 // to implement import date dependent notification for one time only
 typedef StringValue = String Function(String);
@@ -39,6 +40,8 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
   String body;
   DateTime pickedDate;
   bool isTimetableSet = true;
+  final RoundedLoadingButtonController btnController =
+      RoundedLoadingButtonController();
   final values = <bool>[false, false, false, false, false, false, false];
   TimeOfDay selectedTime = TimeOfDay.now();
   Future _selectTime(int timePicker) async {
@@ -80,6 +83,11 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
     _lectureData = LectureData(
         rootCollection:
             Provider.of<HubDataProvider>(context, listen: false).rootReference);
+  }
+
+  error() {
+    btnController.error();
+    Common.showSnackBar('something went wrong', context);
   }
 
   Future<bool> setLectureTime() async {
@@ -143,18 +151,21 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
               title: title,
             ));
         AppLogger.print('sending fcm msg');
-        final isFcmMessagSent = await fcm.sendCustomMessage(m.toJson());
-        if (isFcmMessagSent) {
-          await _lectureData.addLectureData(lecture, nth.toString());
-        } else {
-          Common.showSnackBar(
-              "Something went Wrong try again", Colors.redAccent, context);
-        }
+
+        await fcm.sendCustomMessage(m.toJson()).then((values) async {
+          if (values) {
+            await _lectureData
+                .addLectureData(lecture, nth.toString())
+                .then((value) {
+              btnController.success();
+            });
+          } else {
+            error();
+          }
+        });
 
         return true;
       } else {
-        Common.showSnackBar(
-            "dates should be in future", Colors.redAccent, context);
         AppLogger.print('something went wrong in creating timetable');
         return true;
       }
@@ -185,12 +196,15 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
                     _selectTime(1);
                   },
                   onTapPickDate: _pickDate,
+                  btnController: btnController,
                   onPressed: () async {
+                    btnController.start();
                     if (Common.isValidNotificationTym(
                         Common.getNotificationTimeString(selectedTime,
                             date: pickedDate, isSpecificDate: true))) {
                       await setSpecificCLassTime();
                     } else {
+                      btnController.error();
                       Common.showDateTimeSnackBar(context);
                       AppLogger.print('not a valid time');
                       // show snackbar here
@@ -214,8 +228,14 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
                     setState(() {
                       values[v % 7] = !values[v % 7];
                     });
+                    AppLogger.print(values.toString());
+                    AppLogger.print(v.toString());
                   },
+                  btnController: btnController,
                   onPressed: () async {
+                    AppLogger.print(startTime.toString());
+                    AppLogger.print(endTime.toString());
+                    btnController.start();
                     widget.sheetLectureData == null
                         ? await setLectureTime()
                         : await updateLectureTime();
@@ -286,18 +306,21 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
             title: title,
           ));
       AppLogger.print('sending fcm msg');
-      final isFcmMessageSent = await fcm.sendCustomMessage(m.toJson());
-      AppLogger.print(isFcmMessageSent.toString());
-      if (isFcmMessageSent) {
-        await _lectureData.addLectureData(lecture, nth.toString());
-      } else {
-        Common.showSnackBar("Something went Wrong", Colors.redAccent, context);
-      }
+
+      await fcm.sendCustomMessage(m.toJson()).then((value) async {
+        if (value) {
+          await _lectureData
+              .addLectureData(lecture, nth.toString())
+              .then((value) {
+            btnController.success();
+          });
+        } else {
+          error();
+        }
+      });
 
       return true;
     } else {
-      Common.showSnackBar(
-          "Something went Wrong try again", Colors.redAccent, context);
       return false;
     }
   }
@@ -346,15 +369,22 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
               title: widget.sheetLectureData.title,
             ));
         AppLogger.print('sending fcm msg');
-        final isFcmMessageSent = await fcm.sendCustomMessage(m.toJson());
-        if (isFcmMessageSent) {
-          await _lectureData.addLectureData(
-              lecture, widget.sheetLectureData.nth.toString());
-          // await np.cancelNotification(widget.sheetLectureData.notificationId);
-        } else {
-          Common.showSnackBar(
-              "Something went Wrong try again", Colors.redAccent, context);
-        }
+
+        await fcm.sendCustomMessage(m.toJson()).then((value) async {
+          AppLogger.print(value.toString());
+          await _lectureData
+              .addLectureData(lecture, widget.sheetLectureData.nth.toString())
+              .then((value) {
+            btnController.success();
+          });
+          if (value) {
+          } else {
+            error();
+          }
+        }).catchError((onError) {
+          error();
+          Common.showSnackBar("something went worng", context);
+        });
 
         return true;
       } else {

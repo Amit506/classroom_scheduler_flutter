@@ -1,5 +1,4 @@
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
-import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 
 import 'package:flutter/material.dart';
 
@@ -95,7 +94,7 @@ class Common {
     return int.parse(time);
   }
 
-  static showSnackBar(msg, color, context) {
+  static showSnackBar(msg, context) {
     ScaffoldMessenger.of(context).showSnackBar(
       new SnackBar(
         content: new Text(
@@ -107,7 +106,7 @@ class Common {
         duration: new Duration(seconds: 5),
         behavior: SnackBarBehavior.floating,
         elevation: 3.0,
-        backgroundColor: color,
+        backgroundColor: Colors.red,
       ),
     );
   }
