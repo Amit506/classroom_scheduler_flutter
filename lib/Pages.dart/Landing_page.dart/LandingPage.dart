@@ -46,8 +46,6 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-
-    loadDrawer();
   }
 
   @override
@@ -134,11 +132,11 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                 List<UserCollection> rootData = [];
                 for (var list in lists) {
                   rootData.add(UserCollection.fromJson(list.data()));
+                  AppLogger.print(rootData.toString());
                 }
-                drawerData = rootData;
 
                 return ListView.builder(
-                    itemCount: snapshot.data.size,
+                    itemCount: rootData.length,
                     itemBuilder: (context, index) {
                       return HubContainer(
                         hubName: rootData[index].hubname,
@@ -149,6 +147,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                         onTap: () async {
                           final roothub = await setHubData(
                               rootData[index].hubname, rootData[index].hubCode);
+
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -410,26 +409,6 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
         ),
       ),
     );
-  }
-
-  loadDrawer() async {
-    AppLogger.print("loading drawer");
-    final temp = await hubRootData.getDrawerData();
-    List lists = temp.docs;
-    List<UserCollection> drawerData = [];
-    for (var list in lists) {
-      final admin = list["admin"];
-      final hubCode = list["hubCode"];
-      final hubName = list["hubname"];
-      final createdBy = list["createdBy"];
-      setState(() {
-        drawerData.add(UserCollection(
-            admin: admin,
-            hubCode: hubCode,
-            hubname: hubName,
-            createdBy: createdBy));
-      });
-    }
   }
 
   Future joinHub() async {

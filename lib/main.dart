@@ -3,6 +3,7 @@ import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/connectivity.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
+import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
 
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<HubRootData>(create: (_) => HubRootData()),
         ChangeNotifierProvider<LocalNotificationManagerFlutter>(
             create: (_) => LocalNotificationManagerFlutter.getInstance()),
         ChangeNotifierProvider<AuthService>(create: (_) => AuthService()),
@@ -48,11 +50,8 @@ class MyApp extends StatelessWidget {
       ],
       child: FeatureDiscovery(
         child: MaterialApp(
-          home: NetworkWidget(
-            child: AuthWidget(
-              child: SplashScreen(),
-            ),
-          ),
+          home: MainWidget(),
+
           routes: routes,
           debugShowCheckedModeBanner: false,
           theme: theme,

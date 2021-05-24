@@ -1,4 +1,6 @@
+import 'package:classroom_scheduler_flutter/Pages.dart/HomePage.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/LandingPage.dart';
+import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
@@ -6,12 +8,24 @@ import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
 import 'package:classroom_scheduler_flutter/services/notifications_new_installation.dart';
+import 'package:classroom_scheduler_flutter/widgets.dart/AuthWidget.dart';
+import 'package:classroom_scheduler_flutter/widgets.dart/NetworkWidget.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class MainWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return NetworkWidget(
+      child: AuthWidget(),
+    );
+  }
+}
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -19,18 +33,17 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final HubRootData hubRootData = HubRootData();
   FireBaseNotificationService _fcm = FireBaseNotificationService();
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  List<PendingNotificationRequest> pendingNotification;
   bool isFirstTime = false;
+  List<PendingNotificationRequest> pendingNotification;
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   @override
   void initState() {
-    initialize();
     super.initState();
+    init();
   }
 
-  initialize() async {
+  init() async {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       FeatureDiscovery.discoverFeatures(context, <String>[
         'feature1',
@@ -39,6 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
         'feature4',
       ]);
     });
+
     await _prefs.then((value) {
       isFirstTime = value.containsKey('isFirstTime');
       if (!isFirstTime) {
@@ -51,16 +65,45 @@ class _SplashScreenState extends State<SplashScreen> {
     });
 
     _fcm.tokenRefresh();
-
     LocalNotificationManagerFlutter f =
         LocalNotificationManagerFlutter.getInstance();
     f.getActiveNotifications();
     _fcm.onMessage();
+    Provider.of<HubRootData>(context, listen: false).loadDrawerData();
     pendingNotification = await f.pendingNotifications();
+    Navigator.push(context, MaterialPageRoute(builder: (_) => LandingPage()));
   }
 
   @override
   Widget build(BuildContext context) {
-    return LandingPage();
+    return LoadingScreen();
+  }
+}
+
+class LoadingScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: color4,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Material(
+              elevation: 5.0,
+              borderRadius: BorderRadius.circular(60.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(60.0),
+                child: SvgPicture.asset(
+                  'image/icons8-clock.svg',
+                  height: 100,
+                  width: 100,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

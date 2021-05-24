@@ -203,6 +203,18 @@ class _PeoplePageState extends State<PeoplePage>
                                                   letterSpacing: 1,
                                                   fontWeight: FontWeight.w400),
                                             ),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Text(
+                                                Provider.of<HubDataProvider>(_)
+                                                            .rootData
+                                                            .admin ==
+                                                        list[index - 1]
+                                                                ["memberInfo"]
+                                                            ["name"]
+                                                    ? 'Admin'
+                                                    : 'h'),
                                           )
                                         ],
                                       ),
@@ -216,7 +228,7 @@ class _PeoplePageState extends State<PeoplePage>
                         }
                       });
                 } else {
-                  return Text('somewhat whent wromg');
+                  return LinearProgressIndicator();
                 }
               },
             ),

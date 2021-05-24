@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService with ChangeNotifier {
   StreamSubscription<User> _subscription;
-  bool _isSignedIn = true;
+  bool _isSignedIn = false;
   AuthService() {
     _subscription = instance.authStateChanges().listen(
       (result) {

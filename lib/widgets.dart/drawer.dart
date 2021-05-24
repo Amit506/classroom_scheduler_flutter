@@ -2,8 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
+import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import 'package:system_settings/system_settings.dart';
 
@@ -38,7 +40,9 @@ class LandingScreenDrawer extends StatelessWidget {
             color: Colors.black,
             //          <-- ListTile.divideTiles
             context: context,
-            tiles: drawerData.map((item) {
+            tiles: Provider.of<HubRootData>(context, listen: false)
+                .userHubs
+                .map((item) {
               return ListTile(
                 title: Text(
                   item.hubname,

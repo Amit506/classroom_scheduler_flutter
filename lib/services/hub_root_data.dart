@@ -17,6 +17,7 @@ class HubRootData extends ChangeNotifier {
   final AuthService authService = AuthService();
   final FireBaseNotificationService fcm = FireBaseNotificationService();
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  List<UserCollection> userHubs = [];
   RootCollection _collection;
 
 // collection of hubs user has joined
@@ -55,7 +56,7 @@ class HubRootData extends ChangeNotifier {
   Future deleteAdminHub(RootCollection rootCollection, String hubId,
       String hubName, BuildContext context) async {
     rootCollection.lectures.get().then((value) async {
-      List<String> notificationId = ['423', '123'];
+      List<String> notificationId;
 
       value.docs.forEach((element) async {
         notificationId.add(element.data()['notificationId'].toString());
@@ -84,6 +85,28 @@ class HubRootData extends ChangeNotifier {
       });
     }).catchError((error) {
       Common.showSnackBar(error.toString(), context);
+    });
+  }
+
+  loadDrawerData() {
+    userCollection(authService.currentUser.uid)
+        .orderBy('timeStamp', descending: true)
+        .get()
+        .asStream()
+        .listen((event) {
+      event.docs.forEach((element) {
+        AppLogger.print(element.data().toString());
+        AppLogger.print(element.data()["admin"].toString());
+
+        userHubs.add(UserCollection(
+            admin: element.data()["admin"],
+            hubCode: element.data()["hubCode"],
+            hubname: element.data()["hubname"],
+            createdBy: element.data()["createdBy"]));
+
+        userHubs.toSet();
+        notifyListeners();
+      });
     });
   }
 
@@ -279,12 +302,6 @@ class HubRootData extends ChangeNotifier {
       }
     } else
       AppLogger.print('hubcode is null or topic(hubname) is inavlid');
-  }
-
-  Future<QuerySnapshot> getDrawerData() async {
-    return await userCollection(authService.currentUser.uid)
-        .orderBy('timeStamp', descending: true)
-        .get();
   }
 }
 

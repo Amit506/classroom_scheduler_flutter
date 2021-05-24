@@ -112,7 +112,7 @@ class _NoticesPageState extends State<NoticesPage>
       floatingActionButton: widget.isAdmin
           ? FloatingActionButton(
               tooltip: 'Add notice',
-              heroTag: 'add_hub',
+              // heroTag: 'add_hub',
               child: Icon(Icons.add),
               onPressed: () {
                 AppLogger.print('pressed');
