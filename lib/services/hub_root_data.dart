@@ -80,8 +80,9 @@ class HubRootData extends ChangeNotifier {
           final CollectionReference user = userCollection(uid);
 
           await user.doc(hubId).delete();
-          // user.doc(hubId).delete();
         });
+      }).then((value) async {
+        await rootCollection.rootData.doc(hubId).delete();
       });
     }).catchError((error) {
       Common.showSnackBar(error.toString(), context);
