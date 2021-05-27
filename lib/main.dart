@@ -6,9 +6,6 @@ import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/localnotification_manager.dart';
-
-import 'package:classroom_scheduler_flutter/widgets.dart/AuthWidget.dart';
-import 'package:classroom_scheduler_flutter/widgets.dart/NetworkWidget.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 
 import 'package:firebase_core/firebase_core.dart';

@@ -46,7 +46,9 @@ class _LectureTabBarState extends State<LectureTabBar>
   // bool switchValue = false;
   int itemCount = 0;
   // bool weekSwitchValue = true;
-  List<PendingNotificationRequest> pendingNotifications;
+  List<int> pendingNotificationsId = [];
+  bool weekSwitch = false;
+  bool oneTimeSwitch = false;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -60,12 +62,15 @@ class _LectureTabBarState extends State<LectureTabBar>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    AppLogger.print("updated");
     Provider.of<LocalNotificationManagerFlutter>(context)
-        .pendingNotificationStream
-        .listen((event) {
-      pendingNotifications = event.toList();
-      AppLogger.print(pendingNotifications.toString());
+        .pendingNotifications()
+        .then((value) {
+      value.forEach((element) {
+        pendingNotificationsId.add(element.id);
+      });
     });
+    AppLogger.print("pending  :" + pendingNotificationsId.toString());
   }
 
   @override
@@ -89,6 +94,8 @@ class _LectureTabBarState extends State<LectureTabBar>
                       itemBuilder: (_, index) {
                         sheetLectureData = lectures[0];
                         if (lectures[index].isSpecificDateTime) {
+                          oneTimeSwitch = pendingNotificationsId
+                              .contains(lectures[index].notificationId);
                           return OneTimeSchedule(
                             lecture: lectures[index],
                             onDelete: (value) async {
@@ -98,14 +105,13 @@ class _LectureTabBarState extends State<LectureTabBar>
                                   lectures[index],
                                   context);
                             },
-                            switchValue: pendingNotifications
-                                .contains(lectures[index].notificationId),
+                            switchValue: oneTimeSwitch,
                             onChanged: (value) async {
-                              setState(() {
-                                // switchValue = value;
-                              });
-
                               if (!value) {
+                                setState(() {
+                                  pendingNotificationsId
+                                      .remove(lectures[index].notificationId);
+                                });
                                 notificationProvider.cancelNotification(
                                     lectures[index].notificationId);
                               } else {
@@ -119,6 +125,10 @@ class _LectureTabBarState extends State<LectureTabBar>
                                 AppLogger.print('$now    :  $scheduledDate');
 
                                 if (scheduledDate.isAfter(now)) {
+                                  setState(() {
+                                    pendingNotificationsId
+                                        .add(lectures[index].notificationId);
+                                  });
                                   await notificationProvider
                                       .createSpecificNotificationUtil(
                                           scheduledDate, null,
@@ -131,11 +141,12 @@ class _LectureTabBarState extends State<LectureTabBar>
                             },
                           );
                         } else {
+                          weekSwitch = pendingNotificationsId
+                              .contains(lectures[index].notificationId);
                           return WeeklyLecture(
                             isAdmin: widget.isAdmin,
                             lecture: lectures[index],
-                            weekSwitchValue: pendingNotifications
-                                .contains(lectures[index].notificationId),
+                            weekSwitchValue: weekSwitch,
                             onTap: () {
                               widget.isAdmin
                                   ? showModalBottomSheet(
@@ -152,15 +163,20 @@ class _LectureTabBarState extends State<LectureTabBar>
                                   : AppLogger.print("admin: ${widget.isAdmin}");
                             },
                             onChanged: (value) async {
-                              setState(() {
-                                // weekSwitchValue = value;
-                              });
                               AppLogger.print(value.toString());
                               if (!value) {
+                                setState(() {
+                                  pendingNotificationsId
+                                      .remove(lectures[index].notificationId);
+                                });
                                 AppLogger.print('cancel');
                                 notificationProvider.cancelNotification(
                                     lectures[index].notificationId);
                               } else {
+                                setState(() {
+                                  pendingNotificationsId
+                                      .add(lectures[index].notificationId);
+                                });
                                 for (int i = 0;
                                     i < lectures[index].lectureDays.length;
                                     i++) {
