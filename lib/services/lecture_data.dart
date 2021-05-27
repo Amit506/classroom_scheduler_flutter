@@ -1,8 +1,6 @@
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
-import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
-import 'package:provider/provider.dart';
 
 class LectureData {
   final RootCollection rootCollection;
@@ -10,6 +8,8 @@ class LectureData {
   LectureData({this.rootCollection});
 
   Future addLectureData(Lecture lecture, String docid) async {
+    AppLogger.print(lecture.toString());
+    AppLogger.print(docid);
     await rootCollection.lectures.doc(docid).set(lecture.toJson());
   }
 

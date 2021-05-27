@@ -105,7 +105,9 @@ class HubDataProvider extends ChangeNotifier {
       bool b = element.data()['isSpecificDateTime'];
       AppLogger.print(b.toString());
       if (b) {
-        if (date.isAfter(DateTime.parse(element.data()['specificDateTime']))) {
+        if (date.isBefore(DateTime.parse(element.data()['specificDateTime']))) {
+          AppLogger.print(
+              'ppppppppppppppppppppppppppppppppppppppppppppppppppp');
           await _rootCollection.lectures
               .doc(element.data()['nth'].toString())
               .delete();
