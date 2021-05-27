@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/SpecificTimeBottomSheet.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/WeeklyPageBottomSheet.dart';
@@ -29,8 +31,8 @@ class CustomBottomSheet extends StatefulWidget {
 }
 
 class _CustomBottomSheet extends State<CustomBottomSheet> {
-  String messageTitle = 'Empty';
-  String notificarionAlert = 'Alert';
+  String messageTitle;
+  String notificationDescription;
   TimeOfDay startTime;
   TimeOfDay endTime;
   NotificationProvider np = NotificationProvider();
@@ -40,6 +42,10 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
   String body;
   DateTime pickedDate;
   bool isTimetableSet = true;
+  bool error = false;
+  bool errorOneTime = false;
+  TextEditingController textEditingControllerOneTime = TextEditingController();
+  TextEditingController textEditingControllerWeekTime = TextEditingController();
   final RoundedLoadingButtonController btnController =
       RoundedLoadingButtonController();
   final values = <bool>[false, false, false, false, false, false, false];
@@ -85,7 +91,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
             Provider.of<HubDataProvider>(context, listen: false).rootReference);
   }
 
-  error() {
+  errorr() {
     btnController.error();
     Common.showSnackBar('something went wrong', context);
   }
@@ -100,7 +106,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
         int nth = await _lectureData.nthLectureTime();
         String hubName = hubRootData.rootData.hubname;
         String hubCode = hubRootData.rootData.hubCode;
-        body = '$hubName will start in 5 minutes';
+        body = textEditingControllerWeekTime.text;
         title = '$hubName';
         AppLogger.print(body);
         int notificationId = Common.generateNotificationId(hubName);
@@ -160,7 +166,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
               btnController.success();
             });
           } else {
-            error();
+            errorr();
           }
         });
 
@@ -183,66 +189,91 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
         color: Color.fromRGBO(0, 0, 0, 0.001),
         child: GestureDetector(
           onTap: () {},
-          child: DraggableScrollableSheet(
-            initialChildSize: 0.4,
-            minChildSize: 0.2,
-            maxChildSize: 0.8,
-            builder: (_, controller) {
-              if (widget.isSpecicifTime) {
-                return SpecifcTimeBottomSheet(
-                  pickedDate: pickedDate,
-                  selectedTime: selectedTime,
-                  onTapPickedTime: () {
-                    _selectTime(1);
-                  },
-                  onTapPickDate: _pickDate,
-                  btnController: btnController,
-                  onPressed: () async {
-                    btnController.start();
-                    if (Common.isValidNotificationTym(
-                        Common.getNotificationTimeString(selectedTime,
-                            date: pickedDate, isSpecificDate: true))) {
-                      await setSpecificCLassTime();
-                    } else {
-                      btnController.error();
-                      Common.showDateTimeSnackBar(context);
-                      AppLogger.print('not a valid time');
-                      // show snackbar here
-                    }
-                  },
-                );
-              } else {
-                return WeeklyTimeBottomSheet(
-                  sheetLectureData: widget.sheetLectureData,
-                  startTime: startTime,
-                  selectedTime: selectedTime,
-                  endTime: endTime,
-                  onTapStartTime: () {
-                    _selectTime(1);
-                  },
-                  onTapEndTime: () {
-                    _selectTime(2);
-                  },
-                  values: values,
-                  onChanged: (int v) {
-                    setState(() {
-                      values[v % 7] = !values[v % 7];
-                    });
-                    AppLogger.print(values.toString());
-                    AppLogger.print(v.toString());
-                  },
-                  btnController: btnController,
-                  onPressed: () async {
-                    AppLogger.print(startTime.toString());
-                    AppLogger.print(endTime.toString());
-                    btnController.start();
-                    widget.sheetLectureData == null
-                        ? await setLectureTime()
-                        : await updateLectureTime();
-                  },
-                );
-              }
-            },
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.5,
+              minChildSize: 0.2,
+              maxChildSize: 0.8,
+              builder: (_, controller) {
+                if (widget.isSpecicifTime) {
+                  return SpecifcTimeBottomSheet(
+                    pickedDate: pickedDate,
+                    selectedTime: selectedTime,
+                    onTapPickedTime: () {
+                      _selectTime(1);
+                    },
+                    textEditingController: textEditingControllerOneTime,
+                    onTapPickDate: _pickDate,
+                    errorOneTime: errorOneTime,
+                    btnController: btnController,
+                    onPressed: () async {
+                      setState(() {
+                        textEditingControllerOneTime.text.isEmpty
+                            ? errorOneTime = true
+                            : errorOneTime = false;
+                      });
+                      if (textEditingControllerOneTime.text.isNotEmpty) {
+                        btnController.start();
+                        if (Common.isValidNotificationTym(
+                            Common.getNotificationTimeString(selectedTime,
+                                date: pickedDate, isSpecificDate: true))) {
+                          await setSpecificCLassTime();
+                        } else {
+                          btnController.error();
+                          Common.showDateTimeSnackBar(context);
+                          AppLogger.print('not a valid time');
+                          // show snackbar here
+                        }
+                      } else {
+                        btnController.reset();
+                      }
+                    },
+                  );
+                } else {
+                  return WeeklyTimeBottomSheet(
+                    sheetLectureData: widget.sheetLectureData,
+                    startTime: startTime,
+                    selectedTime: selectedTime,
+                    error: error,
+                    endTime: endTime,
+                    textEditingController: textEditingControllerWeekTime,
+                    onTapStartTime: () {
+                      _selectTime(1);
+                    },
+                    onTapEndTime: () {
+                      _selectTime(2);
+                    },
+                    values: values,
+                    onChanged: (int v) {
+                      setState(() {
+                        values[v % 7] = !values[v % 7];
+                      });
+                      AppLogger.print(values.toString());
+                      AppLogger.print(v.toString());
+                    },
+                    btnController: btnController,
+                    onPressed: () async {
+                      AppLogger.print(startTime.toString());
+                      AppLogger.print(endTime.toString());
+                      setState(() {
+                        textEditingControllerOneTime.text.isEmpty
+                            ? errorOneTime = true
+                            : errorOneTime = false;
+                      });
+                      if (textEditingControllerOneTime.text.isNotEmpty) {
+                        btnController.start();
+                        widget.sheetLectureData == null
+                            ? await setLectureTime()
+                            : await updateLectureTime();
+                      } else {
+                        btnController.reset();
+                      }
+                    },
+                  );
+                }
+              },
+            ),
           ),
         ),
       ),
@@ -258,7 +289,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
       AppLogger.print(hubName);
       String hubCode =
           Provider.of<HubDataProvider>(context, listen: false).rootData.hubCode;
-      body = '$hubName extra class will start in 5 minutes';
+      body = textEditingControllerOneTime.text;
       title = '$hubName';
 
       int notificationId = Common.generateNotificationId(hubName);
@@ -315,7 +346,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
             btnController.success();
           });
         } else {
-          error();
+          errorr();
         }
       });
 
@@ -379,10 +410,10 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
           });
           if (value) {
           } else {
-            error();
+            errorr();
           }
         }).catchError((onError) {
-          error();
+          errorr();
           Common.showSnackBar("something went worng", context);
         });
 

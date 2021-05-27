@@ -83,6 +83,7 @@ class _LectureTabBarState extends State<LectureTabBar>
           child: StreamBuilder<QuerySnapshot>(
               stream: hubRootData.getLectureSream(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                hubRootData.deleteOlder();
                 if (snapshot.hasData) {
                   List<QueryDocumentSnapshot> lists = snapshot.data.docs;
                   List<Lecture> lectures = [];
