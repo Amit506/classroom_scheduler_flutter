@@ -98,12 +98,14 @@ class HubRootData extends ChangeNotifier {
       event.docs.forEach((element) {
         AppLogger.print(element.data().toString());
         AppLogger.print(element.data()["admin"].toString());
-
-        userHubs.add(UserCollection(
+        final user = UserCollection(
             admin: element.data()["admin"],
             hubCode: element.data()["hubCode"],
             hubname: element.data()["hubname"],
-            createdBy: element.data()["createdBy"]));
+            createdBy: element.data()["createdBy"]);
+        if (!userHubs.contains(user)) {
+          userHubs.add(user);
+        }
 
         userHubs.toSet();
         notifyListeners();
@@ -183,18 +185,21 @@ class HubRootData extends ChangeNotifier {
       String hubName,
       String hubCode,
       bool isRetriving = false}) async {
-    AppLogger.print('reched joining');
+    AppLogger.print('reached joining');
     try {
+      AppLogger.print('oooo');
       bool isJoined = false;
       RootCollection collection;
       if (!isRetriving) {
         collection = rootCollectionReference(userCollection.hubname,
             userCollection.hubCode, authService.currentUser.uid);
       } else {
+        AppLogger.print('pp');
         collection = rootCollectionReference(
             hubName, hubCode, authService.currentUser.uid);
       }
-      AppLogger.print(userCollection.hubname);
+      AppLogger.print('pp');
+      // AppLogger.print(userCollection.hubname);
 //  set notification to device joining after creating the hub
       List<NotificationData> notificationData = [];
       final lectures = await collection.lectures.get();
@@ -218,23 +223,32 @@ class HubRootData extends ChangeNotifier {
             token: token,
             uid: authService.currentUser.uid),
       );
-      print(userCollection.hubCode);
+      // print(userCollection.hubCode);
 
       final snap = await collection.userData
           .doc(authService.currentUser.uid)
           .collection('joinedHubs')
-          .doc(userCollection.hubCode)
+          .doc(userCollection != null ? userCollection.hubCode : hubCode)
           .get();
       if (!snap.exists) {
-        await fcm.subscribeTopic(userCollection.hubname);
+        final snap = await _firestore
+            .collection('Data')
+            .doc(userCollection != null ? userCollection.hubCode : hubCode)
+            .get();
+
+        final retriveUserCollection = UserCollection.fromJson(snap.data());
+        await fcm.subscribeTopic(
+            userCollection != null ? userCollection.hubname : hubName);
         await collection.members
             .doc(authService.currentUser.uid)
             .set(members.toJson());
         await collection.userData
             .doc(authService.currentUser.uid)
             .collection('joinedHubs')
-            .doc(userCollection.hubCode)
-            .set(userCollection.toJson());
+            .doc(userCollection != null ? userCollection.hubCode : hubCode)
+            .set(userCollection != null
+                ? userCollection.toJson()
+                : retriveUserCollection.toJson());
         if (notificationData != null) {
           for (var data in notificationData) {
             await notificationProvider.createHubNotification(data);

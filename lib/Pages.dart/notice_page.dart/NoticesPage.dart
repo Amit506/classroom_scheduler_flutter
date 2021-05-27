@@ -280,7 +280,7 @@ class _NoticesPageState extends State<NoticesPage>
   }
 
   Future uploadNotice() async {
-    if (noticeTitleController != null) {
+    if (noticeTitleController.text != null) {
       final hubRootData = Provider.of<HubDataProvider>(context, listen: false);
       StorageDataBase storageDataBase =
           StorageDataBase(hubCode: hubRootData.rootData.hubCode);
@@ -304,7 +304,7 @@ class _NoticesPageState extends State<NoticesPage>
           _btnController.success();
         });
       });
-      final body = "tomorrow is extra class";
+      final body = noticeBodyController.text;
       NotificationMessage msg = NotificationMessage(
           to: "/topics/${hubRootData.rootData.hubname}",
           notification: NotificationA(
@@ -319,6 +319,9 @@ class _NoticesPageState extends State<NoticesPage>
                   NotificationType.noticeNotification)));
       final isFcmMessageSent = await fcm.sendCustomMessage(msg.toJson());
       AppLogger.print("notice sended succesfully $isFcmMessageSent");
+    } else {
+      _btnController.reset();
+      Common.showSnackBar("title cannot be empty", context);
     }
   }
 

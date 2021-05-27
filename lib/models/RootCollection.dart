@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
 
+import 'package:equatable/equatable.dart';
+
 // this class used to get forebase path to various collection of hubs
 class RootCollection {
   final CollectionReference notice;
@@ -81,7 +83,7 @@ UserCollection welcomeFromJson(String str) =>
 
 String welcomeToJson(UserCollection data) => json.encode(data.toJson());
 
-class UserCollection {
+class UserCollection extends Equatable {
   UserCollection({
     this.token,
     this.uid,
@@ -123,4 +125,8 @@ class UserCollection {
         "createdBy": createdBy,
         "status": status,
       };
+
+  @override
+  List<Object> get props =>
+      [token, uid, hubname, hubCode, timeStamp, admin, createdBy, status];
 }

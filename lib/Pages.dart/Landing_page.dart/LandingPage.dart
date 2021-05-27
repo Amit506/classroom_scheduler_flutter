@@ -34,7 +34,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   FireBaseNotificationService _fcm = FireBaseNotificationService();
   NotificationProvider nf = NotificationProvider();
   final HubRootData hubRootData = HubRootData();
-  List<UserCollection> drawerData = [];
+
   String hubname;
   String hubcode;
   String token;
@@ -91,12 +91,8 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    print(authService.currentUser.uid);
-    print(drawerData);
     return Scaffold(
-      drawer: LandingScreenDrawer(
-        drawerData: drawerData,
-      ),
+      drawer: LandingScreenDrawer(),
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
@@ -114,6 +110,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
               icon: Icon(Icons.login_rounded),
               onPressed: () async {
                 await authService.logout();
+                Navigator.pop(context);
               })
         ],
       ),

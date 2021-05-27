@@ -1,11 +1,13 @@
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/LandingPage.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
+import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 
 class DynamicLink {
   HubRootData hubRootData = HubRootData();
+  FireBaseNotificationService _fcm = FireBaseNotificationService();
   Future<Uri> createDynamicLink(String hubCode, String hubName) async {
     final DynamicLinkParameters parameters = DynamicLinkParameters(
         uriPrefix: "http://classscheduler.page.link",
@@ -34,6 +36,7 @@ class DynamicLink {
       final Uri deepLink = data?.link;
 
       if (deepLink != null) {
+        AppLogger.print('opened from link');
         handleDynamicLink(deepLink, context);
         // handleDynamicLink(data);
 //         print('downloaded using link');
@@ -46,6 +49,7 @@ class DynamicLink {
       FirebaseDynamicLinks.instance.onLink(
           onSuccess: (PendingDynamicLinkData dynamicLink) async {
         AppLogger.print('opened from link');
+
         handleDynamicLink(dynamicLink?.link, context);
 
         Navigator.of(context)
@@ -61,7 +65,7 @@ class DynamicLink {
     final hubCode = data.queryParameters.values.last;
     AppLogger.print(hubName);
     AppLogger.print(hubCode);
-    final token = 'poiugfdgcvhjkhfdsazdxfcvhcxzd';
+    final token = await _fcm.token();
     if (hubName != null && hubCode != null) {
       hubRootData.joinHub(token, context,
           hubName: hubName, hubCode: hubCode, isRetriving: true);

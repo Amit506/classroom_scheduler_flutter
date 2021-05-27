@@ -3,6 +3,7 @@ import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/Landing
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
+import 'package:classroom_scheduler_flutter/services/dynamic_link.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
@@ -33,6 +34,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  DynamicLink dynamicLink = DynamicLink();
   FireBaseNotificationService _fcm = FireBaseNotificationService();
   bool isFirstTime = false;
   List<PendingNotificationRequest> pendingNotification;
@@ -69,6 +71,8 @@ class _SplashScreenState extends State<SplashScreen> {
         LocalNotificationManagerFlutter.getInstance();
     f.getActiveNotifications();
     _fcm.onMessage();
+    dynamicLink.retrieveDynamicLink(context);
+
     Provider.of<HubRootData>(context, listen: false).loadDrawerData();
     pendingNotification = await f.pendingNotifications();
     Navigator.push(context, MaterialPageRoute(builder: (_) => LandingPage()));

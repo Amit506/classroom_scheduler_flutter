@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
@@ -10,15 +11,11 @@ import 'package:provider/provider.dart';
 import 'package:system_settings/system_settings.dart';
 
 class LandingScreenDrawer extends StatelessWidget {
-  final List<UserCollection> drawerData;
-
   final AuthService authService = AuthService();
   static const MethodChannel _channel = const MethodChannel('settings');
-  LandingScreenDrawer({Key key, this.drawerData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    AppLogger.print(drawerData.length.toString());
     return Drawer(
       child: Column(children: [
         Align(
@@ -54,17 +51,25 @@ class LandingScreenDrawer extends StatelessWidget {
         )),
         Align(
             alignment: Alignment.bottomCenter,
-            child: TextButton(
-              onPressed: () async {
-                await SystemSettings.appNotifications();
-                // await _channel
-                //     .invokeMethod('notification_channel',
-                //         '{chanId:high_importance_channel}')
-                //     .catchError((error) {
-                //   AppLogger.print(error.toString());
-                // });
-              },
-              child: Text('Notification Setting'),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.all(0),
+                  backgroundColor: color10,
+                  primary: Colors.white,
+                ),
+                onPressed: () async {
+                  await SystemSettings.appNotifications();
+                  // await _channel
+                  //     .invokeMethod('notification_channel',
+                  //         '{chanId:high_importance_channel}')
+                  //     .catchError((error) {
+                  //   AppLogger.print(error.toString());
+                  // });
+                },
+                child: Text('Notification Setting'),
+              ),
             )),
       ]),
     );
