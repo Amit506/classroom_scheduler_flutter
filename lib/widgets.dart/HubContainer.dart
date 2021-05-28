@@ -12,20 +12,18 @@ class HubContainer extends StatelessWidget {
   final String createdBy;
   final Function onTap;
   final Function(dynamic) ondelete;
+  final String image;
 
   const HubContainer(
       {Key key,
       this.hubName,
+      this.image,
       this.isAdmin,
       this.date,
       this.createdBy,
       this.onTap,
       this.ondelete})
       : super(key: key);
-  String getImage() {
-    final _random = Random();
-    return assetImages[_random.nextInt(3)];
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +37,7 @@ class HubContainer extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      fit: BoxFit.cover, image: AssetImage(getImage()))),
+                      fit: BoxFit.cover, image: AssetImage(image))),
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Column(

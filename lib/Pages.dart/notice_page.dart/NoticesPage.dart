@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/NoticeCard.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/notice_page.dart/NoticeView.dart';
@@ -10,9 +12,11 @@ import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -35,12 +39,14 @@ class _NoticesPageState extends State<NoticesPage>
   final key = GlobalKey<AnimatedListState>();
   List itemss;
   List<File> files = [];
+  File pdfFile;
+  String pdfName;
   final RoundedLoadingButtonController _btnController =
       RoundedLoadingButtonController();
   FireBaseNotificationService fcm = FireBaseNotificationService();
   TextEditingController noticeTitleController = TextEditingController();
   TextEditingController noticeBodyController = TextEditingController();
-
+  final _random = Random();
   Future<List<File>> getImage() async {
     if (files.length < 2) {
       final picker = ImagePicker();
@@ -87,6 +93,7 @@ class _NoticesPageState extends State<NoticesPage>
                     itemCount: noticeItem.length,
                     itemBuilder: (context, index) {
                       return NoticeCard(
+                        image: noticeImages[_random.nextInt(2)],
                         noticeTitle: noticeItem[index].noticeTitle,
                         body: noticeItem[index].noticeDetails.body,
                         urlImage: noticeItem[index].urlImage,
@@ -251,14 +258,43 @@ class _NoticesPageState extends State<NoticesPage>
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(18.0),
                                     side: BorderSide(color: Colors.black12)))),
-                    onPressed: () {},
-                    child: Row(children: [
-                      Icon(
-                        AntDesign.pdffile1,
-                        color: Colors.redAccent,
-                      ),
-                      Text(' add pdf', style: TextStyle(color: Colors.black26)),
-                    ])),
+                    onPressed: () async {
+                      FilePickerResult result = await FilePicker.platform
+                          .pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: ['pdf']);
+                      if (result != null) {
+                        pdfFile = File(result.files.single.path);
+
+                        setState(() {
+                          pdfName = path.basename(pdfFile.path);
+                          AppLogger.print(pdfName);
+                        });
+                      } else {
+                        // User canceled the picker
+
+                      }
+                    },
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: Row(children: [
+                        Icon(
+                          AntDesign.pdffile1,
+                          color: Colors.redAccent,
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        SizedBox(
+                          width: 150,
+                          child: Text(pdfName == null ? 'add pdf' : pdfName,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.black26,
+                              )),
+                        ),
+                      ]),
+                    )),
                 files.length == 0
                     ? SizedBox()
                     : SizedBox(
@@ -297,8 +333,12 @@ class _NoticesPageState extends State<NoticesPage>
       final hubRootData = Provider.of<HubDataProvider>(context, listen: false);
       StorageDataBase storageDataBase =
           StorageDataBase(hubCode: hubRootData.rootData.hubCode);
-      List<String> imageUrls = await storageDataBase.addNoticeData(files);
+      List<String> imageUrls = await storageDataBase.addNoticeData(
+        files,
+      );
+      String pdfUrl = await storageDataBase.addPdf(pdfFile);
       AppLogger.print(imageUrls.toString());
+      AppLogger.print(pdfUrl);
       List<Comment> comment = [];
       final notice = NoticeItem(
         noticeTitle: noticeTitleController.text,
@@ -306,6 +346,7 @@ class _NoticesPageState extends State<NoticesPage>
         timeStamp: Timestamp.now().toString(),
         noticeTime: DateTime.now().toString(),
         noticeDetails: NoticeDetails(
+          url: pdfUrl,
           body: noticeBodyController.text,
         ),
         comments: comment,

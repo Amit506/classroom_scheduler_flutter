@@ -18,18 +18,32 @@ class StorageDataBase {
         await ref.putFile(image).whenComplete(() async {
           await ref.getDownloadURL().then((value) {
             imageUrls.add(value);
-            // AppLogger.print(value);
-            // notice.doc(docId).update(
-            //   {
-            //     "urlImage":[
-            //             value,
-            //     ]
-            //   }
-            // );
           });
         });
       }
     }
+
     return imageUrls;
   }
+
+  Future<String> addPdf(File pdfFile) async {
+    final firebase_storage.Reference noticeStorage =
+        firebase_storage.FirebaseStorage.instance.ref().child(this.hubCode);
+    String url;
+    if (pdfFile != null) {
+      ref = noticeStorage.child(basename(pdfFile.path));
+      await ref.putFile(pdfFile).whenComplete(() async {
+        await ref.getDownloadURL().then((value) {
+          url = value;
+        });
+      });
+    }
+    return url;
+  }
+}
+
+class UploadType {
+  List<String> url;
+  bool pdf;
+  UploadType({this.pdf, this.url});
 }

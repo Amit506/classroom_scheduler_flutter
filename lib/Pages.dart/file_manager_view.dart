@@ -47,36 +47,48 @@ class _FileManagerrState extends State<FileManagerr> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Downloads'),
-      ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: ListView.separated(
-          padding: EdgeInsets.only(left: 20),
-          itemCount: downloads.length,
-          separatorBuilder: (_, index) {
-            return Stack(
-              children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    height: 1,
-                    color: Theme.of(context).dividerColor,
-                    width: MediaQuery.of(context).size.width - 70,
-                  ),
-                ),
-              ],
-            );
-          },
-          itemBuilder: (context, index) {
-            AppLogger.print(downloads[index].toString());
-            return FileItem(file: downloads[index]);
-          },
+        appBar: AppBar(
+          title: Text('Downloads'),
         ),
-      ),
-    );
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: ListView.separated(
+            padding: EdgeInsets.only(left: 20),
+            itemCount: downloads.length,
+            separatorBuilder: (_, index) {
+              return Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      height: 1,
+                      color: Theme.of(context).dividerColor,
+                      width: MediaQuery.of(context).size.width - 70,
+                    ),
+                  ),
+                ],
+              );
+            },
+            itemBuilder: (context, index) {
+              AppLogger.print(downloads[index].toString());
+              return FileItem(file: downloads[index]);
+            },
+          ),
+        )
+        // : Center(
+        //     child: Column(
+        //       children: [
+        //         Icon(
+        //           Icons.sd_card_alert_rounded,
+        //           size: 50,
+        //         ),
+        //         SizedBox(height: 20),
+        //         Text('folder is empty')
+        //       ],
+        //     ),
+        // )
+        );
   }
 }
 

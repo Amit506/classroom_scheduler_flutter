@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/HubContainer.dart';
@@ -35,7 +36,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   FireBaseNotificationService _fcm = FireBaseNotificationService();
   NotificationProvider nf = NotificationProvider();
   final HubRootData hubRootData = HubRootData();
-
+  final _random = Random();
   String hubname;
   String hubcode;
   String token;
@@ -137,6 +138,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                     itemCount: rootData.length,
                     itemBuilder: (context, index) {
                       return HubContainer(
+                        image: assetImages[_random.nextInt(3)],
                         hubName: rootData[index].hubname,
                         isAdmin: rootData[index].admin ==
                             authService.currentUser.email,

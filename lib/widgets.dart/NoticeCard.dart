@@ -11,8 +11,8 @@ class NoticeCard extends StatelessWidget {
   final List<String> urlImage;
   final NoticeItem noticeItem;
   final Function onTap;
-  final Function(dynamic) onDeleteNotice;
-
+  final Function(String) onDeleteNotice;
+  final String image;
   const NoticeCard(
       {Key key,
       this.noticeTitle,
@@ -20,17 +20,13 @@ class NoticeCard extends StatelessWidget {
       this.urlImage,
       this.noticeItem,
       this.onTap,
-      this.onDeleteNotice})
+      this.onDeleteNotice,
+      this.image})
       : super(key: key);
-  String getImage() {
-    final _random = Random();
-    return noticeImages[_random.nextInt(2)];
-  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 180,
       width: double.infinity,
       child: Card(
         child: Container(
@@ -40,7 +36,7 @@ class NoticeCard extends StatelessWidget {
                       Colors.white24.withOpacity(0.2), BlendMode.dstATop),
                   alignment: Alignment.centerRight,
                   fit: BoxFit.cover,
-                  image: AssetImage(getImage()))),
+                  image: AssetImage(image))),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -50,9 +46,10 @@ class NoticeCard extends StatelessWidget {
                   children: [
                     Text(
                       noticeTitle,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 22,
+                        fontSize: 20,
                       ),
                     ),
                     PopupMenuButton(
@@ -61,7 +58,7 @@ class NoticeCard extends StatelessWidget {
                           return [
                             PopupMenuItem(
                                 height: 26,
-
+                                value: "delete",
                                 //  enabled: ,
                                 child: Text('Delete')),
                           ];
@@ -89,7 +86,7 @@ class NoticeCard extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(Icons.burst_mode_outlined),
-                                  Text('photos')
+                                  Text('photos & pdf')
                                 ],
                               )),
                             )

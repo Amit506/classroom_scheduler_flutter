@@ -4,7 +4,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:http/http.dart' as http;
+import 'package:open_file/open_file.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_ex/path_provider_ex.dart';
@@ -21,8 +23,11 @@ class NoticeView extends StatefulWidget {
 }
 
 class _NoticeViewState extends State<NoticeView> {
-  bool downloading = false;
+  List<bool> downloading = [false, false];
+  bool pdfDownloading = false;
+
   String path;
+  int no = 1;
   @override
   void initState() {
     super.initState();
@@ -47,16 +52,58 @@ class _NoticeViewState extends State<NoticeView> {
           margin: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          child: Column(children: [
-            Text(
-              widget.noticeItem.noticeTitle,
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                widget.noticeItem.noticeTitle,
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
             ),
             widget.noticeItem.noticeDetails.body != null
                 ? Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Text(widget.noticeItem.noticeDetails.body),
                   )
+                : SizedBox(),
+            widget.noticeItem.noticeDetails.url != null
+                ? ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.grey[100]),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18.0),
+                                    side: BorderSide(color: Colors.black12)))),
+                    onPressed: () async {
+                      await downloadPdf(widget.noticeItem.noticeDetails.url);
+                    },
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      child: Row(children: [
+                        Icon(
+                          AntDesign.pdffile1,
+                          color: Colors.redAccent,
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        SizedBox(
+                          width: 150,
+                          child: Text(
+                              Uri.parse(widget.noticeItem.noticeDetails.url)
+                                  .pathSegments
+                                  .last
+                                  .split("/")[1],
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.black26,
+                              )),
+                        ),
+                      ]),
+                    ))
                 : SizedBox(),
             widget.noticeItem.urlImage.length != 0
                 ? Expanded(
@@ -79,33 +126,14 @@ class _NoticeViewState extends State<NoticeView> {
                                 children: [
                                   Row(
                                     children: [
-                                      !downloading
+                                      !downloading[index]
                                           ? IconButton(
                                               icon: Icon(Icons.file_download),
                                               onPressed: () async {
-                                                setState(() {
-                                                  downloading = true;
-                                                });
-
-                                                final response = await http.get(
-                                                    Uri.parse(widget.noticeItem
-                                                        .urlImage[index]));
-                                                final localPath = join(path +
+                                                await download(
                                                     widget.noticeItem
-                                                        .noticeTitle +
-                                                    '.jpg');
-
-                                                final imageFile =
-                                                    File(localPath);
-                                                await imageFile
-                                                    .writeAsBytes(
-                                                        response.bodyBytes)
-                                                    .catchError((onError) {
-                                                  AppLogger.print(onError);
-                                                });
-                                                setState(() {
-                                                  downloading = false;
-                                                });
+                                                        .urlImage[index],
+                                                    index);
                                               })
                                           : SizedBox(
                                               height: 20,
@@ -145,6 +173,52 @@ class _NoticeViewState extends State<NoticeView> {
         ),
       ),
     );
+  }
+
+  downloadPdf(String url) async {
+    Uri uri = Uri.parse(url);
+    final localPath =
+        join(path, uri.pathSegments.last.split("/")[1].replaceAll(" ", "_"));
+    final exist = await Directory(localPath).exists();
+    if (!exist) {
+      setState(() {
+        pdfDownloading = true;
+      });
+      final response = await http.get(uri);
+
+      AppLogger.print(localPath);
+      final pdfFile = File(localPath);
+      await pdfFile.writeAsBytes(response.bodyBytes).whenComplete(() {
+        OpenFile.open(pdfFile.path);
+      }).catchError((onError) {
+        AppLogger.print(onError);
+      });
+      setState(() {
+        pdfDownloading = true;
+      });
+    } else {
+      await OpenFile.open(localPath);
+    }
+  }
+
+  download(String image, int index) async {
+    no++;
+    setState(() {
+      downloading[index] = true;
+    });
+    Uri uri = Uri.parse(image);
+    final response = await http.get(uri);
+
+    final localPath =
+        join(path, uri.pathSegments.last.split("/")[1].replaceAll(" ", "_"));
+    AppLogger.print(localPath);
+    final imageFile = File(localPath);
+    await imageFile.writeAsBytes(response.bodyBytes).catchError((onError) {
+      AppLogger.print(onError);
+    });
+    setState(() {
+      downloading[index] = false;
+    });
   }
 }
 

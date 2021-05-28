@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:classroom_scheduler_flutter/Pages.dart/HomePage.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/LandingPage.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
@@ -16,6 +18,7 @@ import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:path_provider_ex/path_provider_ex.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -75,7 +78,18 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Provider.of<HubRootData>(context, listen: false).loadDrawerData();
     pendingNotification = await f.pendingNotifications();
+    configurePath();
     Navigator.push(context, MaterialPageRoute(builder: (_) => LandingPage()));
+  }
+
+  configurePath() async {
+    List<StorageInfo> storageInfo = await PathProviderEx.getStorageInfo();
+    String path = storageInfo[0].rootDir + '/DCIM/scheduler/';
+    final exist = await Directory(path).exists();
+    AppLogger.print("directory exist  " + exist.toString());
+    if (!exist) {
+      await Directory(path).create();
+    }
   }
 
   @override
