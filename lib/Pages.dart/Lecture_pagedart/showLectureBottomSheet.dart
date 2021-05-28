@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 
 class ShowLectureBottomSheet extends StatelessWidget {
   final Lecture sheetLectureData;
+  final List<int> pendingNotificationsId;
 
-  const ShowLectureBottomSheet({Key key, this.sheetLectureData})
+  const ShowLectureBottomSheet(
+      {Key key, this.sheetLectureData, this.pendingNotificationsId})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -41,9 +43,9 @@ class ShowLectureBottomSheet extends StatelessWidget {
                         backgroundColor: Colors.transparent,
                         builder: (context) {
                           return CustomBottomSheet(
-                            sheetLectureData: sheetLectureData,
-                            isSpecicifTime: false,
-                          );
+                              sheetLectureData: sheetLectureData,
+                              isSpecicifTime: false,
+                              pendingNotificationsId: pendingNotificationsId);
                         },
                       );
                     },
@@ -62,9 +64,9 @@ class ShowLectureBottomSheet extends StatelessWidget {
                         backgroundColor: Colors.transparent,
                         builder: (context) {
                           return CustomBottomSheet(
-                            sheetLectureData: sheetLectureData,
-                            isSpecicifTime: true,
-                          );
+                              sheetLectureData: sheetLectureData,
+                              isSpecicifTime: true,
+                              pendingNotificationsId: pendingNotificationsId);
                         },
                       );
                     },

@@ -24,7 +24,12 @@ typedef StringValue = String Function(String);
 class CustomBottomSheet extends StatefulWidget {
   final Lecture sheetLectureData;
   final bool isSpecicifTime;
-  const CustomBottomSheet({Key key, this.sheetLectureData, this.isSpecicifTime})
+  final List<int> pendingNotificationsId;
+  const CustomBottomSheet(
+      {Key key,
+      this.sheetLectureData,
+      this.isSpecicifTime,
+      this.pendingNotificationsId})
       : super(key: key);
   @override
   _CustomBottomSheet createState() => _CustomBottomSheet();
@@ -110,7 +115,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
         title = '$hubName';
         AppLogger.print(body);
         int notificationId = Common.generateNotificationId(hubName);
-
+        widget.pendingNotificationsId.add(notificationId);
         String starttime = Common.getNotificationTimeString(startTime);
         String endtime = Common.getNotificationTimeString(endTime);
         AppLogger.print(starttime);
@@ -293,7 +298,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
       title = '$hubName';
 
       int notificationId = Common.generateNotificationId(hubName);
-
+      widget.pendingNotificationsId.add(notificationId);
       String specifcDateTime = Common.getNotificationTimeString(selectedTime,
           date: pickedDate, isSpecificDate: true);
       AppLogger.print(specifcDateTime);

@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import '../HomePage.dart';
+import '../file_manager_view.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -107,10 +108,10 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
         centerTitle: true,
         actions: [
           IconButton(
-              icon: Icon(Icons.login_rounded),
+              icon: Icon(Icons.download_sharp),
               onPressed: () async {
-                await authService.logout();
-                Navigator.pop(context);
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => FileManagerr()));
               })
         ],
       ),

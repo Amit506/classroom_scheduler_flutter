@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/NoticeCard.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/notice_page.dart/NoticeView.dart';
 import 'package:classroom_scheduler_flutter/models/notification.dart';
@@ -11,6 +12,7 @@ import 'package:classroom_scheduler_flutter/services/notification_manager.dart/f
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -129,6 +131,7 @@ class _NoticesPageState extends State<NoticesPage>
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
       return AlertDialog(
+        scrollable: true,
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -160,13 +163,6 @@ class _NoticesPageState extends State<NoticesPage>
               await uploadNotice();
             },
           ),
-
-          // TextButton(
-          //   onPressed: () async {
-          //     await uploadNotice();
-          //   },
-          //   child: Text('send'),
-          // ),
         ],
         title: Center(
             child: Column(
@@ -179,10 +175,10 @@ class _NoticesPageState extends State<NoticesPage>
             )
           ],
         )),
-        content: SingleChildScrollView(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.35,
+        content: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height * 0.4,
+          child: SingleChildScrollView(
             child: Column(
               children: [
                 Container(
@@ -196,7 +192,7 @@ class _NoticesPageState extends State<NoticesPage>
                       controller: noticeTitleController,
                       maxLines: 2,
                       decoration: InputDecoration.collapsed(
-                        hintText: '  Notice Title',
+                        hintText: '  Notice Title...',
 
                         // enabledBorder: UnderlineInputBorder(
                         //   borderSide: BorderSide(color: Colors.black),
@@ -209,7 +205,7 @@ class _NoticesPageState extends State<NoticesPage>
                         //   borderSide: BorderSide(color: Colors.black),
                         // ),
                         hintStyle: TextStyle(
-                          color: Colors.black45,
+                          color: Colors.black26,
                         ),
                       ),
                     )),
@@ -227,7 +223,7 @@ class _NoticesPageState extends State<NoticesPage>
                       controller: noticeBodyController,
                       maxLines: 7,
                       decoration: InputDecoration.collapsed(
-                        hintText: 'Notice  body',
+                        hintText: 'Notice  body ...',
                         // enabledBorder: OutlineInputBorder(
                         //   borderSide: BorderSide(color: Colors.black),
                         // ),
@@ -239,13 +235,30 @@ class _NoticesPageState extends State<NoticesPage>
                         //   borderSide: BorderSide(color: Colors.black),
                         // ),
                         hintStyle: TextStyle(
-                          color: Colors.black45,
+                          color: Colors.black26,
                         ),
                       ),
                     )),
                 SizedBox(
                   height: 10,
                 ),
+                ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.grey[100]),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18.0),
+                                    side: BorderSide(color: Colors.black12)))),
+                    onPressed: () {},
+                    child: Row(children: [
+                      Icon(
+                        AntDesign.pdffile1,
+                        color: Colors.redAccent,
+                      ),
+                      Text(' add pdf', style: TextStyle(color: Colors.black26)),
+                    ])),
                 files.length == 0
                     ? SizedBox()
                     : SizedBox(

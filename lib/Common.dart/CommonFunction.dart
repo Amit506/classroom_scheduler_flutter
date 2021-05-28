@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Common {
   static List<String> months = [
@@ -141,6 +144,35 @@ class Common {
     } catch (error) {
       return false;
     }
+  }
+
+  static String formatTime(String iso) {
+    DateTime date = DateTime.parse(iso);
+    DateTime now = DateTime.now();
+    DateTime yDay = DateTime.now().subtract(Duration(days: 1));
+    DateTime dateFormat = DateTime.parse(
+        "${date.year}-${date.month.toString().padLeft(2, "0")}-${date.day.toString().padLeft(2, "0")}T00:00:00.000Z");
+    DateTime today = DateTime.parse(
+        "${now.year}-${now.month.toString().padLeft(2, "0")}-${now.day.toString().padLeft(2, "0")}T00:00:00.000Z");
+    DateTime yesterday = DateTime.parse(
+        "${yDay.year}-${yDay.month.toString().padLeft(2, "0")}-${yDay.day.toString().padLeft(2, "0")}T00:00:00.000Z");
+
+    if (dateFormat == today) {
+      return "Today ${DateFormat("HH:mm").format(DateTime.parse(iso))}";
+    } else if (dateFormat == yesterday) {
+      return "Yesterday ${DateFormat("HH:mm").format(DateTime.parse(iso))}";
+    } else {
+      return "${DateFormat("MMM dd, HH:mm").format(DateTime.parse(iso))}";
+    }
+  }
+
+  static String formatBytes(bytes, decimals) {
+    if (bytes == 0) return "0.0 KB";
+    var k = 1024,
+        dm = decimals <= 0 ? 0 : decimals,
+        sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+        i = (log(bytes) / log(k)).floor();
+    return (((bytes / pow(k, i)).toStringAsFixed(dm)) + ' ' + sizes[i]);
   }
 }
 

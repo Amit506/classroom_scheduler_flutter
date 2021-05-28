@@ -236,6 +236,7 @@ class _LectureTabBarState extends State<LectureTabBar>
                     context: context,
                     builder: (_) => ShowLectureBottomSheet(
                           sheetLectureData: sheetLectureData,
+                          pendingNotificationsId: pendingNotificationsId,
                         ));
               })
           : SizedBox(),

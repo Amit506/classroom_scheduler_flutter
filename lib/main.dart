@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'routes.dart';
 import 'Theme.dart/app_theme.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +24,7 @@ void main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage((firebaseMessagingBackgroundHandler));
-
+  await Permission.manageExternalStorage.request();
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     AppLogger.print('${message.data.toString()}');
   });

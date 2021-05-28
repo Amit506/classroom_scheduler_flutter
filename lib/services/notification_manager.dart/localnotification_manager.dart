@@ -9,6 +9,7 @@ import 'package:device_info/device_info.dart';
 
 class LocalNotificationManagerFlutter extends ChangeNotifier {
   Stream<List<PendingNotificationRequest>> _subscription;
+
   static LocalNotificationManagerFlutter _instance;
   static LocalNotificationManagerFlutter getInstance() {
     if (_instance == null) {
