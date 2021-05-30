@@ -31,8 +31,9 @@ class _HomePageState extends State<HomePage> {
   RootCollection rootCollection;
   HubRootData hubRootData = HubRootData();
   PageController _pageController;
-  int _pageIndex = 0;
 
+  int _pageIndex = 0;
+  int currIndex = 0;
   @override
   void initState() {
     super.initState();
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    _pageController.dispose();
+    // _pageController.dispose();
     super.dispose();
   }
 
@@ -66,7 +67,13 @@ class _HomePageState extends State<HomePage> {
           icon: Icon(Icons.home),
         ),
       ),
-      body: PageView(
+      body:
+          // <Widget>[
+          //   NoticesPage(isAdmin: isAdmin),
+          //   LectureTabBar(isAdmin: isAdmin),
+          //   PeoplePage(),
+          // ].elementAt(currIndex)
+          PageView(
         children: [
           NoticesPage(isAdmin: isAdmin),
           LectureTabBar(isAdmin: isAdmin),

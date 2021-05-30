@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/HubContainer.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/drawer.dart';
@@ -97,14 +98,27 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
       drawer: LandingScreenDrawer(),
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
-          'Classroom scheduler',
-          style: TextStyle(
-            fontSize: 30,
-            color: Colors.white,
-            fontFamily: 'Damion',
-            // letterSpacing: 1
-          ),
+        title: Row(
+          children: [
+            Text(
+              'Classroom',
+              style: TextStyle(
+                fontSize: 28,
+                color: Colors.white,
+                fontFamily: 'Damion',
+                // letterSpacing: 1
+              ),
+            ),
+            Text(
+              ' Scheduler',
+              style: TextStyle(
+                fontSize: 28,
+                color: color9,
+                fontFamily: 'Damion',
+                // letterSpacing: 1
+              ),
+            ),
+          ],
         ),
         centerTitle: true,
         actions: [

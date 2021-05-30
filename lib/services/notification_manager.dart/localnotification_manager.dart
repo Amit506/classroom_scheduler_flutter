@@ -29,7 +29,7 @@ class LocalNotificationManagerFlutter extends ChangeNotifier {
     _subscription =
         flnp.pendingNotificationRequests().asStream().asBroadcastStream();
 
-// if want to initialize ios platform permission is required
+// if want to initialize ios platform permission is required\
     intitialzeAndroidPlatform();
   }
   intitialzeAndroidPlatform() async {

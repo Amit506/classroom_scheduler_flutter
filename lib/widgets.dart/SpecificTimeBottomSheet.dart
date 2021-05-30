@@ -116,7 +116,7 @@ class SpecifcTimeBottomSheet extends StatelessWidget {
                           style: style,
                           onPressed: onTapPickedTime,
                           child: Text(
-                            'start time',
+                            'Start Time',
                             style: TextStyle(color: Colors.white),
                           )),
                       Wrap(

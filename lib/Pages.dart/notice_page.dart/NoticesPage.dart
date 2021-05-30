@@ -34,8 +34,7 @@ class NoticesPage extends StatefulWidget {
   _NoticesPageState createState() => _NoticesPageState();
 }
 
-class _NoticesPageState extends State<NoticesPage>
-    with AutomaticKeepAliveClientMixin<NoticesPage> {
+class _NoticesPageState extends State<NoticesPage> {
   final key = GlobalKey<AnimatedListState>();
   List itemss;
   List<File> files = [];
@@ -147,7 +146,9 @@ class _NoticesPageState extends State<NoticesPage>
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text('Exit')),
+                  child: Text(
+                    'Exit',
+                  )),
               TextButton(
                 onPressed: () async {
                   List<File> temp = await getImage();
@@ -174,11 +175,22 @@ class _NoticesPageState extends State<NoticesPage>
         title: Center(
             child: Column(
           children: [
-            Text('Notice'),
+            Row(
+              children: [
+                SizedBox(
+                  width: 10,
+                ),
+                Icon(Icons.info_outline),
+                SizedBox(
+                  width: 50,
+                ),
+                Text('Notice'),
+              ],
+            ),
             Divider(
-              thickness: 2,
-              indent: 40,
-              endIndent: 40,
+              thickness: 1,
+              indent: 10,
+              endIndent: 10,
             )
           ],
         )),
@@ -192,7 +204,7 @@ class _NoticesPageState extends State<NoticesPage>
                     padding:
                         EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
                     decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
+                        border: Border.all(color: Colors.black38),
                         borderRadius: BorderRadius.circular(12.0)),
                     width: MediaQuery.of(context).size.width * 0.6,
                     child: TextField(
@@ -223,7 +235,7 @@ class _NoticesPageState extends State<NoticesPage>
                     padding:
                         EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
                     decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
+                        border: Border.all(color: Colors.black38),
                         borderRadius: BorderRadius.circular(12.0)),
                     width: MediaQuery.of(context).size.width * 0.6,
                     child: TextField(
@@ -246,37 +258,35 @@ class _NoticesPageState extends State<NoticesPage>
                         ),
                       ),
                     )),
-                SizedBox(
-                  height: 10,
-                ),
-                ElevatedButton(
-                    style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.grey[100]),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
-                                    side: BorderSide(color: Colors.black12)))),
-                    onPressed: () async {
-                      FilePickerResult result = await FilePicker.platform
-                          .pickFiles(
-                              type: FileType.custom,
-                              allowedExtensions: ['pdf']);
-                      if (result != null) {
-                        pdfFile = File(result.files.single.path);
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 3.0),
+                  child: ElevatedButton(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      side:
+                                          BorderSide(color: Colors.black26)))),
+                      onPressed: () async {
+                        FilePickerResult result = await FilePicker.platform
+                            .pickFiles(
+                                type: FileType.custom,
+                                allowedExtensions: ['pdf']);
+                        if (result != null) {
+                          pdfFile = File(result.files.single.path);
 
-                        setState(() {
-                          pdfName = path.basename(pdfFile.path);
-                          AppLogger.print(pdfName);
-                        });
-                      } else {
-                        // User canceled the picker
+                          setState(() {
+                            pdfName = path.basename(pdfFile.path);
+                            AppLogger.print(pdfName);
+                          });
+                        } else {
+                          // User canceled the picker
 
-                      }
-                    },
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width,
+                        }
+                      },
                       child: Row(children: [
                         Icon(
                           AntDesign.pdffile1,
@@ -285,16 +295,13 @@ class _NoticesPageState extends State<NoticesPage>
                         SizedBox(
                           width: 20,
                         ),
-                        SizedBox(
-                          width: 150,
-                          child: Text(pdfName == null ? 'add pdf' : pdfName,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: Colors.black26,
-                              )),
-                        ),
-                      ]),
-                    )),
+                        Text(pdfName == null ? 'Add pdf' : pdfName,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.black26,
+                            )),
+                      ])),
+                ),
                 files.length == 0
                     ? SizedBox()
                     : SizedBox(
@@ -329,7 +336,8 @@ class _NoticesPageState extends State<NoticesPage>
   }
 
   Future uploadNotice() async {
-    if (noticeTitleController.text != null) {
+    AppLogger.print('0000000000000000000000000' + noticeTitleController.text);
+    if (noticeTitleController.text.length != 0) {
       final hubRootData = Provider.of<HubDataProvider>(context, listen: false);
       StorageDataBase storageDataBase =
           StorageDataBase(hubCode: hubRootData.rootData.hubCode);
@@ -378,7 +386,4 @@ class _NoticesPageState extends State<NoticesPage>
       Common.showSnackBar("title cannot be empty", context);
     }
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

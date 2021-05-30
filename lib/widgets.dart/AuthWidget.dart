@@ -17,10 +17,14 @@ class AuthWidget extends StatelessWidget {
       stream: Provider.of<AuthService>(context).authState,
       builder: (_, snapshot) {
         AppLogger.print(snapshot.data.toString());
-        if (snapshot.hasData) {
-          return SplashScreen();
+        if (snapshot.connectionState == ConnectionState.active) {
+          if (snapshot.hasData) {
+            return SplashScreen();
+          } else {
+            return LogInPage();
+          }
         } else {
-          return LogInPage();
+          return LoadingScreen();
         }
       },
     );

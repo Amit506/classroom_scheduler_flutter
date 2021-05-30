@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:classroom_scheduler_flutter/Pages.dart/HomePage.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/LandingPage.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
@@ -72,6 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
     _fcm.tokenRefresh();
     LocalNotificationManagerFlutter f =
         LocalNotificationManagerFlutter.getInstance();
+    cache();
     f.getActiveNotifications();
     _fcm.onMessage();
     dynamicLink.retrieveDynamicLink(context);
@@ -79,7 +81,17 @@ class _SplashScreenState extends State<SplashScreen> {
     Provider.of<HubRootData>(context, listen: false).loadDrawerData();
     pendingNotification = await f.pendingNotifications();
     configurePath();
+
     Navigator.push(context, MaterialPageRoute(builder: (_) => LandingPage()));
+  }
+
+  cache() {
+    assetImages.forEach((element) {
+      precacheImage(AssetImage(element), context);
+    });
+    noticeImages.forEach((element) {
+      precacheImage(AssetImage(element), context);
+    });
   }
 
   configurePath() async {

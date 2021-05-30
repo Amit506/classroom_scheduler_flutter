@@ -62,12 +62,14 @@ class Common {
 
   static String noticetime(String dat) {
     DateTime date = DateTime.parse(dat);
-    return date.hour.toString() + ":" + date.minute.toString();
+    return date.hour.toString().padLeft(2, '0') +
+        ":" +
+        date.minute.toString().padLeft(2, '0');
   }
 
   static String noticeDate(String dat) {
     DateTime date = DateTime.parse(dat);
-    return date.day.toString() +
+    return date.day.toString().padLeft(2, '0') +
         ' ' +
         months[date.month] +
         ' ' +
