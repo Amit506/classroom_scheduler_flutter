@@ -124,7 +124,8 @@ class _LectureTabBarState extends State<LectureTabBar>
                                         lectures[index].specificDateTime);
                                 AppLogger.print('$now    :  $scheduledDate');
 
-                                if (scheduledDate.isAfter(now)) {
+                                if (scheduledDate
+                                    .isAfter(now.add(Duration(minutes: 5)))) {
                                   setState(() {
                                     pendingNotificationsId
                                         .add(lectures[index].notificationId);

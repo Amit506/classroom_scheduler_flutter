@@ -69,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
       AppLogger.print('containsKey : ' + isFirstTime.toString());
     });
-
+    _fcm.subscribeTopic('Biology');
     _fcm.tokenRefresh();
     LocalNotificationManagerFlutter f =
         LocalNotificationManagerFlutter.getInstance();

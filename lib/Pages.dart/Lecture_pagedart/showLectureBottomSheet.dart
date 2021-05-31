@@ -32,12 +32,9 @@ class ShowLectureBottomSheet extends StatelessWidget {
                 child: CachedNetworkImage(
                     imageUrl: CAL_GIF,
                     progressIndicatorBuilder:
-                        (context, url, downloadProgress) => SizedBox(
-                              height: 40,
-                              width: 40,
-                              child: CircularProgressIndicator(
-                                  value: downloadProgress.progress),
-                            )),
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress)),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
