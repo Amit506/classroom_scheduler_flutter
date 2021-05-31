@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import '../components/LectureTile.dart';
-import '../models/Lecture.dart';
 
 class LecturesColumn extends StatefulWidget {
   @override

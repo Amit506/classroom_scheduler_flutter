@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +9,8 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
+
 import 'package:path_provider_ex/path_provider_ex.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 
 class NoticeView extends StatefulWidget {
@@ -44,6 +44,7 @@ class _NoticeViewState extends State<NoticeView> {
     }
   }
 
+  var style = TextStyle(color: Colors.black45, fontSize: 16);
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -58,15 +59,43 @@ class _NoticeViewState extends State<NoticeView> {
               alignment: Alignment.center,
               child: Text(
                 widget.noticeItem.noticeTitle,
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Message',
+                style: style,
               ),
             ),
             widget.noticeItem.noticeDetails.body != null
-                ? Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text(widget.noticeItem.noticeDetails.body),
+                ? Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black38),
+                        borderRadius: BorderRadius.circular(12.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(widget.noticeItem.noticeDetails.body),
+                    ),
                   )
-                : SizedBox(),
+                : Container(
+                    decoration: BoxDecoration(
+                        color: Colors.black12,
+                        border: Border.all(color: Colors.black38),
+                        borderRadius: BorderRadius.circular(12.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text('no message'),
+                    ),
+                  ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Documents',
+                style: style,
+              ),
+            ),
             widget.noticeItem.noticeDetails.url != null
                 ? ElevatedButton(
                     style: ButtonStyle(
@@ -104,7 +133,16 @@ class _NoticeViewState extends State<NoticeView> {
                         ),
                       ]),
                     ))
-                : SizedBox(),
+                : Container(
+                    decoration: BoxDecoration(
+                        color: Colors.black12,
+                        border: Border.all(color: Colors.black38),
+                        borderRadius: BorderRadius.circular(12.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text('no documents'),
+                    ),
+                  ),
             widget.noticeItem.urlImage.length != 0
                 ? Expanded(
                     child: ListView.builder(
@@ -123,34 +161,56 @@ class _NoticeViewState extends State<NoticeView> {
                                             )));
                               },
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    children: [
-                                      !downloading[index]
-                                          ? IconButton(
-                                              icon: Icon(Icons.file_download),
-                                              onPressed: () async {
-                                                await download(
-                                                    widget.noticeItem
-                                                        .urlImage[index],
-                                                    index);
-                                              })
-                                          : SizedBox(
-                                              height: 20,
-                                              width: 20,
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        'Download',
-                                        style: TextStyle(
-                                          fontSize: 15,
+                                  Container(
+                                    padding: EdgeInsets.all(5.0),
+                                    decoration: BoxDecoration(
+                                        color: Colors.black12,
+                                        border:
+                                            Border.all(color: Colors.black12),
+                                        borderRadius:
+                                            BorderRadius.circular(18.0)),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        !downloading[index]
+                                            ? GestureDetector(
+                                                onTap: () async {
+                                                  await download(
+                                                      widget.noticeItem
+                                                          .urlImage[index],
+                                                      index);
+                                                },
+                                                child: Icon(
+                                                  Icons.file_download,
+                                                  size: 18,
+                                                ))
+                                            : SizedBox(
+                                                height: 18,
+                                                width: 18,
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
+                                        SizedBox(
+                                          width: 8.0,
                                         ),
-                                      )
-                                    ],
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 5.0),
+                                          child: Text(
+                                            'Download',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
                                   ),
                                   Hero(
                                     tag: "hero",
@@ -215,6 +275,8 @@ class _NoticeViewState extends State<NoticeView> {
     final imageFile = File(localPath);
     await imageFile.writeAsBytes(response.bodyBytes).catchError((onError) {
       AppLogger.print(onError);
+    }).whenComplete(() {
+      // Common.showSnackBar("download successful", context);
     });
     setState(() {
       downloading[index] = false;

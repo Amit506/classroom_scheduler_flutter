@@ -79,6 +79,7 @@ class ClassDetails extends StatelessWidget {
                   Provider.of<HubDataProvider>(context, listen: false)
                       .addClassDetails(id, subCodeController.text,
                           teacherNameController.text);
+                  Navigator.pop(context);
                 },
                 child: Text('update'))
           ],

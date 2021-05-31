@@ -1,4 +1,5 @@
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 
 import 'package:flutter/material.dart';
@@ -30,56 +31,73 @@ class OneTimeSchedule extends StatelessWidget {
         ),
       ),
       child: Card(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 7.0),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'One Time Lecture',
-                    style: oneStyle,
-                  ),
-                  PopupMenuButton(
-                      onSelected: onDelete,
-                      itemBuilder: (_) {
-                        return [
-                          PopupMenuItem(
-                              height: 26,
-                              value: "delete",
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.all(
+                Radius.circular(8.0) //                 <--- border radius here
+                ),
+            gradient: LinearGradient(
+                colors: [color3, color14],
+                begin: FractionalOffset(0, 0),
+                end: FractionalOffset(0, 1),
+                stops: [0.7, 0.3],
+                tileMode: TileMode.clamp),
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 7.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'One Time Lecture',
+                      style: oneStyle,
+                    ),
+                    PopupMenuButton(
+                        onSelected: onDelete,
+                        itemBuilder: (_) {
+                          return [
+                            PopupMenuItem(
+                                height: 26,
+                                value: "delete",
 
-                              //  enabled: ,
-                              child: Text('Delete')),
-                        ];
-                      }),
-                ],
-              ),
-              SwitchListTile(value: switchValue, onChanged: onChanged),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
+                                //  enabled: ,
+                                child: Text('Delete')),
+                          ];
+                        }),
+                  ],
+                ),
+                SwitchListTile(value: switchValue, onChanged: onChanged),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          'Date',
+                        ),
+                        Text(
+                          '${date.day} ${months[date.month]} ${date.year}',
+                          style: dateTimeStyle,
+                        ),
+                      ],
+                    ),
+                    Column(children: [
+                      Text('Time'),
                       Text(
-                        'Date',
-                      ),
-                      Text(
-                        '${date.day} ${months[date.month]} ${date.year}',
+                        Common.lctureSpecificTime(lecture.specificDateTime)[1],
                         style: dateTimeStyle,
                       ),
-                    ],
-                  ),
-                  Column(children: [
-                    Text('Time'),
-                    Text(
-                      Common.lctureSpecificTime(lecture.specificDateTime)[1],
-                      style: dateTimeStyle,
-                    ),
-                  ])
-                ],
-              )
-            ],
+                    ])
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),

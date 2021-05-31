@@ -71,7 +71,7 @@ class _LectureTabBarState extends State<LectureTabBar>
       });
     });
     AppLogger.print("pending  :" + pendingNotificationsId.toString());
-    Provider.of<HubDataProvider>(context, listen: false).deleteOlder();
+    Provider.of<HubDataProvider>(context, listen: false).deleteOlderSchedule();
   }
 
   @override

@@ -12,7 +12,7 @@ import 'package:system_settings/system_settings.dart';
 
 class LandingScreenDrawer extends StatelessWidget {
   final AuthService authService = AuthService();
-  static const MethodChannel _channel = const MethodChannel('settings');
+  // static const MethodChannel _channel = const MethodChannel('settings');
 
   @override
   Widget build(BuildContext context) {

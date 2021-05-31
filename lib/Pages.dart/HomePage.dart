@@ -56,15 +56,19 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(Provider.of<HubDataProvider>(context, listen: true)
-            .rootData
-            .hubname),
+        title: Text(
+          Provider.of<HubDataProvider>(context, listen: true).rootData.hubname,
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
             Navigator.pushNamed(context, LandingPage.routename);
           },
-          icon: Icon(Icons.home),
+          icon: Icon(
+            Icons.home,
+            color: Colors.white,
+          ),
         ),
       ),
       body:

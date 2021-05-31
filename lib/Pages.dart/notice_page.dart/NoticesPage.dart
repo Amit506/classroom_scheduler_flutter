@@ -15,6 +15,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
+import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
@@ -34,7 +35,8 @@ class NoticesPage extends StatefulWidget {
   _NoticesPageState createState() => _NoticesPageState();
 }
 
-class _NoticesPageState extends State<NoticesPage> {
+class _NoticesPageState extends State<NoticesPage>
+    with AutomaticKeepAliveClientMixin {
   final key = GlobalKey<AnimatedListState>();
   List itemss;
   List<File> files = [];
@@ -124,8 +126,10 @@ class _NoticesPageState extends State<NoticesPage> {
               child: Icon(Icons.add),
               onPressed: () {
                 AppLogger.print('pressed');
-                showDialog(
-                    context: context, builder: (_) => noticeDialog(context));
+                showAnimatedDialog(
+                    animationType: DialogTransitionType.slideFromBottomFade,
+                    context: context,
+                    builder: (_) => noticeDialog(context));
 
                 // insertItem(3, Data.noticesList.first);
               })
@@ -148,6 +152,7 @@ class _NoticesPageState extends State<NoticesPage> {
                   },
                   child: Text(
                     'Exit',
+                    style: TextStyle(color: Colors.red),
                   )),
               TextButton(
                 onPressed: () async {
@@ -295,11 +300,14 @@ class _NoticesPageState extends State<NoticesPage> {
                         SizedBox(
                           width: 20,
                         ),
-                        Text(pdfName == null ? 'Add pdf' : pdfName,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Colors.black26,
-                            )),
+                        SizedBox(
+                          width: 120,
+                          child: Text(pdfName == null ? 'Add pdf' : pdfName,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.black26,
+                              )),
+                        ),
                       ])),
                 ),
                 files.length == 0
@@ -336,7 +344,6 @@ class _NoticesPageState extends State<NoticesPage> {
   }
 
   Future uploadNotice() async {
-    AppLogger.print('0000000000000000000000000' + noticeTitleController.text);
     if (noticeTitleController.text.length != 0) {
       final hubRootData = Provider.of<HubDataProvider>(context, listen: false);
       StorageDataBase storageDataBase =
@@ -364,6 +371,7 @@ class _NoticesPageState extends State<NoticesPage> {
           "docId": value.id,
         }).then((value) {
           _btnController.success();
+          Navigator.pop(context);
         });
       });
       final body = noticeBodyController.text;
@@ -386,4 +394,7 @@ class _NoticesPageState extends State<NoticesPage> {
       Common.showSnackBar("title cannot be empty", context);
     }
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

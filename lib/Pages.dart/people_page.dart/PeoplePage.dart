@@ -18,7 +18,8 @@ class PeoplePage extends StatefulWidget {
   _PeoplePageState createState() => _PeoplePageState();
 }
 
-class _PeoplePageState extends State<PeoplePage> {
+class _PeoplePageState extends State<PeoplePage>
+    with AutomaticKeepAliveClientMixin {
   final DynamicLink dynamicLink = DynamicLink();
 
   @override
@@ -227,4 +228,7 @@ class _PeoplePageState extends State<PeoplePage> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

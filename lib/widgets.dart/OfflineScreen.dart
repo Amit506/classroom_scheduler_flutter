@@ -1,3 +1,5 @@
+import 'package:classroom_scheduler_flutter/Pages.dart/file_manager_view.dart';
+import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 
@@ -5,8 +7,36 @@ class OfflineScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new AppBar(
-        title: new Text("class scheduler"),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Row(children: [
+          Text(
+            'Classroom',
+            style: TextStyle(
+              fontSize: 28,
+              color: Colors.white,
+              fontFamily: 'Damion',
+              // letterSpacing: 1
+            ),
+          ),
+          Text(
+            ' Scheduler',
+            style: TextStyle(
+              fontSize: 28,
+              color: color9,
+              fontFamily: 'Damion',
+              // letterSpacing: 1
+            ),
+          ),
+        ]),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.download_sharp, color: Colors.white),
+              onPressed: () async {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => FileManagerr()));
+              })
+        ],
       ),
       body: OfflineBuilder(
         connectivityBuilder: (
@@ -31,7 +61,7 @@ class OfflineScreen extends StatelessWidget {
               ),
               Center(
                 child: new Text(
-                  'Yay!',
+                  'Turn on network...',
                 ),
               ),
             ],

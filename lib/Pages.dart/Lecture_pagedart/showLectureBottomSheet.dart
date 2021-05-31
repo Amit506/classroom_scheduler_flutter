@@ -37,6 +37,7 @@ class ShowLectureBottomSheet extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(6.0))),
                     onPressed: () {
+                      Navigator.pop(context);
                       showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
@@ -58,6 +59,7 @@ class ShowLectureBottomSheet extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(6.0))),
                     onPressed: () {
+                      Navigator.pop(context);
                       showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,

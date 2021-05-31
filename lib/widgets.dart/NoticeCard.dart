@@ -33,7 +33,7 @@ class NoticeCard extends StatelessWidget {
           decoration: BoxDecoration(
               image: DecorationImage(
                   colorFilter: ColorFilter.mode(
-                      Colors.white24.withOpacity(0.2), BlendMode.dstATop),
+                      Colors.white24.withOpacity(0.4), BlendMode.dstATop),
                   alignment: Alignment.centerRight,
                   fit: BoxFit.cover,
                   image: AssetImage(image))),

@@ -97,7 +97,7 @@ class HubDataProvider extends ChangeNotifier {
     // to implement delete set notifications drom device;
   }
 
-  deleteOlder() async {
+  deleteOlderSchedule() async {
     DateTime date = DateTime.now().add(Duration(days: 1));
     final data = await _rootCollection.lectures.get();
 
@@ -105,7 +105,8 @@ class HubDataProvider extends ChangeNotifier {
       bool b = element.data()['isSpecificDateTime'];
       AppLogger.print(b.toString());
       if (b) {
-        if (date.isBefore(DateTime.parse(element.data()['specificDateTime']))) {
+        if (date.isAfter(DateTime.parse(element.data()['specificDateTime'])
+            .add(Duration(days: 1)))) {
           await _rootCollection.lectures
               .doc(element.data()['nth'].toString())
               .delete();

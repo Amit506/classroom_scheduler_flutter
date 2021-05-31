@@ -17,6 +17,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import '../HomePage.dart';
@@ -33,6 +34,7 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   final AuthService authService = AuthService();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FireBaseNotificationService _fcm = FireBaseNotificationService();
   NotificationProvider nf = NotificationProvider();
@@ -95,9 +97,16 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       drawer: LandingScreenDrawer(),
       backgroundColor: Colors.white,
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu, color: Colors.white),
+          onPressed: () {
+            _scaffoldKey.currentState.openDrawer();
+          },
+        ),
         title: Row(
           children: [
             Text(
@@ -123,7 +132,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
         centerTitle: true,
         actions: [
           IconButton(
-              icon: Icon(Icons.download_sharp),
+              icon: Icon(Icons.download_sharp, color: Colors.white),
               onPressed: () async {
                 Navigator.push(
                     context, MaterialPageRoute(builder: (_) => FileManagerr()));
@@ -220,12 +229,13 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                 tapTarget: Icon(Icons.add),
                 child: Icon(Icons.add)),
         onPressed: () {
-          showDialog(
+          showAnimatedDialog(
+            animationType: DialogTransitionType.slideFromLeft,
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(40.0))),
+                    borderRadius: BorderRadius.all(Radius.circular(20.0))),
                 backgroundColor: Theme.of(context).primaryColor,
                 titleTextStyle: TextStyle(
                     color: Colors.white,
@@ -237,7 +247,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                     'Hub Actions',
                     style: TextStyle(
                       fontFamily: 'Lato',
-                      fontSize: 30,
+                      fontSize: 22,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -254,6 +264,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                             fontWeight: FontWeight.w300),
                       ),
                       onPressed: () {
+                        Navigator.pop(context);
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -272,6 +283,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                             fontWeight: FontWeight.w100),
                       ),
                       onPressed: () {
+                        Navigator.pop(context);
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {

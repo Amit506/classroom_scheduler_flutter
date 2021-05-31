@@ -30,9 +30,9 @@ dependencies:
   flutter_icons: ^1.1.0
   flutter_local_notifications: ^5.0.0+1
   flutter_offline: ^2.0.0
-  flutter_staggered_animations: ^1.0.0
+  # flutter_staggered_animations: ^1.0.0
   flutter_svg: ^0.19.3
-  giffy_dialog: ^1.8.0
+  # giffy_dialog: ^1.8.0
   google_sign_in: ^5.0.0
   http: ^0.13.1
   image_picker: ^0.7.4
@@ -45,7 +45,7 @@ dependencies:
   path_provider_ex: ^1.0.1
   permission_handler: ^8.0.0+2
   photo_view: ^0.11.1
-  provider: null
+  provider: 
   rounded_loading_button: ^1.0.18
   share: ^2.0.1
   shared_preferences: ^2.0.5
