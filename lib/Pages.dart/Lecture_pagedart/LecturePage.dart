@@ -4,7 +4,6 @@ import 'package:classroom_scheduler_flutter/widgets.dart/OneTimeLecture.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/WeeklyLecture.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/bottom_sheet.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/showLectureBottomSheet.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';

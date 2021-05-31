@@ -3,12 +3,15 @@ import 'package:classroom_scheduler_flutter/widgets.dart/CircleAvatar.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/dynamic_link.dart';
 import 'package:classroom_scheduler_flutter/services/hub_data_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+
+import 'package:cached_network_image/cached_network_image.dart';
+
+import '../Landing_page.dart/cache_directory.dart';
 
 class PeoplePage extends StatefulWidget {
   const PeoplePage({
@@ -74,8 +77,8 @@ class _PeoplePageState extends State<PeoplePage>
                                                   BlendMode.dstATop),
                                               fit: BoxFit.contain,
                                               alignment: Alignment.bottomCenter,
-                                              image: AssetImage(
-                                                  'image/dash.png'))),
+                                              image: CachedNetworkImageProvider(
+                                                  DASH_IMAGE))),
                                       height: 60,
                                       child: Row(
                                         mainAxisAlignment:

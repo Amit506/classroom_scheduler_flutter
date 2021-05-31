@@ -253,7 +253,6 @@ class NotificationProvider {
             enableVibration: true,
           ),
         ),
-        payload:
-            "{amrita is fooooooooooooooooooooooooooooooooooooooooooooooool}");
+        payload: "{ooooooooooooooooooooooooooooooooooooooooooooooool}");
   }
 }

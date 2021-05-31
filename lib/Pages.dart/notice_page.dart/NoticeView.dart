@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:flutter/material.dart';

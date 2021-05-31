@@ -33,7 +33,7 @@ class LocalNotificationManagerFlutter extends ChangeNotifier {
     intitialzeAndroidPlatform();
   }
   intitialzeAndroidPlatform() async {
-    var initSettingAndroid = AndroidInitializationSettings('launch_background');
+    var initSettingAndroid = AndroidInitializationSettings('ic_launcher');
     initSetting = InitializationSettings(android: initSettingAndroid);
     await flutterLocalNotificationsPlugin.initialize(initSetting,
         onSelectNotification: selectNotification);

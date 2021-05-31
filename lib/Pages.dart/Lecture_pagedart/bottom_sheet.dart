@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/SpecificTimeBottomSheet.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/WeeklyPageBottomSheet.dart';
-import 'package:classroom_scheduler_flutter/main.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:classroom_scheduler_flutter/services/notification_manager.dart/firebase_notification.dart';

@@ -58,7 +58,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
     super.didChangeDependencies();
 
     for (int i = 0; i <= 3; i++) {
-      precacheImage(AssetImage(assetImages[i]), context);
+      precacheImage(AssetImage(assetImagesN[i]), context);
     }
     // precacheImage(provider, context);
   }
@@ -161,7 +161,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                     itemCount: rootData.length,
                     itemBuilder: (context, index) {
                       return HubContainer(
-                        image: assetImages[_random.nextInt(3)],
+                        image: assetImagesN[_random.nextInt(3)],
                         hubName: rootData[index].hubname,
                         isAdmin: rootData[index].admin ==
                             authService.currentUser.email,

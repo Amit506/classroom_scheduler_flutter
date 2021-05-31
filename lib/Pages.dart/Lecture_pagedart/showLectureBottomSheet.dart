@@ -1,6 +1,9 @@
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/bottom_sheet.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+import '../Landing_page.dart/cache_directory.dart';
 
 class ShowLectureBottomSheet extends StatelessWidget {
   final Lecture sheetLectureData;
@@ -25,7 +28,16 @@ class ShowLectureBottomSheet extends StatelessWidget {
             children: [
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.35,
-                child: Image.asset('image/calender.gif'),
+                width: MediaQuery.of(context).size.width,
+                child: CachedNetworkImage(
+                    imageUrl: CAL_GIF,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) => SizedBox(
+                              height: 40,
+                              width: 40,
+                              child: CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                            )),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -1,9 +1,11 @@
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/ClassDetails.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/bottom_sheet.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 import 'package:flutter/material.dart';
 import 'package:weekday_selector/weekday_selector.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+import '../Pages.dart/Landing_page.dart/cache_directory.dart';
 
 class WeeklyLecture extends StatelessWidget {
   final bool isAdmin;
@@ -36,7 +38,7 @@ class WeeklyLecture extends StatelessWidget {
             decoration: BoxDecoration(
                 image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: AssetImage('image/time_glass.png'))),
+                    image: CachedNetworkImageProvider(TIME_GLASS))),
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 7.0),
               child: Column(

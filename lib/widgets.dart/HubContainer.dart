@@ -1,9 +1,5 @@
-import 'dart:math';
-
-import '../Pages.dart/Landing_page.dart/cache_directory.dart';
-
-import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HubContainer extends StatelessWidget {
   final String hubName;
@@ -37,7 +33,8 @@ class HubContainer extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      fit: BoxFit.cover, image: AssetImage(image))),
+                      fit: BoxFit.cover,
+                      image: CachedNetworkImageProvider(image))),
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Column(

@@ -35,6 +35,9 @@ android {
 
     lintOptions {
         disable 'InvalidPackage'
+        abortOnError false
+        // checkReleaseBuilds false
+        // abortOnError false
     }
 
     defaultConfig {
@@ -71,6 +74,5 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:26.2.0')
         implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-analytics'
-      // Work Manager
     implementation 'android.arch.work:work-runtime:1.0.1'
 }

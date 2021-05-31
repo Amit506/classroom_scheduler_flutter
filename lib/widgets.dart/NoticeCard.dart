@@ -1,9 +1,9 @@
-import 'dart:math';
-
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
+
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:flutter/material.dart';
+
+import 'package:cached_network_image/cached_network_image.dart';
 
 class NoticeCard extends StatelessWidget {
   final String noticeTitle;
@@ -33,10 +33,10 @@ class NoticeCard extends StatelessWidget {
           decoration: BoxDecoration(
               image: DecorationImage(
                   colorFilter: ColorFilter.mode(
-                      Colors.white24.withOpacity(0.4), BlendMode.dstATop),
+                      Colors.white24.withOpacity(0.3), BlendMode.dstATop),
                   alignment: Alignment.centerRight,
                   fit: BoxFit.cover,
-                  image: AssetImage(image))),
+                  image: CachedNetworkImageProvider(image))),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(

@@ -8,6 +8,7 @@ Lecture welcomeFromJson(String str) => Lecture.fromJson(json.decode(str));
 
 String welcomeToJson(Lecture data) => json.encode(data.toJson());
 
+// ignore: must_be_immutable
 class Lecture extends Equatable {
   Lecture({
     this.hubName,

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:classroom_scheduler_flutter/Pages.dart/HomePage.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/LandingPage.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
@@ -62,6 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await _prefs.then((value) {
       isFirstTime = value.containsKey('isFirstTime');
       if (!isFirstTime) {
+        cache();
         InstallNotifications.init(
             userid: Provider.of<AuthService>(context, listen: false)
                 .currentUser
@@ -73,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
     _fcm.tokenRefresh();
     LocalNotificationManagerFlutter f =
         LocalNotificationManagerFlutter.getInstance();
-    cache();
+
     f.getActiveNotifications();
     _fcm.onMessage();
     dynamicLink.retrieveDynamicLink(context);
@@ -86,11 +86,11 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   cache() {
-    assetImages.forEach((element) {
-      precacheImage(AssetImage(element), context);
+    assetImagesN.forEach((element) {
+      precacheImage(NetworkImage(element), context);
     });
-    noticeImages.forEach((element) {
-      precacheImage(AssetImage(element), context);
+    noticeImagesN.forEach((element) {
+      precacheImage(NetworkImage(element), context);
     });
   }
 

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 
 import 'package:flutter/material.dart';
@@ -108,10 +109,10 @@ class Common {
             color: Colors.white,
           ),
         ),
-        duration: new Duration(seconds: 5),
+        duration: new Duration(seconds: 4),
         behavior: SnackBarBehavior.floating,
         elevation: 3.0,
-        backgroundColor: Colors.red,
+        backgroundColor: color13,
       ),
     );
   }
@@ -128,7 +129,7 @@ class Common {
         duration: new Duration(seconds: 5),
         behavior: SnackBarBehavior.floating,
         elevation: 3.0,
-        backgroundColor: Colors.blue,
+        backgroundColor: color13,
       ),
     );
   }

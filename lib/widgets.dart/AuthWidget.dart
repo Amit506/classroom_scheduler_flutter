@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:classroom_scheduler_flutter/Pages.dart/AuthenticationScreen.dart/LoginPage.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/splashScreen.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';

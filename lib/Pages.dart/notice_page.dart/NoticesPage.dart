@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
-import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/NoticeCard.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/notice_page.dart/NoticeView.dart';
 import 'package:classroom_scheduler_flutter/models/notification.dart';
@@ -94,7 +93,7 @@ class _NoticesPageState extends State<NoticesPage>
                     itemCount: noticeItem.length,
                     itemBuilder: (context, index) {
                       return NoticeCard(
-                        image: noticeImages[_random.nextInt(2)],
+                        image: noticeImagesN[_random.nextInt(2)],
                         noticeTitle: noticeItem[index].noticeTitle,
                         body: noticeItem[index].noticeDetails.body,
                         urlImage: noticeItem[index].urlImage,

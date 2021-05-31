@@ -1,7 +1,6 @@
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
-import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:classroom_scheduler_flutter/models/notification.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';

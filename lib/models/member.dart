@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
 
 Members welcomeFromJson(String str) => Members.fromJson(json.decode(str));
