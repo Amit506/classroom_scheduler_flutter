@@ -48,32 +48,38 @@ class _FileManagerrState extends State<FileManagerr> {
         appBar: AppBar(
           title: Text('Downloads'),
         ),
-        body: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: ListView.separated(
-            padding: EdgeInsets.only(left: 20),
-            itemCount: downloads.length,
-            separatorBuilder: (_, index) {
-              return Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      height: 1,
-                      color: Theme.of(context).dividerColor,
-                      width: MediaQuery.of(context).size.width - 70,
-                    ),
-                  ),
-                ],
-              );
-            },
-            itemBuilder: (context, index) {
-              AppLogger.print(downloads[index].toString());
-              return FileItem(file: downloads[index]);
-            },
-          ),
-        )
+        body: downloads.length == 0
+            ? Container(
+                child: Center(
+                  child: Text('no downloads available'),
+                ),
+              )
+            : Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: ListView.separated(
+                  padding: EdgeInsets.only(left: 20),
+                  itemCount: downloads.length,
+                  separatorBuilder: (_, index) {
+                    return Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                            height: 1,
+                            color: Theme.of(context).dividerColor,
+                            width: MediaQuery.of(context).size.width - 70,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                  itemBuilder: (context, index) {
+                    AppLogger.print(downloads[index].toString());
+                    return FileItem(file: downloads[index]);
+                  },
+                ),
+              )
         // : Center(
         //     child: Column(
         //       children: [
