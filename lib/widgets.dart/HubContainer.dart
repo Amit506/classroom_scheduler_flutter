@@ -5,15 +5,15 @@ class HubContainer extends StatelessWidget {
   final String hubName;
   final bool isAdmin;
   final String date;
+  final String backgroundUrl;
   final String createdBy;
   final Function onTap;
   final Function(dynamic) ondelete;
-  final String image;
 
   const HubContainer(
       {Key key,
       this.hubName,
-      this.image,
+      this.backgroundUrl,
       this.isAdmin,
       this.date,
       this.createdBy,
@@ -34,7 +34,9 @@ class HubContainer extends StatelessWidget {
               decoration: BoxDecoration(
                   image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: CachedNetworkImageProvider(image))),
+                      colorFilter: ColorFilter.mode(
+                          Colors.white24.withOpacity(0.65), BlendMode.dstATop),
+                      image: CachedNetworkImageProvider(backgroundUrl))),
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Column(

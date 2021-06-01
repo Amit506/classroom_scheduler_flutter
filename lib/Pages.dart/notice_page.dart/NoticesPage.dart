@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
+import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/NoticeCard.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/notice_page.dart/NoticeView.dart';
 import 'package:classroom_scheduler_flutter/models/notification.dart';
@@ -65,6 +65,7 @@ class _NoticesPageState extends State<NoticesPage>
 
   @override
   void initState() {
+    AppLogger.print(color3.toString());
     print(widget.isAdmin);
     super.initState();
   }
@@ -93,7 +94,7 @@ class _NoticesPageState extends State<NoticesPage>
                     itemCount: noticeItem.length,
                     itemBuilder: (context, index) {
                       return NoticeCard(
-                        image: noticeImagesN[_random.nextInt(2)],
+                        color: Color(int.parse(noticeItem[index].color)),
                         noticeTitle: noticeItem[index].noticeTitle,
                         body: noticeItem[index].noticeDetails.body,
                         urlImage: noticeItem[index].urlImage,
@@ -355,6 +356,7 @@ class _NoticesPageState extends State<NoticesPage>
       AppLogger.print(pdfUrl);
       List<Comment> comment = [];
       final notice = NoticeItem(
+        color: noticeColors[_random.nextInt(7)].toString(),
         noticeTitle: noticeTitleController.text,
         urlImage: imageUrls,
         timeStamp: Timestamp.now().toString(),
@@ -373,7 +375,7 @@ class _NoticesPageState extends State<NoticesPage>
           Navigator.pop(context);
         });
       });
-      final body = noticeBodyController.text;
+      final body = noticeTitleController.text;
       NotificationMessage msg = NotificationMessage(
           to: "/topics/${hubRootData.rootData.hubname}",
           notification: NotificationA(

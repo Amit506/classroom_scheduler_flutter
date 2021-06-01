@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/LandingPage.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
@@ -61,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await _prefs.then((value) {
       isFirstTime = value.containsKey('isFirstTime');
       if (!isFirstTime) {
-        cache();
+        // cache();
         InstallNotifications.init(
             userid: Provider.of<AuthService>(context, listen: false)
                 .currentUser
@@ -69,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
       AppLogger.print('containsKey : ' + isFirstTime.toString());
     });
-    _fcm.subscribeTopic('Biology');
+
     _fcm.tokenRefresh();
     LocalNotificationManagerFlutter f =
         LocalNotificationManagerFlutter.getInstance();
@@ -85,14 +84,11 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.push(context, MaterialPageRoute(builder: (_) => LandingPage()));
   }
 
-  cache() {
-    assetImagesN.forEach((element) {
-      precacheImage(NetworkImage(element), context);
-    });
-    noticeImagesN.forEach((element) {
-      precacheImage(NetworkImage(element), context);
-    });
-  }
+  // cache() {
+  //   assetImagesN.forEach((element) {
+  //     precacheImage(NetworkImage(element), context);
+  //   });
+  // }
 
   configurePath() async {
     List<StorageInfo> storageInfo = await PathProviderEx.getStorageInfo();

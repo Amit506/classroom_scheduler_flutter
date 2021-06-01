@@ -1,11 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/SettingsScreen.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/hub_root_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'package:system_settings/system_settings.dart';
 
 class LandingScreenDrawer extends StatelessWidget {
   final AuthService authService = AuthService();
@@ -48,7 +47,8 @@ class LandingScreenDrawer extends StatelessWidget {
         )),
         Align(
             alignment: Alignment.bottomCenter,
-            child: SizedBox(
+            child: Container(
+              color: color10,
               width: MediaQuery.of(context).size.width,
               child: TextButton(
                 style: TextButton.styleFrom(
@@ -57,7 +57,9 @@ class LandingScreenDrawer extends StatelessWidget {
                   primary: Colors.white,
                 ),
                 onPressed: () async {
-                  await SystemSettings.appNotifications();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => SettingScreen()));
+                  // await SystemSettings.appNotifications();
                   // await _channel
                   //     .invokeMethod('notification_channel',
                   //         '{chanId:high_importance_channel}')
@@ -65,7 +67,13 @@ class LandingScreenDrawer extends StatelessWidget {
                   //   AppLogger.print(error.toString());
                   // });
                 },
-                child: Text('Notification Setting'),
+                child: Text(
+                  'Settings',
+                  style: TextStyle(
+                      letterSpacing: 1,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16),
+                ),
               ),
             )),
       ]),

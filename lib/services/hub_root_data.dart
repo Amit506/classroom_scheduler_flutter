@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
 import 'package:classroom_scheduler_flutter/models/notification.dart';
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class HubRootData extends ChangeNotifier {
+  final _random = Random();
   final NotificationProvider notificationProvider = NotificationProvider();
   final AuthService authService = AuthService();
   final FireBaseNotificationService fcm = FireBaseNotificationService();
@@ -269,7 +271,7 @@ class HubRootData extends ChangeNotifier {
   Future<bool> createRootHub(
       String hubname, String userId, String token, BuildContext context) async {
     final hubcode = await uniqueHubCode(rootCollection());
-    AppLogger.print(hubcode);
+    AppLogger.print('-----' + hubcode);
 
     if (hubcode != null) {
       try {
@@ -284,6 +286,7 @@ class HubRootData extends ChangeNotifier {
             hubCode: hubcode);
         final userCollection = UserCollection(
             admin: authService.currentUser.email,
+            backgroundUrl: assetImagesN[_random.nextInt(5)],
             hubname: hubname,
             timeStamp: Timestamp.now(),
             createdBy: authService.currentUser.displayName,
@@ -311,7 +314,9 @@ class HubRootData extends ChangeNotifier {
             .collection('joinedHubs')
             .doc(hubcode)
             .set(userCollection.toJson())
-            .then((value) {});
+            .then((value) {
+          return true;
+        });
       } catch (error) {
         Common.showSnackBar("something went wrong", context);
       }

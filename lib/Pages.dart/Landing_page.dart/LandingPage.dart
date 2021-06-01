@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:ui';
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/HubContainer.dart';
-import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/cache_directory.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/drawer.dart';
 import 'package:classroom_scheduler_flutter/models/RootCollection.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
@@ -39,7 +37,6 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   FireBaseNotificationService _fcm = FireBaseNotificationService();
   NotificationProvider nf = NotificationProvider();
   final HubRootData hubRootData = HubRootData();
-  final _random = Random();
   String hubname;
   String hubcode;
   String token;
@@ -56,11 +53,6 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    for (int i = 0; i <= 3; i++) {
-      precacheImage(AssetImage(assetImagesN[i]), context);
-    }
-    // precacheImage(provider, context);
   }
 
   floatingActionButtonLoading() {
@@ -79,7 +71,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
     } else {
       AppLogger.print('token & hubname are null');
     }
-
+    AppLogger.print('0000000000000-------------');
     floatingActionButtonLoading();
   }
 
@@ -161,7 +153,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                     itemCount: rootData.length,
                     itemBuilder: (context, index) {
                       return HubContainer(
-                        image: assetImagesN[_random.nextInt(3)],
+                        backgroundUrl: rootData[index].backgroundUrl,
                         hubName: rootData[index].hubname,
                         isAdmin: rootData[index].admin ==
                             authService.currentUser.email,
@@ -422,7 +414,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                     onPressed: () async {
                       if (_formKey.currentState.validate()) {
                         Navigator.pop(context);
-                        Navigator.pop(context);
+
                         await addHub();
                         AppLogger.print('valid');
                       } else {

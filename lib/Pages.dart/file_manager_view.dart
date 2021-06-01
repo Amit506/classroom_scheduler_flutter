@@ -46,12 +46,30 @@ class _FileManagerrState extends State<FileManagerr> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Downloads'),
+          iconTheme: IconThemeData(
+            color: Colors.white, //change your color here
+          ),
+          title: Text(
+            'Downloads',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         body: downloads.length == 0
             ? Container(
                 child: Center(
-                  child: Text('no downloads available'),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.file_copy_rounded,
+                          size: 150,
+                          color: Colors.black12,
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text('no downloads available !')
+                      ]),
                 ),
               )
             : Container(

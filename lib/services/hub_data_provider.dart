@@ -97,15 +97,14 @@ class HubDataProvider extends ChangeNotifier {
   }
 
   deleteOlderSchedule() async {
-    DateTime date = DateTime.now().add(Duration(days: 1));
+    DateTime date = DateTime.now().subtract(Duration(days: 1));
     final data = await _rootCollection.lectures.get();
 
     data.docs.forEach((element) async {
       bool b = element.data()['isSpecificDateTime'];
       AppLogger.print(b.toString());
       if (b) {
-        if (date.isAfter(DateTime.parse(element.data()['specificDateTime'])
-            .add(Duration(days: 1)))) {
+        if (date.isAfter(DateTime.parse(element.data()['specificDateTime']))) {
           await _rootCollection.lectures
               .doc(element.data()['nth'].toString())
               .delete();

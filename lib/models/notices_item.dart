@@ -6,15 +6,15 @@ NoticeItem welcomeFromJson(String str) =>
 String welcomeToJson(NoticeItem data) => json?.encode(data.toJson());
 
 class NoticeItem {
-  NoticeItem({
-    this.noticeTime,
-    this.docId,
-    this.noticeTitle,
-    this.urlImage,
-    this.timeStamp,
-    this.noticeDetails,
-    this.comments,
-  });
+  NoticeItem(
+      {this.noticeTime,
+      this.docId,
+      this.noticeTitle,
+      this.urlImage,
+      this.timeStamp,
+      this.noticeDetails,
+      this.comments,
+      this.color});
 
   String noticeTime;
   final String timeStamp;
@@ -23,9 +23,11 @@ class NoticeItem {
   List<String> urlImage;
   NoticeDetails noticeDetails;
   List<Comment> comments;
+  String color;
 
   factory NoticeItem.fromJson(Map<String, dynamic> json) => NoticeItem(
         noticeTime: json["noticeTime"] ?? null,
+        color: json['color'],
         noticeTitle: json["noticeTitle"] ?? null,
         timeStamp: json["timeStamp"] ?? null,
         docId: json["docId"] ?? null,
@@ -45,6 +47,7 @@ class NoticeItem {
 
   Map<String, dynamic> toJson() => {
         "noticeTime": noticeTime ?? null,
+        "color": color,
         "timeStamp": timeStamp ?? null,
         "noticeTitle": noticeTitle ?? null,
         "docId": docId ?? null,

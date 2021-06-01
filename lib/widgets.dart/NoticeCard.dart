@@ -3,8 +3,6 @@ import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:flutter/material.dart';
 
-import 'package:cached_network_image/cached_network_image.dart';
-
 class NoticeCard extends StatelessWidget {
   final String noticeTitle;
   final String body;
@@ -13,6 +11,7 @@ class NoticeCard extends StatelessWidget {
   final Function onTap;
   final Function(String) onDeleteNotice;
   final String image;
+  final Color color;
   const NoticeCard(
       {Key key,
       this.noticeTitle,
@@ -21,7 +20,8 @@ class NoticeCard extends StatelessWidget {
       this.noticeItem,
       this.onTap,
       this.onDeleteNotice,
-      this.image})
+      this.image,
+      this.color})
       : super(key: key);
 
   @override
@@ -29,14 +29,28 @@ class NoticeCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
         child: Container(
           decoration: BoxDecoration(
-              image: DecorationImage(
-                  colorFilter: ColorFilter.mode(
-                      Colors.white24.withOpacity(0.3), BlendMode.dstATop),
-                  alignment: Alignment.centerRight,
-                  fit: BoxFit.cover,
-                  image: CachedNetworkImageProvider(image))),
+            color: color,
+            borderRadius: BorderRadius.all(
+                Radius.circular(8.0) //                 <--- border radius here
+                ),
+            //   gradient: LinearGradient(
+            //       colors: [color3, color14],
+            //       begin: FractionalOffset(0, 0),
+            //       end: FractionalOffset(0, 1),
+            //       stops: [1.0, 0.0],
+            //       tileMode: TileMode.clamp),
+          ),
+          // image: DecorationImage(
+          //     colorFilter: ColorFilter.mode(
+          //         Colors.white24.withOpacity(0.3), BlendMode.dstATop),
+          //     alignment: Alignment.centerRight,
+          //     fit: BoxFit.cover,
+          //     image: CachedNetworkImageProvider(image))),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -48,7 +62,7 @@ class NoticeCard extends StatelessWidget {
                       noticeTitle,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                         fontSize: 20,
                       ),
                     ),
@@ -70,7 +84,7 @@ class NoticeCard extends StatelessWidget {
                         body,
                         style: TextStyle(),
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 3,
+                        maxLines: 2,
                       )
                     : SizedBox(),
                 Align(

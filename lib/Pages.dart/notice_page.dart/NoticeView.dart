@@ -58,7 +58,11 @@ class _NoticeViewState extends State<NoticeView> {
               alignment: Alignment.center,
               child: Text(
                 widget.noticeItem.noticeTitle,
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.w500,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.black87),
               ),
             ),
             Padding(
@@ -68,7 +72,7 @@ class _NoticeViewState extends State<NoticeView> {
                 style: style,
               ),
             ),
-            widget.noticeItem.noticeDetails.body != null
+            widget.noticeItem.noticeDetails.body.length != 0
                 ? Container(
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.black38),
@@ -149,81 +153,92 @@ class _NoticeViewState extends State<NoticeView> {
                         itemBuilder: (_, index) {
                           return Padding(
                             padding: const EdgeInsets.only(top: 15.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => FullScreen(
-                                              url: widget
-                                                  .noticeItem.urlImage[index],
-                                            )));
-                              },
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(5.0),
-                                    decoration: BoxDecoration(
-                                        color: Colors.black12,
-                                        border:
-                                            Border.all(color: Colors.black12),
-                                        borderRadius:
-                                            BorderRadius.circular(18.0)),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        !downloading[index]
-                                            ? GestureDetector(
-                                                onTap: () async {
-                                                  await download(
-                                                      widget.noticeItem
-                                                          .urlImage[index],
-                                                      index);
-                                                },
-                                                child: Icon(
-                                                  Icons.file_download,
-                                                  size: 18,
-                                                ))
-                                            : SizedBox(
-                                                height: 18,
-                                                width: 18,
-                                                child:
-                                                    CircularProgressIndicator(),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(5.0),
+                                  decoration: BoxDecoration(
+                                      color: Colors.black12,
+                                      border: Border.all(color: Colors.black12),
+                                      borderRadius:
+                                          BorderRadius.circular(18.0)),
+                                  child: !downloading[index]
+                                      ? GestureDetector(
+                                          onTap: () async {
+                                            await download(
+                                                widget
+                                                    .noticeItem.urlImage[index],
+                                                index);
+                                          },
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.file_download,
+                                                size: 18,
                                               ),
-                                        SizedBox(
-                                          width: 8.0,
-                                        ),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 5.0),
-                                          child: Text(
-                                            'Download',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                            ),
+                                              SizedBox(
+                                                width: 8.0,
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 5.0),
+                                                child: Text(
+                                                  'Download',
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
                                           ),
                                         )
-                                      ],
-                                    ),
+                                      : Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            SizedBox(
+                                              height: 16,
+                                              width: 16,
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 5.0),
+                                              child: Text(
+                                                'Download',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) => FullScreen(
+                                                  url: widget.noticeItem
+                                                      .urlImage[index],
+                                                )));
+                                  },
+                                  child: CachedNetworkImage(
+                                    imageUrl: widget.noticeItem.urlImage[index],
+                                    placeholder: (context, url) =>
+                                        CircularProgressIndicator(),
+                                    alignment: Alignment.center,
+                                    fit: BoxFit.fill,
                                   ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Hero(
-                                    tag: "hero",
-                                    child: CachedNetworkImage(
-                                      imageUrl:
-                                          widget.noticeItem.urlImage[index],
-                                      placeholder: (context, url) =>
-                                          CircularProgressIndicator(),
-                                      alignment: Alignment.center,
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           );
                         }))
@@ -291,12 +306,9 @@ class FullScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      body: Hero(
-        tag: "hero",
-        child: PhotoView(
-          imageProvider: CachedNetworkImageProvider(
-            url,
-          ),
+      body: PhotoView(
+        imageProvider: CachedNetworkImageProvider(
+          url,
         ),
       ),
     ));

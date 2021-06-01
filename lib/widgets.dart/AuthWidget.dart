@@ -17,11 +17,13 @@ class AuthWidget extends StatelessWidget {
         AppLogger.print(snapshot.data.toString());
         if (snapshot.connectionState == ConnectionState.active) {
           if (snapshot.hasData) {
+            AppLogger.print('oooooooooooooo--------------');
             return SplashScreen();
           } else {
             return LogInPage();
           }
         } else {
+          AppLogger.print('------------------------------------');
           return LoadingScreen();
         }
       },
