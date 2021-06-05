@@ -163,12 +163,11 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
         AppLogger.print('sending fcm msg');
 
         await fcm.sendCustomMessage(m.toJson()).then((values) async {
+          AppLogger.print(values.toString());
           if (values) {
-            await _lectureData
-                .addLectureData(lecture, nth.toString())
-                .then((value) {
-              btnController.success();
-            });
+            await _lectureData.addLectureData(lecture, nth.toString());
+
+            btnController.success();
           } else {
             errorr();
           }
@@ -176,6 +175,7 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
 
         return true;
       } else {
+        errorr();
         AppLogger.print('something went wrong in creating timetable');
         return true;
       }
@@ -261,11 +261,11 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
                       AppLogger.print(startTime.toString());
                       AppLogger.print(endTime.toString());
                       setState(() {
-                        textEditingControllerOneTime.text.isEmpty
+                        textEditingControllerWeekTime.text.isEmpty
                             ? errorOneTime = true
                             : errorOneTime = false;
                       });
-                      if (textEditingControllerOneTime.text.isNotEmpty) {
+                      if (textEditingControllerWeekTime.text.isNotEmpty) {
                         btnController.start();
                         widget.sheetLectureData == null
                             ? await setLectureTime()
@@ -344,11 +344,8 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
 
       await fcm.sendCustomMessage(m.toJson()).then((value) async {
         if (value) {
-          await _lectureData
-              .addLectureData(lecture, nth.toString())
-              .then((value) {
-            btnController.success();
-          });
+          await _lectureData.addLectureData(lecture, nth.toString());
+          btnController.success();
         } else {
           errorr();
         }
@@ -407,12 +404,11 @@ class _CustomBottomSheet extends State<CustomBottomSheet> {
 
         await fcm.sendCustomMessage(m.toJson()).then((value) async {
           AppLogger.print(value.toString());
-          await _lectureData
-              .addLectureData(lecture, widget.sheetLectureData.nth.toString())
-              .then((value) {
-            btnController.success();
-          });
+
           if (value) {
+            await _lectureData.addLectureData(
+                lecture, widget.sheetLectureData.nth.toString());
+            btnController.success();
           } else {
             errorr();
           }

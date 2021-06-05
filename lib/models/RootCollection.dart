@@ -27,12 +27,14 @@ class RootHub {
   final String hubCode;
   final Timestamp timeStamp;
   final String admin;
+  final String backgroundUrl;
   final String createdBy;
   final String teacherName;
   final String subCode;
   RootHub(
       {this.hubname,
       this.hubCode,
+      this.backgroundUrl,
       this.timeStamp,
       this.admin,
       this.createdBy,
@@ -42,6 +44,7 @@ class RootHub {
   factory RootHub.fromJson(Map<String, dynamic> json) => RootHub(
         hubname: json["hubname"],
         hubCode: json["hubCode"],
+        backgroundUrl: json["backgroundUrl"],
         timeStamp: json["timeStamp"],
         admin: json["admin"],
         createdBy: json["createdBy"],
@@ -52,6 +55,7 @@ class RootHub {
   Map<String, dynamic> toJson() => {
         "hubname": hubname,
         "hubCode": hubCode,
+        "backgroundUrl": backgroundUrl,
         "timeStamp": timeStamp,
         "admin": admin,
         "createdBy": createdBy,
@@ -59,10 +63,11 @@ class RootHub {
         "subCode": subCode,
       };
 
-  static RootHub mapRootHub(
-      hubname, hubCode, timeStamp, admin, createdBy, teacherName, subCode) {
+  static RootHub mapRootHub(hubname, hubCode, timeStamp, backgroundUrl, admin,
+      createdBy, teacherName, subCode) {
     return RootHub(
       hubname: hubname,
+      backgroundUrl: backgroundUrl,
       hubCode: hubCode,
       timeStamp: timeStamp,
       admin: admin,

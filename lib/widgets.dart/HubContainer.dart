@@ -50,20 +50,17 @@ class HubContainer extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                         ),
-                        isAdmin
-                            ? PopupMenuButton(
-                                onSelected: ondelete,
-                                itemBuilder: (_) {
-                                  return [
-                                    PopupMenuItem(
-                                        height: 26,
-                                        value: "delete",
-                                        //  enabled: ,
-                                        child:
-                                            Text(isAdmin ? 'Delete' : 'Exit')),
-                                  ];
-                                })
-                            : SizedBox(),
+                        PopupMenuButton(
+                            onSelected: ondelete,
+                            itemBuilder: (_) {
+                              return [
+                                PopupMenuItem(
+                                    height: 26,
+                                    value: isAdmin ? 'Delete' : 'Exit',
+                                    //  enabled: ,
+                                    child: Text(isAdmin ? 'Delete' : 'Exit')),
+                              ];
+                            })
                       ],
                     ),
                     Row(

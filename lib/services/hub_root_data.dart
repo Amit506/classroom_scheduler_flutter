@@ -195,6 +195,8 @@ class HubRootData extends ChangeNotifier {
       if (!isRetriving) {
         collection = rootCollectionReference(userCollection.hubname,
             userCollection.hubCode, authService.currentUser.uid);
+        userCollection.uid = authService.currentUser.uid;
+        userCollection.status = 'subscribed';
       } else {
         AppLogger.print('pp');
         collection = rootCollectionReference(
@@ -239,8 +241,14 @@ class HubRootData extends ChangeNotifier {
             .get();
 
         final retriveUserCollection = UserCollection.fromJson(snap.data());
+        retriveUserCollection.uid = authService.currentUser.uid;
+        retriveUserCollection.token = token;
         await fcm.subscribeTopic(
             userCollection != null ? userCollection.hubname : hubName);
+        userCollection != null
+            ? userCollection.status = 'subscribed'
+            : retriveUserCollection.status = 'subscribed';
+
         await collection.members
             .doc(authService.currentUser.uid)
             .set(members.toJson());
@@ -275,10 +283,12 @@ class HubRootData extends ChangeNotifier {
 
     if (hubcode != null) {
       try {
+        final backgroundUrl = assetImagesN[_random.nextInt(5)];
         final collection = rootCollectionReference(
             hubname, hubcode, authService.currentUser.uid);
         await fcm.subscribeTopic(hubname);
         final roothub = RootHub(
+            backgroundUrl: backgroundUrl,
             admin: authService.currentUser.email,
             hubname: hubname,
             timeStamp: Timestamp.now(),
@@ -286,7 +296,7 @@ class HubRootData extends ChangeNotifier {
             hubCode: hubcode);
         final userCollection = UserCollection(
             admin: authService.currentUser.email,
-            backgroundUrl: assetImagesN[_random.nextInt(5)],
+            backgroundUrl: backgroundUrl,
             hubname: hubname,
             timeStamp: Timestamp.now(),
             createdBy: authService.currentUser.displayName,

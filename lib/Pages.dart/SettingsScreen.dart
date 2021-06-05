@@ -1,31 +1,33 @@
+import 'package:classroom_scheduler_flutter/Pages.dart/AuthenticationScreen.dart/LoginPage.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:system_settings/system_settings.dart';
 
 class SettingScreen extends StatelessWidget {
   static AuthService authService = AuthService();
-  static List<Widget> settings = [
-    ListTile(
-      onTap: () async {
-        await SystemSettings.appNotifications();
-      },
-      title: Text('Notification Setting'),
-    ),
-    ListTile(
-      onTap: () async {
-        await authService.logout();
-      },
-      title: Text('Log out'),
-    ),
-    ListTile(
-      onTap: () async {},
-      title: Text('About app'),
-    ),
-  ];
+
   static TextStyle style = TextStyle(fontSize: 16, fontWeight: FontWeight.w500);
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> settings = [
+      ListTile(
+        onTap: () async {
+          await SystemSettings.appNotifications();
+        },
+        title: Text('Notification Setting'),
+      ),
+      ListTile(
+        onTap: () async {
+          await authService.logout(context);
+        },
+        title: Text('Log out'),
+      ),
+      ListTile(
+        onTap: () async {},
+        title: Text('About app'),
+      ),
+    ];
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(

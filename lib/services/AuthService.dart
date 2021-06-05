@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:classroom_scheduler_flutter/Pages.dart/AuthenticationScreen.dart/LoginPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -52,8 +54,15 @@ class AuthService with ChangeNotifier {
     return userCredential;
   }
 
-  logout() async {
+  Future logout(BuildContext context) async {
     await instance.signOut();
-    await googleSignIn.signOut();
+    await googleSignIn.signOut().then((value) {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (_) => LogInPage(),
+          ),
+          (route) => false);
+    });
   }
 }

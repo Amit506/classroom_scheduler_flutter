@@ -81,7 +81,8 @@ class _SplashScreenState extends State<SplashScreen> {
     pendingNotification = await f.pendingNotifications();
     configurePath();
 
-    Navigator.push(context, MaterialPageRoute(builder: (_) => LandingPage()));
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (_) => LandingPage()));
   }
 
   // cache() {

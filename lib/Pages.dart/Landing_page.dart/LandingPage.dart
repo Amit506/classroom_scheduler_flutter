@@ -185,7 +185,8 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                                 rootData[index].hubname,
                                 context);
                           } else {
-                            hubRootData.deleteHub(rootData[index]);
+                            AppLogger.print('exiting');
+                            await hubRootData.deleteHub(rootData[index]);
                           }
                         },
                       );
@@ -435,18 +436,20 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
     AppLogger.print(token);
     if (hubcode != null) {
       floatingActionButtonLoading();
-      Navigator.pop(context);
+
       final check = await hubRootData.isexist(
           hubRootData.rootCollection(), hubcode, token);
       if (check.isExist) {
+        Navigator.pop(context);
+        check.userCollection.token = token;
         final b = await hubRootData.joinHub(
           token,
           context,
           userCollection: check.userCollection,
         );
         floatingActionButtonLoading();
+
         print(b);
-        Navigator.pop(context);
       } else {
         floatingActionButtonLoading();
         Navigator.pop(context);
