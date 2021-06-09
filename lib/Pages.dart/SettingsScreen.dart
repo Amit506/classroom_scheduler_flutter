@@ -1,4 +1,3 @@
-import 'package:classroom_scheduler_flutter/Pages.dart/AuthenticationScreen.dart/LoginPage.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:system_settings/system_settings.dart';
