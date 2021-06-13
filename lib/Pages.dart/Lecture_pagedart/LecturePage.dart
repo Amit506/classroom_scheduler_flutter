@@ -4,6 +4,7 @@ import 'package:classroom_scheduler_flutter/widgets.dart/OneTimeLecture.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/WeeklyLecture.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/bottom_sheet.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/Lecture_pagedart/showLectureBottomSheet.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:classroom_scheduler_flutter/models/Lecture.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
@@ -74,6 +75,7 @@ class _LectureTabBarState extends State<LectureTabBar>
   }
 
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
     final hubRootData = Provider.of<HubDataProvider>(context, listen: false);
     return Scaffold(
@@ -88,121 +90,144 @@ class _LectureTabBarState extends State<LectureTabBar>
                   List<Lecture> lectures = [];
                   for (var list in lists)
                     lectures.add(Lecture.fromJson(list.data()));
+                  if (lectures.length == 0) {
+                    return Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            FontAwesome.clock_o,
+                            size: 200,
+                            color: Colors.blueGrey[600],
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Text(
+                            'Add your first schedule !',
+                            style: TextStyle(color: Colors.black38),
+                          )
+                        ],
+                      ),
+                    );
+                  } else {
+                    return ListView.builder(
+                        itemCount: lectures.length,
+                        itemBuilder: (_, index) {
+                          sheetLectureData = lectures[0];
+                          if (lectures[index].isSpecificDateTime) {
+                            oneTimeSwitch = pendingNotificationsId
+                                .contains(lectures[index].notificationId);
+                            return OneTimeSchedule(
+                              lecture: lectures[index],
+                              onDelete: (value) async {
+                                AppLogger.print(value);
+                                await hubRootData.deleteOneTimeschedule(
+                                    lectures[index].nth.toString(),
+                                    lectures[index],
+                                    context);
+                              },
+                              switchValue: oneTimeSwitch,
+                              onChanged: (value) async {
+                                if (!value) {
+                                  setState(() {
+                                    pendingNotificationsId
+                                        .remove(lectures[index].notificationId);
+                                  });
+                                  notificationProvider.cancelNotification(
+                                      lectures[index].notificationId);
+                                } else {
+                                  AppLogger.print('one time notification');
 
-                  return ListView.builder(
-                      itemCount: lectures.length,
-                      itemBuilder: (_, index) {
-                        sheetLectureData = lectures[0];
-                        if (lectures[index].isSpecificDateTime) {
-                          oneTimeSwitch = pendingNotificationsId
-                              .contains(lectures[index].notificationId);
-                          return OneTimeSchedule(
-                            lecture: lectures[index],
-                            onDelete: (value) async {
-                              AppLogger.print(value);
-                              await hubRootData.deleteOneTimeschedule(
-                                  lectures[index].nth.toString(),
-                                  lectures[index],
-                                  context);
-                            },
-                            switchValue: oneTimeSwitch,
-                            onChanged: (value) async {
-                              if (!value) {
-                                setState(() {
-                                  pendingNotificationsId
-                                      .remove(lectures[index].notificationId);
-                                });
-                                notificationProvider.cancelNotification(
-                                    lectures[index].notificationId);
-                              } else {
-                                AppLogger.print('one time notification');
+                                  final tz.TZDateTime now =
+                                      tz.TZDateTime.now(tz.local);
+                                  tz.TZDateTime scheduledDate =
+                                      tz.TZDateTime.parse(tz.local,
+                                          lectures[index].specificDateTime);
+                                  AppLogger.print('$now    :  $scheduledDate');
 
-                                final tz.TZDateTime now =
-                                    tz.TZDateTime.now(tz.local);
-                                tz.TZDateTime scheduledDate =
-                                    tz.TZDateTime.parse(tz.local,
-                                        lectures[index].specificDateTime);
-                                AppLogger.print('$now    :  $scheduledDate');
-
-                                if (scheduledDate
-                                    .isAfter(now.add(Duration(minutes: 5)))) {
+                                  if (scheduledDate
+                                      .isAfter(now.add(Duration(minutes: 5)))) {
+                                    setState(() {
+                                      pendingNotificationsId
+                                          .add(lectures[index].notificationId);
+                                    });
+                                    await notificationProvider
+                                        .createSpecificNotificationUtil(
+                                            scheduledDate, null,
+                                            lecture: lectures[index]);
+                                  } else {
+                                    AppLogger.print("time should be in future");
+                                    // Common.showDateTimeSnackBar(context);
+                                  }
+                                }
+                              },
+                            );
+                          } else {
+                            weekSwitch = pendingNotificationsId
+                                .contains(lectures[index].notificationId);
+                            return WeeklyLecture(
+                              isAdmin: widget.isAdmin,
+                              lecture: lectures[index],
+                              weekSwitchValue: weekSwitch,
+                              onTap: () {
+                                widget.isAdmin
+                                    ? showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (context) {
+                                          return CustomBottomSheet(
+                                            sheetLectureData: lectures[index],
+                                            isSpecicifTime: false,
+                                          );
+                                        },
+                                      )
+                                    : AppLogger.print(
+                                        "admin: ${widget.isAdmin}");
+                              },
+                              onChanged: (value) async {
+                                AppLogger.print(value.toString());
+                                if (!value) {
+                                  setState(() {
+                                    pendingNotificationsId
+                                        .remove(lectures[index].notificationId);
+                                  });
+                                  AppLogger.print('cancel');
+                                  notificationProvider.cancelNotification(
+                                      lectures[index].notificationId);
+                                } else {
                                   setState(() {
                                     pendingNotificationsId
                                         .add(lectures[index].notificationId);
                                   });
-                                  await notificationProvider
-                                      .createSpecificNotificationUtil(
-                                          scheduledDate, null,
-                                          lecture: lectures[index]);
-                                } else {
-                                  AppLogger.print("time should be in future");
-                                  // Common.showDateTimeSnackBar(context);
-                                }
-                              }
-                            },
-                          );
-                        } else {
-                          weekSwitch = pendingNotificationsId
-                              .contains(lectures[index].notificationId);
-                          return WeeklyLecture(
-                            isAdmin: widget.isAdmin,
-                            lecture: lectures[index],
-                            weekSwitchValue: weekSwitch,
-                            onTap: () {
-                              widget.isAdmin
-                                  ? showModalBottomSheet(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      backgroundColor: Colors.transparent,
-                                      builder: (context) {
-                                        return CustomBottomSheet(
-                                          sheetLectureData: lectures[index],
-                                          isSpecicifTime: false,
-                                        );
-                                      },
-                                    )
-                                  : AppLogger.print("admin: ${widget.isAdmin}");
-                            },
-                            onChanged: (value) async {
-                              AppLogger.print(value.toString());
-                              if (!value) {
-                                setState(() {
-                                  pendingNotificationsId
-                                      .remove(lectures[index].notificationId);
-                                });
-                                AppLogger.print('cancel');
-                                notificationProvider.cancelNotification(
-                                    lectures[index].notificationId);
-                              } else {
-                                setState(() {
-                                  pendingNotificationsId
-                                      .add(lectures[index].notificationId);
-                                });
-                                for (int i = 0;
-                                    i < lectures[index].lectureDays.length;
-                                    i++) {
-                                  if (i == 0) {
-                                    tz.TZDateTime time =
-                                        notificationProvider.nextInstanceOfDay(
-                                            lectures[index].startTime, 7);
-                                    await notificationProvider
-                                        .createHubNotificationUtil(time, null,
-                                            lecture: lectures[index]);
-                                  } else {
-                                    tz.TZDateTime time =
-                                        notificationProvider.nextInstanceOfDay(
-                                            lectures[index].startTime, i);
-                                    AppLogger.print(time.toString());
-                                    await notificationProvider
-                                        .createHubNotificationUtil(time, null,
-                                            lecture: lectures[index]);
+                                  for (int i = 0;
+                                      i < lectures[index].lectureDays.length;
+                                      i++) {
+                                    if (i == 0) {
+                                      tz.TZDateTime time = notificationProvider
+                                          .nextInstanceOfDay(
+                                              lectures[index].startTime, 7);
+                                      await notificationProvider
+                                          .createHubNotificationUtil(time, null,
+                                              lecture: lectures[index]);
+                                    } else {
+                                      tz.TZDateTime time = notificationProvider
+                                          .nextInstanceOfDay(
+                                              lectures[index].startTime, i);
+                                      AppLogger.print(time.toString());
+                                      await notificationProvider
+                                          .createHubNotificationUtil(time, null,
+                                              lecture: lectures[index]);
+                                    }
                                   }
                                 }
-                              }
-                            },
-                          );
-                        }
-                      });
+                              },
+                            );
+                          }
+                        });
+                  }
                 } else {
                   return LinearProgressIndicator();
                 }

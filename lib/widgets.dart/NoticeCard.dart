@@ -1,4 +1,5 @@
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/notice_page.dart/NoticesPage.dart';
 
 import 'package:classroom_scheduler_flutter/models/notices_item.dart';
 import 'package:flutter/material.dart';
@@ -34,16 +35,16 @@ class NoticeCard extends StatelessWidget {
         ),
         child: Container(
           decoration: BoxDecoration(
-            color: color,
+            // color: color,
             borderRadius: BorderRadius.all(
                 Radius.circular(8.0) //                 <--- border radius here
                 ),
-            //   gradient: LinearGradient(
-            //       colors: [color3, color14],
-            //       begin: FractionalOffset(0, 0),
-            //       end: FractionalOffset(0, 1),
-            //       stops: [1.0, 0.0],
-            //       tileMode: TileMode.clamp),
+            gradient: LinearGradient(
+                colors: [color, color.withOpacity(0.5).withAlpha(100)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: [0.4, 1],
+                tileMode: TileMode.clamp),
           ),
           // image: DecorationImage(
           //     colorFilter: ColorFilter.mode(

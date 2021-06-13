@@ -20,6 +20,7 @@ import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'dart:ui' as ui;
 
 class NoticesPage extends StatefulWidget {
   final String title = "NOTICES";
@@ -76,6 +77,7 @@ class _NoticesPageState extends State<NoticesPage>
   }
 
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
     final hubRootData = Provider.of<HubDataProvider>(context, listen: false);
     return Scaffold(
@@ -90,30 +92,53 @@ class _NoticesPageState extends State<NoticesPage>
                 for (var list in items) {
                   noticeItem.add(NoticeItem.fromJson(list.data()));
                 }
-                return ListView.builder(
-                    itemCount: noticeItem.length,
-                    itemBuilder: (context, index) {
-                      return NoticeCard(
-                        color: Color(int.parse(noticeItem[index].color)),
-                        noticeTitle: noticeItem[index].noticeTitle,
-                        body: noticeItem[index].noticeDetails.body,
-                        urlImage: noticeItem[index].urlImage,
-                        noticeItem: noticeItem[index],
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => NoticeView(
-                                      noticeItem: noticeItem[index])));
-                        },
-                        onDeleteNotice: (value) async {
-                          AppLogger.print('pressed');
-                          AppLogger.print(hubRootData.rootData.hubCode);
-                          await hubRootData.deleteNotice(
-                              noticeItem[index].docId, context);
-                        },
-                      );
-                    });
+                if (noticeItem.length == 0) {
+                  return Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          FontAwesome.sticky_note,
+                          size: 200,
+                          color: Colors.blueGrey[600],
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Text(
+                          'Add first notice !',
+                          style: TextStyle(color: Colors.black38),
+                        )
+                      ],
+                    ),
+                  );
+                } else {
+                  return ListView.builder(
+                      itemCount: noticeItem.length,
+                      itemBuilder: (context, index) {
+                        return NoticeCard(
+                          color: Color(int.parse(noticeItem[index].color)),
+                          noticeTitle: noticeItem[index].noticeTitle,
+                          body: noticeItem[index].noticeDetails.body,
+                          urlImage: noticeItem[index].urlImage,
+                          noticeItem: noticeItem[index],
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => NoticeView(
+                                        noticeItem: noticeItem[index])));
+                          },
+                          onDeleteNotice: (value) async {
+                            AppLogger.print('pressed');
+                            AppLogger.print(hubRootData.rootData.hubCode);
+                            await hubRootData.deleteNotice(
+                                noticeItem[index].docId, context);
+                          },
+                        );
+                      });
+                }
               } else {
                 return LinearProgressIndicator();
               }
@@ -399,3 +424,36 @@ class _NoticesPageState extends State<NoticesPage>
   @override
   bool get wantKeepAlive => true;
 }
+
+// class CustomNoticeTilePainter extends CustomPainter {
+//   final Color startColor;
+//   final Color endColor;
+
+//   CustomNoticeTilePainter({this.startColor, this.endColor = Colors.blueAccent});
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     var radius = 24.0;
+
+//     var paint = Paint();
+//     paint.shader = ui.Gradient.linear(
+//         Offset(0, 0),
+//         Offset(size.width, size.height),
+//         [HSLColor.fromColor(endColor).toColor(), startColor]);
+//     var path = Path()
+//       ..moveTo(0, size.height)
+//       ..lineTo(size.width - radius, size.height)
+//       ..quadraticBezierTo(
+//           size.width, size.height, size.width, size.height - radius)
+//       ..lineTo(size.width, radius)
+//       ..quadraticBezierTo(size.width, 0, size.width - radius, 0)
+//       ..lineTo(size.width - 1.5 * radius, 0)
+//       ..quadraticBezierTo(-radius, 2 * radius, 0, size.height)
+//       ..close();
+//     canvas.drawPath(path, paint);
+//   }
+
+//   @override
+//   bool shouldRepaint(covariant CustomPainter oldDelegate) {
+//     return true;
+//   }
+// }
