@@ -287,11 +287,12 @@ class _NoticeViewState extends State<NoticeView> {
     Uri uri = Uri.parse(url);
     final localPath =
         join(path, uri.pathSegments.last.split("/")[1].replaceAll(" ", "_"));
-    final exist = await Directory(localPath).exists();
+    final exist = await File(localPath).exists();
+    AppLogger.print(exist.toString());
     if (!exist) {
       setState(() {
         pdfDownloading = true;
-        Common.showSnackBar("downloading pdf...", context);
+        Common.showSnackBar("Downloading pdf ", context);
       });
       final response = await http.get(uri);
 
@@ -300,7 +301,8 @@ class _NoticeViewState extends State<NoticeView> {
       await pdfFile.writeAsBytes(response.bodyBytes).whenComplete(() {
         OpenFile.open(pdfFile.path);
       }).catchError((onError) {
-        AppLogger.print(onError);
+        AppLogger.print(onError.toString());
+        Common.showSnackBar("Kindly allow  permission to save files", context);
       });
       setState(() {
         pdfDownloading = true;

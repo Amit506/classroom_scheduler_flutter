@@ -24,7 +24,8 @@ void main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage((firebaseMessagingBackgroundHandler));
-
+  await Permission.manageExternalStorage.request();
+  await Permission.accessMediaLocation.request();
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     AppLogger.print('${message.data.toString()}');
   });
