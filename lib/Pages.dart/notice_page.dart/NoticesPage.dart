@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/pagebuilder.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/NoticeCard.dart';
 import 'package:classroom_scheduler_flutter/Pages.dart/notice_page.dart/NoticeView.dart';
@@ -99,7 +100,7 @@ class _NoticesPageState extends State<NoticesPage>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          FontAwesome.sticky_note,
+                          Icons.assignment_outlined,
                           size: 200,
                           color: Colors.blueGrey[600],
                         ),
@@ -107,7 +108,7 @@ class _NoticesPageState extends State<NoticesPage>
                           height: 15,
                         ),
                         Text(
-                          'Add first notice !',
+                          'Add first notice ',
                           style: TextStyle(color: Colors.black38),
                         )
                       ],
@@ -126,8 +127,8 @@ class _NoticesPageState extends State<NoticesPage>
                           onTap: () {
                             Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (_) => NoticeView(
+                                SlideRightRoute(
+                                    widget: NoticeView(
                                         noticeItem: noticeItem[index])));
                           },
                           onDeleteNotice: (value) async {
@@ -205,18 +206,7 @@ class _NoticesPageState extends State<NoticesPage>
         title: Center(
             child: Column(
           children: [
-            Row(
-              children: [
-                SizedBox(
-                  width: 10,
-                ),
-                Icon(Icons.info_outline),
-                SizedBox(
-                  width: 50,
-                ),
-                Text('Notice'),
-              ],
-            ),
+            Text('Notice'),
             Divider(
               thickness: 1,
               indent: 10,
@@ -292,6 +282,7 @@ class _NoticesPageState extends State<NoticesPage>
                   padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 3.0),
                   child: ElevatedButton(
                       style: ButtonStyle(
+                          elevation: MaterialStateProperty.all<double>(0),
                           backgroundColor:
                               MaterialStateProperty.all<Color>(Colors.white),
                           shape:
@@ -319,7 +310,7 @@ class _NoticesPageState extends State<NoticesPage>
                       },
                       child: Row(children: [
                         Icon(
-                          AntDesign.pdffile1,
+                          AntDesign.addfile,
                           color: Colors.redAccent,
                         ),
                         SizedBox(
@@ -327,7 +318,7 @@ class _NoticesPageState extends State<NoticesPage>
                         ),
                         SizedBox(
                           width: 120,
-                          child: Text(pdfName == null ? 'Add pdf' : pdfName,
+                          child: Text(pdfName == null ? 'add pdf' : pdfName,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 color: Colors.black26,

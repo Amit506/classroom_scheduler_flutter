@@ -97,7 +97,7 @@ class _LectureTabBarState extends State<LectureTabBar>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            FontAwesome.clock_o,
+                            Icons.pending_actions_outlined,
                             size: 200,
                             color: Colors.blueGrey[600],
                           ),
@@ -105,7 +105,7 @@ class _LectureTabBarState extends State<LectureTabBar>
                             height: 15,
                           ),
                           Text(
-                            'Add your first schedule !',
+                            'Add your first schedule',
                             style: TextStyle(color: Colors.black38),
                           )
                         ],

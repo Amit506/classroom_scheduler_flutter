@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/pagebuilder.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/HubContainer.dart';
 import 'package:classroom_scheduler_flutter/widgets.dart/drawer.dart';
@@ -127,7 +128,7 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
               icon: Icon(Icons.download_sharp, color: Colors.white),
               onPressed: () async {
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => FileManagerr()));
+                    context, SlideRightRoute(widget: FileManagerr()));
               })
         ],
       ),
@@ -148,49 +149,56 @@ class _LandingPageState extends State<LandingPage> with WidgetsBindingObserver {
                   rootData.add(UserCollection.fromJson(list.data()));
                   AppLogger.print(rootData.toString());
                 }
-
-                return ListView.builder(
-                    itemCount: rootData.length,
-                    itemBuilder: (context, index) {
-                      return HubContainer(
-                        backgroundUrl: rootData[index].backgroundUrl,
-                        hubName: rootData[index].hubname,
-                        isAdmin: rootData[index].admin ==
-                            authService.currentUser.email,
-                        date: rootData[index].timeStamp.toString(),
-                        createdBy: rootData[index].createdBy,
-                        onTap: () async {
-                          final roothub = await setHubData(
-                              rootData[index].hubname, rootData[index].hubCode);
-
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      HomePage(rootData: roothub)));
-                        },
-                        ondelete: (value) async {
-                          AppLogger.print('presses');
-                          if (rootData[index].admin ==
-                              authService.currentUser.email) {
-                            final rootCollection =
-                                hubRootData.rootCollectionReference(
-                                    rootData[index].hubname,
-                                    rootData[index].hubCode,
-                                    authService.currentUser.uid);
-                            AppLogger.print(rootData[index].hubname);
-                            await hubRootData.deleteAdminHub(
-                                rootCollection,
-                                rootData[index].hubCode,
+                if (rootData.length == 0) {
+                  return Center(
+                    child: Text(
+                      'Add or join hub',
+                      style: TextStyle(color: color6, fontSize: 16),
+                    ),
+                  );
+                } else
+                  return ListView.builder(
+                      itemCount: rootData.length,
+                      itemBuilder: (context, index) {
+                        return HubContainer(
+                          backgroundUrl: rootData[index].backgroundUrl,
+                          hubName: rootData[index].hubname,
+                          isAdmin: rootData[index].admin ==
+                              authService.currentUser.email,
+                          date: rootData[index].timeStamp.toString(),
+                          createdBy: rootData[index].createdBy,
+                          onTap: () async {
+                            final roothub = await setHubData(
                                 rootData[index].hubname,
-                                context);
-                          } else {
-                            AppLogger.print('exiting');
-                            await hubRootData.deleteHub(rootData[index]);
-                          }
-                        },
-                      );
-                    });
+                                rootData[index].hubCode);
+
+                            Navigator.push(
+                                context,
+                                SlideRightRoute(
+                                    widget: HomePage(rootData: roothub)));
+                          },
+                          ondelete: (value) async {
+                            AppLogger.print('presses');
+                            if (rootData[index].admin ==
+                                authService.currentUser.email) {
+                              final rootCollection =
+                                  hubRootData.rootCollectionReference(
+                                      rootData[index].hubname,
+                                      rootData[index].hubCode,
+                                      authService.currentUser.uid);
+                              AppLogger.print(rootData[index].hubname);
+                              await hubRootData.deleteAdminHub(
+                                  rootCollection,
+                                  rootData[index].hubCode,
+                                  rootData[index].hubname,
+                                  context);
+                            } else {
+                              AppLogger.print('exiting');
+                              await hubRootData.deleteHub(rootData[index]);
+                            }
+                          },
+                        );
+                      });
               } else {
                 return LinearProgressIndicator();
               }

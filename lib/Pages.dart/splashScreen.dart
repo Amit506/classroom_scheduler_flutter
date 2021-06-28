@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:classroom_scheduler_flutter/Pages.dart/Landing_page.dart/LandingPage.dart';
+import 'package:classroom_scheduler_flutter/Pages.dart/pagebuilder.dart';
 import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/services/AuthService.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
@@ -80,9 +81,10 @@ class _SplashScreenState extends State<SplashScreen> {
     Provider.of<HubRootData>(context, listen: false).loadDrawerData();
     pendingNotification = await f.pendingNotifications();
     configurePath();
-
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (_) => LandingPage()));
+    Future.delayed(Duration(milliseconds: 500), () {
+      Navigator.pushReplacement(
+          context, SlideRightRoute(widget: LandingPage()));
+    });
   }
 
   // cache() {

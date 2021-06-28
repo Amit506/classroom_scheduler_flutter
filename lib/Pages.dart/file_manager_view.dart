@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:classroom_scheduler_flutter/Common.dart/CommonFunction.dart';
+import 'package:classroom_scheduler_flutter/Theme.dart/colors.dart';
 import 'package:classroom_scheduler_flutter/services/app_loger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -63,12 +64,13 @@ class _FileManagerrState extends State<FileManagerr> {
                         Icon(
                           Icons.file_copy_rounded,
                           size: 150,
-                          color: Colors.black12,
+                          color: color6,
                         ),
                         SizedBox(
                           height: 20,
                         ),
-                        Text('no downloads available !')
+                        Text('no downloads available',
+                            style: TextStyle(color: Colors.black38))
                       ]),
                 ),
               )
